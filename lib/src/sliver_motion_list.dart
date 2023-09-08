@@ -116,14 +116,14 @@ class SliverMotionListState<E> extends State<SliverMotionList<E>> {
   void _onChanged(int position, Object? payLoad, final List<E?> tmpList) {
     listkey.currentState!.removeItem(
         position, (context, animation) => const SizedBox.shrink(),
-        duration: Duration.zero);
+        duration: const Duration(milliseconds: 1000));
     _onInserted(position, 1, tmpList);
   }
 
   void _onInserted(
       final int position, final int count, final List<E?> tmpList) {
     for (var loopCount = 0; loopCount < count; loopCount++) {
-      listkey.currentState!.insertItem(position + loopCount);
+      listkey.currentState!.insertItem(position + loopCount,duration: const Duration(milliseconds: 1000));
     }
     tmpList.insertAll(position, List<E?>.filled(count, null));
   }
@@ -135,7 +135,7 @@ class SliverMotionListState<E> extends State<SliverMotionList<E>> {
           position,
           (context, animation) =>
               AnimationProvider.buildAnimation(widget.removeAnimation??AnimationType.sizeIn, widget.builder(context,oldItem),
-                  animation) );   }
+                  animation) ,duration: const Duration(milliseconds: 1000));   }
     tmpList.removeRange(position, position + count);
   }
 
