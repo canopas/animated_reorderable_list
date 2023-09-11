@@ -1,8 +1,8 @@
 import 'package:diffutil_dart/diffutil.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-import 'package:motion_list/src/animation_provider.dart';
-import 'package:motion_list/src/animation_type.dart';
+import 'package:motion_list/provider/animation_provider.dart';
+import 'package:motion_list/provider/animation_type.dart';
 
 typedef WidgetBuilder<E>= Widget Function(BuildContext context, E item);
 typedef InsertItemBuilder<E> = Widget Function(
@@ -92,8 +92,6 @@ class SliverMotionListState<E> extends State<SliverMotionList<E>> {
       _onDiffUpdate(update, tempList);
     }
     oldList = List.from(newList);
-
-
   }
 
   @override
