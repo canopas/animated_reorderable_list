@@ -131,7 +131,7 @@ class CustomSliverMotionListState extends State<CustomSliverMotionList>
     }
 
     final AnimationController controller= AnimationController(vsync: this,duration: duration);
-    final _ActiveItem incomingItem= _ActiveItem.incoming(controller, itemIndex);
+    final _ActiveItem incomingItem= _ActiveItem.builder(controller, itemIndex);
 
     setState(() {
       _incomingItems..add(incomingItem)..sort();
@@ -142,7 +142,7 @@ class CustomSliverMotionListState extends State<CustomSliverMotionList>
     });
   }
 
-  void removeItem(int index, AnimatedRemovedItemBuilder builder, {Duration duration=_kDuration}){
+  void removeItem(int index , {Duration duration=_kDuration}){
     assert(index >=0);
     final int itemIndex= _indexToItemIndex(index);
     if(itemIndex<0 || itemIndex>=_itemsCount){
@@ -152,16 +152,15 @@ class CustomSliverMotionListState extends State<CustomSliverMotionList>
     assert(_activeItemAt(_outgoingItems, itemIndex)==null);
 
     final _ActiveItem? incomingItem= _removeActiveItemAt(_incomingItems, itemIndex);
-    final AnimationController controller= incomingItem?.controller?? AnimationController(vsync: this,duration: duration);
+    final AnimationController controller= incomingItem?.controller?? AnimationController(vsync: this,value: 1.0,
+        duration: duration);
 
-    final _ActiveItem outgoingItem= _ActiveItem.outgoing(controller, itemIndex,builder);
-
+    final _ActiveItem outgoingItem= _ActiveItem.builder(controller, itemIndex);
     setState(() {
       _outgoingItems..add(outgoingItem)..sort();
     });
 
-    controller.reverse().then((void value) {
-      print('controller is reversed');
+    controller.reverse().then<void>((void value) {
       _removeActiveItemAt(_outgoingItems, outgoingItem.itemIndex)!.controller!.dispose();
 
       for(final _ActiveItem item in _incomingItems){
@@ -180,16 +179,22 @@ class CustomSliverMotionListState extends State<CustomSliverMotionList>
   //   return widget.delegateBuilder?.call(_itemBuilder, _itemsCount) ??
   //       SliverChildBuilderDelegate(_itemBuilder, childCount: _itemsCount);
   // }
+
+
   SliverChildDelegate _createDelegate() {
-    return widget.delegateBuilder?.call(_itemBuilder, _itemsCount) ??
+    return widget.delegateBuilder?.call(insertItemBuilderInList, _itemsCount) ??
         SliverChildBuilderDelegate(insertItemBuilderInList, childCount: _itemsCount);
   }
 
   Widget insertItemBuilderInList(BuildContext context, int itemIndex) {
     final _ActiveItem? outgoingItem = _activeItemAt(_outgoingItems, itemIndex);
     if (outgoingItem != null) {
-      return outgoingItem.removedItemBuilder!(
-          context, outgoingItem.controller!.view);
+      final Animation<double> animation =
+          outgoingItem.controller?.view ??kAlwaysCompleteAnimation;
+      return  AnimationProvider.buildAnimation(widget.insertAnimationType,
+          widget.itemBuilder(context, itemIndex), animation);
+      // return outgoingItem.removedItemBuilder!(
+      //     context, outgoingItem.controller!.view);
     }
     final _ActiveItem? incomingItem = _activeItemAt(_incomingItems, itemIndex);
     final Animation<double> animation =
@@ -199,18 +204,18 @@ class CustomSliverMotionListState extends State<CustomSliverMotionList>
     return widget.animatedItemBuilder!(context, _itemIndexToIndex(itemIndex), animation);
   }
 
-  Widget _itemBuilder(BuildContext context, int itemIndex) {
-    final _ActiveItem? outgoingItem = _activeItemAt(_outgoingItems, itemIndex);
-    if (outgoingItem != null) {
-      return outgoingItem.removedItemBuilder!(
-          context, outgoingItem.controller!.view);
-    }
-    final _ActiveItem? incomingItem = _activeItemAt(_incomingItems, itemIndex);
-    final Animation<double> animation =
-        incomingItem?.controller?.view ?? kAlwaysCompleteAnimation;
-
-    return widget.animatedItemBuilder!(context, _itemIndexToIndex(itemIndex), animation);
-  }
+  // Widget _itemBuilder(BuildContext context, int itemIndex) {
+  //   final _ActiveItem? outgoingItem = _activeItemAt(_outgoingItems, itemIndex);
+  //   if (outgoingItem != null) {
+  //     return outgoingItem.removedItemBuilder!(
+  //         context, outgoingItem.controller!.view);
+  //   }
+  //   final _ActiveItem? incomingItem = _activeItemAt(_incomingItems, itemIndex);
+  //   final Animation<double> animation =
+  //       incomingItem?.controller?.view ?? kAlwaysCompleteAnimation;
+  //
+  //   return widget.animatedItemBuilder!(context, _itemIndexToIndex(itemIndex), animation);
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -220,18 +225,13 @@ class CustomSliverMotionListState extends State<CustomSliverMotionList>
 
 class _ActiveItem implements Comparable<_ActiveItem> {
   final AnimationController? controller;
-  final AnimatedRemovedItemBuilder? removedItemBuilder;
   int itemIndex;
 
-  _ActiveItem.incoming(this.controller, this.itemIndex)
-      : removedItemBuilder = null;
+  _ActiveItem.builder(this.controller, this.itemIndex);
 
-  _ActiveItem.outgoing(
-      this.controller, this.itemIndex, this.removedItemBuilder);
 
   _ActiveItem.index(this.itemIndex)
-      : controller = null,
-        removedItemBuilder = null;
+      : controller = null;
 
   @override
   int compareTo(_ActiveItem other) {

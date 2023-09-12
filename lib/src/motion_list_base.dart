@@ -15,6 +15,7 @@ typedef UpdateItemBuilder<W extends Widget, E> = W Function(
 
 typedef ItemBuilder<W extends Widget ,E>= Widget Function(BuildContext context,int index);
 
+
 typedef EqualityChecker<E> = bool Function(E, E);
 
 
@@ -114,8 +115,7 @@ with TickerProviderStateMixin{
   void _onChanged(int position, Object? payLoad, final List<E?> tmpList) {
     print('on changed invoked');
     listKey.currentState!.removeItem(
-        position, (context, animation) => const SizedBox.shrink(),
-        duration: const Duration(milliseconds: 1000));
+        position, duration: const Duration(milliseconds: 1000));
     _onInserted(position, 1, tmpList);
   }
 
@@ -130,16 +130,10 @@ with TickerProviderStateMixin{
   }
 
   void _onRemoved(final int position, final int count, final List<E?> tmpList) {
-    print('on removed invoked');
-
     for (var loopcount = 0; loopcount < count; loopcount++) {
       final oldItem = tmpList[position + loopcount];
-      listKey.currentState?.removeItem(
-          position,
-              (context, animation) =>
-              AnimationProvider.buildAnimation(widget.removeAnimationType!,
-                  widget.itemBuilder(context,position + loopcount), animation)
-
+      listKey.currentState!.removeItem(
+          position+loopcount
               ,duration: const Duration(milliseconds: 1000));   }
     tmpList.removeRange(position, position + count);
   }
