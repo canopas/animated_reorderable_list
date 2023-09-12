@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:motion_list/motion_list.dart';
 
+import 'motion_list_base.dart';
+
 const Duration _kDuration = Duration(milliseconds: 300);
 
 typedef DelegateBuilder = SliverChildBuilderDelegate Function(
@@ -10,28 +12,30 @@ typedef DelegateBuilder = SliverChildBuilderDelegate Function(
 typedef AnimatedRemovedItemBuilder = Widget Function(
     BuildContext context, Animation<double> animation);
 
-class CustomSliverAnimatedList extends StatefulWidget {
-  final AnimatedItemBuilder itemBuilder;
-  final InsertItemBuilder insertItemBuilder;
+class CustomSliverMotionList<E> extends StatefulWidget {
+  final AnimatedItemBuilder? animatedItemBuilder;
+  final ItemBuilder itemBuilder;
+  final AnimationType insertAnimationType;
   final int initialCount;
   final DelegateBuilder? delegateBuilder;
 
-  const CustomSliverAnimatedList(
+  const CustomSliverMotionList(
       {Key? key,
-      required this.itemBuilder,
-        required this.insertItemBuilder,
+        this.animatedItemBuilder,
+        required  this.itemBuilder,
+        required this.insertAnimationType,
       this.initialCount = 0,
       this.delegateBuilder})
       : assert(initialCount >= 0),
         super(key: key);
 
   @override
-  CustomSliverAnimatedListState createState() =>
-      CustomSliverAnimatedListState();
+  CustomSliverMotionListState createState() =>
+      CustomSliverMotionListState();
 
-  static CustomSliverAnimatedListState of(BuildContext context) {
-    final CustomSliverAnimatedListState? result =
-        context.findAncestorStateOfType<CustomSliverAnimatedListState>();
+  static CustomSliverMotionListState of(BuildContext context) {
+    final CustomSliverMotionListState? result =
+        context.findAncestorStateOfType<CustomSliverMotionListState>();
     assert(() {
       if (result == null) {
         throw FlutterError(
@@ -51,13 +55,14 @@ class CustomSliverAnimatedList extends StatefulWidget {
     return result!;
   }
 
-  static CustomSliverAnimatedListState? maybeOf(BuildContext context) {
-    return context.findAncestorStateOfType<CustomSliverAnimatedListState>();
+  static CustomSliverMotionListState? maybeOf(BuildContext context) {
+    return context.findAncestorStateOfType<CustomSliverMotionListState>();
   }
 }
 
-class CustomSliverAnimatedListState extends State<CustomSliverAnimatedList>
+class CustomSliverMotionListState extends State<CustomSliverMotionList>
     with TickerProviderStateMixin {
+
   final List<_ActiveItem> _incomingItems = <_ActiveItem>[];
   final List<_ActiveItem> _outgoingItems = <_ActiveItem>[];
   int _itemsCount = 0;
@@ -132,7 +137,6 @@ class CustomSliverAnimatedListState extends State<CustomSliverAnimatedList>
       _incomingItems..add(incomingItem)..sort();
       _itemsCount +=1;
     });
-
     controller.forward().then<void>((_) {
       _removeActiveItemAt(_incomingItems, incomingItem.itemIndex)!.controller!.dispose();
     });
@@ -170,9 +174,26 @@ class CustomSliverAnimatedListState extends State<CustomSliverAnimatedList>
     });
   }
 
+  // SliverChildDelegate _createDelegate() {
+  //   return widget.delegateBuilder?.call(_itemBuilder, _itemsCount) ??
+  //       SliverChildBuilderDelegate(_itemBuilder, childCount: _itemsCount);
+  // }
   SliverChildDelegate _createDelegate() {
     return widget.delegateBuilder?.call(_itemBuilder, _itemsCount) ??
-        SliverChildBuilderDelegate(_itemBuilder, childCount: _itemsCount);
+        SliverChildBuilderDelegate(insertItemBuilderInList, childCount: _itemsCount);
+  }
+
+  Widget insertItemBuilderInList(BuildContext context, int itemIndex) {
+    final _ActiveItem? outgoingItem = _activeItemAt(_outgoingItems, itemIndex);
+    if (outgoingItem != null) {
+      return outgoingItem.removedItemBuilder!(
+          context, outgoingItem.controller!.view);
+    }
+    final _ActiveItem? incomingItem = _activeItemAt(_incomingItems, itemIndex);
+    final Animation<double> animation =
+        incomingItem?.controller?.view ?? kAlwaysCompleteAnimation;
+    return AnimationProvider.buildAnimation(widget.insertAnimationType, widget.itemBuilder(context, itemIndex), animation);
+    return widget.animatedItemBuilder!(context, _itemIndexToIndex(itemIndex), animation);
   }
 
   Widget _itemBuilder(BuildContext context, int itemIndex) {
@@ -184,7 +205,8 @@ class CustomSliverAnimatedListState extends State<CustomSliverAnimatedList>
     final _ActiveItem? incomingItem = _activeItemAt(_incomingItems, itemIndex);
     final Animation<double> animation =
         incomingItem?.controller?.view ?? kAlwaysCompleteAnimation;
-    return widget.itemBuilder(context, _itemIndexToIndex(itemIndex), animation);
+
+    return widget.animatedItemBuilder!(context, _itemIndexToIndex(itemIndex), animation);
   }
 
   @override

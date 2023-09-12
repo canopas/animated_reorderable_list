@@ -2,6 +2,7 @@ import 'package:diffutil_dart/diffutil.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:motion_list/motion_list.dart';
+import 'package:motion_list/src/custom_sliver_motion_list.dart';
 
 typedef InsertItemBuilder<W extends Widget, E> = W Function(
     BuildContext context, AnimationType animationType, E item, int i);
@@ -12,13 +13,13 @@ typedef RemoveItemBuilder<W extends Widget, E> = W Function(
 typedef UpdateItemBuilder<W extends Widget, E> = W Function(
     BuildContext context, AnimationType animationType, int i);
 
-typedef WidgetBuilder<E>= Widget Function(BuildContext context, E item);
+typedef ItemBuilder<E>= Widget Function(BuildContext context, int i);
 
 typedef EqualityChecker<E> = bool Function(E, E);
 
 
 abstract class MotionListBase<W extends Widget, E extends Object> extends StatefulWidget{
-  final WidgetBuilder<E> builder;
+  final ItemBuilder<E> itemBuilder;
   final InsertItemBuilder<W, E>? insertItemBuilder;
   final RemoveItemBuilder<W, E>? removeItemBuilder;
   final List<E> items;
@@ -30,7 +31,7 @@ abstract class MotionListBase<W extends Widget, E extends Object> extends Statef
   final EqualityChecker<E>? areItemsTheSame;
   const MotionListBase({Key? key,
   required this.items,
-    required this.builder,
+    required this.itemBuilder,
    this.insertItemBuilder,
    this.removeItemBuilder,
    this.resizeDuration,
@@ -42,17 +43,22 @@ abstract class MotionListBase<W extends Widget, E extends Object> extends Statef
 
 }
 
-abstract class MotionListBaseState<W extends Widget, B extends MotionListBase<W, E>, E extends Object> extends State<B>
+abstract class MotionListBaseState<W extends Widget, B extends MotionListBase<W, E>, E extends Object>
+    extends State<B>
 with TickerProviderStateMixin{
 
   late List<E> oldList;
 
   @protected
-  GlobalKey<SliverAnimatedListState> listKey= GlobalKey();
+  GlobalKey<CustomSliverMotionListState> listKey= GlobalKey();
 
   @nonVirtual
   @protected
-  SliverAnimatedListState get list=> listKey.currentState!;
+  CustomSliverMotionListState get list=> listKey.currentState!;
+
+  @nonVirtual
+  @protected
+ ItemBuilder<W> get itemBuilder=>widget.itemBuilder;
 
   @nonVirtual
   @protected
@@ -83,7 +89,7 @@ with TickerProviderStateMixin{
 
   late final resizeAnimController= AnimationController(vsync: this);
 
-  late final Animation<double> resizeAnimation=
+  // late final Animation<double> resizeAnimation=
 
   @override
   void initState() {
@@ -126,7 +132,7 @@ with TickerProviderStateMixin{
       listKey.currentState?.removeItem(
           position,
               (context, animation) =>
-              AnimationProvider.buildAnimation(widget.removeAnimation??AnimationType.sizeIn, widget.builder(context,oldItem),
+              AnimationProvider.buildAnimation(AnimationType.sizeIn, widget.itemBuilder(context,position),
                   animation) ,duration: const Duration(milliseconds: 1000));   }
     tmpList.removeRange(position, position + count);
   }
