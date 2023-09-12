@@ -100,6 +100,7 @@ class _HomePageState extends State<HomePage> {
         },
           insertAnimationType: appliedStyle,
           removeAnimationType:  appliedStyle,
+
         ),
       ),
     );

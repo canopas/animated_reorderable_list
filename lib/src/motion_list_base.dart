@@ -8,18 +8,18 @@ typedef InsertItemBuilder<W extends Widget, E> = W Function(
     BuildContext context, AnimationType animationType, E item, int i);
 
 typedef RemoveItemBuilder<W extends Widget, E> = W Function(
-    BuildContext context, AnimationType animationType, int i);
+    BuildContext context, AnimationType animationType, E item);
 
 typedef UpdateItemBuilder<W extends Widget, E> = W Function(
     BuildContext context, AnimationType animationType, int i);
 
-typedef ItemBuilder<E>= Widget Function(BuildContext context, int i);
+typedef ItemBuilder<W extends Widget ,E>= Widget Function(BuildContext context,int index);
 
 typedef EqualityChecker<E> = bool Function(E, E);
 
 
 abstract class MotionListBase<W extends Widget, E extends Object> extends StatefulWidget{
-  final ItemBuilder<E> itemBuilder;
+  final ItemBuilder<W,E> itemBuilder;
   final InsertItemBuilder<W, E>? insertItemBuilder;
   final RemoveItemBuilder<W, E>? removeItemBuilder;
   final List<E> items;
@@ -58,7 +58,7 @@ with TickerProviderStateMixin{
 
   @nonVirtual
   @protected
- ItemBuilder<W> get itemBuilder=>widget.itemBuilder;
+ ItemBuilder<W, E> get itemBuilder=>widget.itemBuilder;
 
   @nonVirtual
   @protected
@@ -112,6 +112,7 @@ with TickerProviderStateMixin{
   }
 
   void _onChanged(int position, Object? payLoad, final List<E?> tmpList) {
+    print('on changed invoked');
     listKey.currentState!.removeItem(
         position, (context, animation) => const SizedBox.shrink(),
         duration: const Duration(milliseconds: 1000));
@@ -120,6 +121,8 @@ with TickerProviderStateMixin{
 
   void _onInserted(
       final int position, final int count, final List<E?> tmpList) {
+    print('on inserted invoked');
+
     for (var loopCount = 0; loopCount < count; loopCount++) {
       listKey.currentState!.insertItem(position + loopCount,duration: const Duration(milliseconds: 1000));
     }
@@ -127,13 +130,17 @@ with TickerProviderStateMixin{
   }
 
   void _onRemoved(final int position, final int count, final List<E?> tmpList) {
+    print('on removed invoked');
+
     for (var loopcount = 0; loopcount < count; loopcount++) {
       final oldItem = tmpList[position + loopcount];
       listKey.currentState?.removeItem(
           position,
               (context, animation) =>
-              AnimationProvider.buildAnimation(AnimationType.sizeIn, widget.itemBuilder(context,position),
-                  animation) ,duration: const Duration(milliseconds: 1000));   }
+              AnimationProvider.buildAnimation(widget.removeAnimationType!,
+                  widget.itemBuilder(context,position + loopcount), animation)
+
+              ,duration: const Duration(milliseconds: 1000));   }
     tmpList.removeRange(position, position + count);
   }
 

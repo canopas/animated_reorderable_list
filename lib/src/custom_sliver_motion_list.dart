@@ -153,13 +153,15 @@ class CustomSliverMotionListState extends State<CustomSliverMotionList>
 
     final _ActiveItem? incomingItem= _removeActiveItemAt(_incomingItems, itemIndex);
     final AnimationController controller= incomingItem?.controller?? AnimationController(vsync: this,duration: duration);
+
     final _ActiveItem outgoingItem= _ActiveItem.outgoing(controller, itemIndex,builder);
 
     setState(() {
       _outgoingItems..add(outgoingItem)..sort();
     });
 
-    controller.reverse().then<void>((_) {
+    controller.reverse().then((void value) {
+      print('controller is reversed');
       _removeActiveItemAt(_outgoingItems, outgoingItem.itemIndex)!.controller!.dispose();
 
       for(final _ActiveItem item in _incomingItems){
@@ -192,7 +194,8 @@ class CustomSliverMotionListState extends State<CustomSliverMotionList>
     final _ActiveItem? incomingItem = _activeItemAt(_incomingItems, itemIndex);
     final Animation<double> animation =
         incomingItem?.controller?.view ?? kAlwaysCompleteAnimation;
-    return AnimationProvider.buildAnimation(widget.insertAnimationType, widget.itemBuilder(context, itemIndex), animation);
+    return AnimationProvider.buildAnimation(widget.insertAnimationType,
+        widget.itemBuilder(context, _itemIndexToIndex(itemIndex)), animation);
     return widget.animatedItemBuilder!(context, _itemIndexToIndex(itemIndex), animation);
   }
 

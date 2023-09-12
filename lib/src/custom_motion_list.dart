@@ -9,7 +9,7 @@ class CustomMotionList<E extends Object> extends MotionListBase<Widget, E> {
   CustomMotionList({
     Key? key,
     required List<E> items,
-    required ItemBuilder<E> itemBuilder,
+    required ItemBuilder itemBuilder,
     InsertItemBuilder<Widget, E>? insertItemBuilder,
     RemoveItemBuilder<Widget, E>? removeItemBuilder,
     Duration insertDuration = const Duration(milliseconds: 500),
@@ -45,13 +45,10 @@ class _CustomMotionListState<E extends Object>
           key: listKey,
           initialCount: oldList.length,
           insertAnimationType:  insertAnimationType!,
-          // animatedItemBuilder: (BuildContext context, int index, Animation<double> animation) {
-          //   if(insertAnimationType!=null){
-          //   return insertItemBuilder!(context, widget.insertAnimationType!,widget.builder(context, widget.items[index]), index );
-          // },
           itemBuilder: (BuildContext context, int i) {
             return itemBuilder(context,i);
-          },),
+          },
+        ),
       ],
     );
   }
