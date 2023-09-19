@@ -10,16 +10,11 @@ class FadeInLeft extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return   SizeTransition(
-      sizeFactor:Animation.fromValueListenable(animation,transformer: (value){
-        return (value).clamp(0, 1);
-      }),
-      child: SlideInAnimation(
-        animation: animation,
-        child: FadeTransition(
-          opacity:animation,
-          child: child,
-        ),
+    return   SlideInAnimation(
+      animation: animation,
+      child: FadeTransition(
+        opacity:animation,
+        child: child,
       ),
     );
   }

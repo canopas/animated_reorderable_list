@@ -90,7 +90,6 @@ with TickerProviderStateMixin{
 
   late final resizeAnimController= AnimationController(vsync: this);
 
-  // late final Animation<double> resizeAnimation=
 
   @override
   void initState() {
@@ -121,17 +120,15 @@ with TickerProviderStateMixin{
 
   void _onInserted(
       final int position, final int count, final List<E?> tmpList) {
-    print('on inserted invoked');
-
     for (var loopCount = 0; loopCount < count; loopCount++) {
-      listKey.currentState!.insertItem(position + loopCount,duration: const Duration(milliseconds: 1000));
+      listKey.currentState!.insertItem(position ,duration: const Duration(milliseconds: 1000));
     }
     tmpList.insertAll(position, List<E?>.filled(count, null));
   }
 
   void _onRemoved(final int position, final int count, final List<E?> tmpList) {
     for (var loopcount = 0; loopcount < count; loopcount++) {
-      final oldItem = tmpList[position + loopcount];
+       final oldItem = tmpList[position + loopcount];
       listKey.currentState!.removeItem(
           position+loopcount
               ,duration: const Duration(milliseconds: 1000));   }

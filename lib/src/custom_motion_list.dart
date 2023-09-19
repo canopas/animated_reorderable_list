@@ -1,12 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:motion_list/motion_list.dart';
-import 'package:motion_list/src/custom_sliver_motion_list.dart';
-import 'package:motion_list/src/motion_list_base.dart';
 
-import '../provider/animation_type.dart';
 
 class CustomMotionList<E extends Object> extends MotionListBase<Widget, E> {
-  CustomMotionList({
+  const CustomMotionList({
     Key? key,
     required List<E> items,
     required ItemBuilder itemBuilder,

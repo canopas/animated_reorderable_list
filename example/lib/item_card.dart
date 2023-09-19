@@ -3,12 +3,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class ItemListCard extends StatelessWidget {
-  final  String? item;
   final VoidCallback? onTap;
+  final int index;
   final bool selected;
   const ItemListCard({super.key,
-    this.item,
     this.onTap,
+    required this.index,
     this.selected=false,
   });
 
@@ -31,7 +31,7 @@ class ItemListCard extends StatelessWidget {
                   color: Colors.green,
                 ),
                 child:    Center(
-                  child: Text('Item $item',style: const TextStyle(
+                  child: Text('Item $index',style: const TextStyle(
                       fontSize: 25
                   ),),
                 ),

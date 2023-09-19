@@ -8,16 +8,11 @@ class FadeInRight extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizeTransition(
-      sizeFactor:Animation.fromValueListenable(animation,transformer: (value){
-        return (value).clamp(0, 1);
-      }),
-      child: SlideTransition(
-        position: Tween<Offset>(begin: Offset(1.0,0.0),end:Offset(0.0,0.0)).animate(animation),
-        child: FadeTransition(
-          opacity: animation,
-          child: child,
-        ),
+    return SlideTransition(
+      position: Tween<Offset>(begin: Offset(1.0,0.0),end:Offset(0.0,0.0)).animate(animation),
+      child: FadeTransition(
+        opacity: animation,
+        child: child,
       ),
     );
   }

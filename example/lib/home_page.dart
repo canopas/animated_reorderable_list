@@ -13,22 +13,28 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   AnimationType appliedStyle = AnimationType.fadeIn;
+  //
+  // List<String> list = ['sunny', 'family', "student"];
+  // String nextItem = 'Added item';
+  List<int> list= [1,2,3];
+  int addedNumber=10;
 
-  List<String> list = ['sunny', 'family', "student"];
-  String nextItem = 'Added item';
 
   void insert() {
-    setState(() {
-      list.insert(1, nextItem);
+    addedNumber +=1;
 
+    setState(() {
+      list.insert(1, addedNumber);
     });
+   list.forEach((element) { print(element);});
   }
 
   void remove() {
     setState(() {
       list.removeAt(1);
-
     });
+    list.forEach((element) { print('after removal:$element');});
+
   }
 
   @override
@@ -95,8 +101,8 @@ class _HomePageState extends State<HomePage> {
         child: CustomMotionList(
           items: list,
           itemBuilder: (BuildContext context, index) {
-            final item= list[index];
-            return ItemListCard(item: item);
+            //final item= list[index];
+            return ItemListCard(index: index);
         },
           insertAnimationType: appliedStyle,
           removeAnimationType:  appliedStyle,
