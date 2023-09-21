@@ -26,15 +26,12 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       list.insert(1, addedNumber);
     });
-   list.forEach((element) { print(element);});
   }
 
   void remove() {
     setState(() {
       list.removeAt(1);
     });
-    list.forEach((element) { print('after removal:$element');});
-
   }
 
   @override
