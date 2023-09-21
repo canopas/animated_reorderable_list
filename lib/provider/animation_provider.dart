@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:motion_list/animation/animation.dart';
 import 'package:motion_list/animation/fade_in.dart';
 import 'package:motion_list/animation/fadein_left.dart';
 import 'package:motion_list/animation/fadein_right.dart';
@@ -13,6 +14,14 @@ class AnimationProvider {
     switch (animationType) {
       case (AnimationType.fadeIn):
         return FadeInAnimation(animation: animation, child: child);
+      case (AnimationType.fadeInLeft):
+        return FadeInLeft(animation: animation,child: child,);
+      case (AnimationType.fadeInRight):
+        return FadeInRight(animation: animation,child: child,);
+      case(AnimationType.fadeInDown):
+        return FadeInDown(animation: animation, child: child);
+      case(AnimationType.fadeInUp):
+        return FadeInUp(animation: animation, child: child);
       case (AnimationType.slideIn):
         return SlideInAnimation(
           animation: animation,
@@ -20,10 +29,7 @@ class AnimationProvider {
         );
       case (AnimationType.sizeIn):
         return SizeInAnimation(animation: animation, child: child);
-      case (AnimationType.fadeInLeft):
-        return FadeInLeft(animation: animation,child: child,);
-      case (AnimationType.fadeInRight):
-        return FadeInRight(animation: animation,child: child,);
+
     }
   }
 }

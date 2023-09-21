@@ -1,7 +1,9 @@
 enum AnimationType{
   fadeIn,
-  slideIn,
-  sizeIn,
   fadeInLeft,
-  fadeInRight
+  fadeInRight,
+  fadeInDown,
+  fadeInUp,
+  slideIn,
+  sizeIn
 }
