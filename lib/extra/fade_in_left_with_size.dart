@@ -14,7 +14,7 @@ class FadeInLeftWithSize extends StatelessWidget {
       sizeFactor:Animation.fromValueListenable(animation,transformer: (value){
         return (value).clamp(0, 1);
       }),
-      child: SlideInAnimation(
+      child: SlideIn(
         animation: animation,
         child: FadeTransition(
           opacity:animation,

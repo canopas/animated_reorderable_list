@@ -1,11 +1,11 @@
 import 'package:flutter/cupertino.dart';
 
 
-class SlideInAnimation extends StatelessWidget {
+class SlideIn extends StatelessWidget {
   final Widget child;
   final Animation<double> animation;
 
-  const SlideInAnimation(
+  const SlideIn(
       {Key? key, required this.child, required this.animation})
       :super(key: key);
 

@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 
-class SizeInAnimation extends StatelessWidget {
+class SizeIn extends StatelessWidget {
   final Widget child;
   final Animation<double> animation;
 
-  const SizeInAnimation(
+  const SizeIn(
       {Key? key, required this.child, required this.animation})
       :super(key: key);
 

@@ -3,6 +3,8 @@ import 'package:motion_list/animation/animation.dart';
 import 'package:motion_list/animation/fade_in.dart';
 import 'package:motion_list/animation/fadein_left.dart';
 import 'package:motion_list/animation/fadein_right.dart';
+import 'package:motion_list/animation/landing.dart';
+import 'package:motion_list/animation/scale_in.dart';
 import 'package:motion_list/animation/size_in.dart';
 import 'package:motion_list/animation/slide_in.dart';
 
@@ -22,13 +24,22 @@ class AnimationProvider {
         return FadeInDown(animation: animation, child: child);
       case(AnimationType.fadeInUp):
         return FadeInUp(animation: animation, child: child);
+      case(AnimationType.landing):
+        return Landing(animation: animation, child: child);
+      case(AnimationType.scaleIn):
+        return ScaleIn(animation: animation, child: child);
+      case(AnimationType.scaleInTop):
+        return ScaleInTop(animation: animation, child: child);
+      case(AnimationType.scaleInBottom):
+        return ScaleInBottom(animation: animation, child: child);
+      case(AnimationType.scaleInLeft):
+        return ScaleInLeft(animation: animation, child: child);
+      case(AnimationType.scaleInRight):
+        return ScaleInRight(animation: animation, child: child);
       case (AnimationType.slideIn):
-        return SlideInAnimation(
-          animation: animation,
-          child: child,
-        );
+        return SlideIn(animation: animation, child: child);
       case (AnimationType.sizeIn):
-        return SizeInAnimation(animation: animation, child: child);
+        return SizeIn(animation: animation, child: child);
 
     }
   }
