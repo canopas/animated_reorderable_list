@@ -2,9 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:motion_list/motion_list.dart';
 
-const Curve _kResizeTimeCurve = Interval(0.0, 1.0, curve: Curves.linear);
-const Curve _kResizeTimeInterval = Interval(0.5, 1.0, curve: Curves.linear);
-
 const Duration _kDuration = Duration(milliseconds: 300);
 const Duration _kResizeDuration = Duration(milliseconds: 1000);
 
@@ -67,10 +64,6 @@ class CustomSliverMotionListState extends State<CustomSliverMotionList>
   final List<_ActiveItem> _outgoingItems = <_ActiveItem>[];
   int _itemsCount = 0;
 
-  AnimationController? _resizeController;
-  Animation<double>? _resizeAnimation;
-
-
   @override
   void initState() {
     super.initState();
@@ -81,8 +74,8 @@ class CustomSliverMotionListState extends State<CustomSliverMotionList>
   void dispose() {
     for (final _ActiveItem item in _incomingItems.followedBy(_outgoingItems)) {
       item.controller!.dispose();
+      item.resizeController?.dispose();
     }
-    _resizeController?.dispose();
     super.dispose();
   }
 
@@ -136,17 +129,24 @@ class CustomSliverMotionListState extends State<CustomSliverMotionList>
       if (item.itemIndex >= itemIndex) item.itemIndex += 1;
     }
 
+    final AnimationController addResizeController =
+        AnimationController(vsync: this, duration: _kResizeDuration);
+
     final AnimationController controller =
         AnimationController(vsync: this, duration: duration);
-    final _ActiveItem incomingItem = _ActiveItem.builder(controller, itemIndex);
-
-    controller.forward().then<void>((_) {
-      _removeActiveItemAt(_incomingItems, incomingItem.itemIndex)!
-          .controller!
-          .dispose();
+    final _ActiveItem incomingItem =
+        _ActiveItem.builder(controller, itemIndex, addResizeController);
+    addResizeController.forward();
+    addResizeController.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        controller.forward().then<void>((_) {
+          final activeItem =
+              _removeActiveItemAt(_incomingItems, incomingItem.itemIndex)!;
+          activeItem.controller!.dispose();
+          activeItem.resizeController?.dispose();
+        });
+      }
     });
-
-    controller.addStatusListener((status) {});
     setState(() {
       _incomingItems
         ..add(incomingItem)
@@ -167,24 +167,24 @@ class CustomSliverMotionListState extends State<CustomSliverMotionList>
         _removeActiveItemAt(_incomingItems, itemIndex);
     final AnimationController controller = incomingItem?.controller ??
         AnimationController(vsync: this, value: 1.0, duration: duration);
-
-    _startResizeAnimation();
+    final AnimationController resizeController = incomingItem?.resizeController ??
+        AnimationController(vsync: this, value: 1.0, duration: duration);
     controller.reverse();
     controller.addStatusListener((status) {
       if (status == AnimationStatus.dismissed) {
-        _resizeController!.forward();
+        resizeController.reverse();
       }
     });
-    final _ActiveItem outgoingItem = _ActiveItem.builder(controller, itemIndex);
+    final _ActiveItem outgoingItem = _ActiveItem.builder(controller, itemIndex,resizeController);
     setState(() {
       _outgoingItems
         ..add(outgoingItem)
         ..sort();
     });
 
-    _resizeController!.addStatusListener((status) {
+    resizeController.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
-        _removeActiveItemAt(_outgoingItems, outgoingItem.itemIndex);
+      final _ActiveItem? activeItem=  _removeActiveItemAt(_outgoingItems, outgoingItem.itemIndex);
 
         for (final _ActiveItem item in _incomingItems) {
           if (item.itemIndex > outgoingItem.itemIndex) item.itemIndex -= 1;
@@ -195,46 +195,54 @@ class CustomSliverMotionListState extends State<CustomSliverMotionList>
         setState(() {
           _itemsCount -= 1;
         });
+        activeItem?.controller?.dispose();
+        activeItem?.resizeController?.dispose();
       }
     });
   }
 
-  void _startResizeAnimation() {
-    _resizeController =
-        AnimationController(vsync: this, duration: _kResizeDuration);
-    _resizeAnimation = _resizeController!
-        .drive(Tween<double>(begin: 1.0, end: 0.0))
-        .drive(CurveTween(curve: _kResizeTimeCurve));
-  }
 
   SliverChildDelegate _createDelegate() {
-    return widget.delegateBuilder?.call(insertItemBuilderInList, _itemsCount) ??
-        SliverChildBuilderDelegate(insertItemBuilderInList,
+    return widget.delegateBuilder?.call(itemBuilderDelegate, _itemsCount) ??
+        SliverChildBuilderDelegate(itemBuilderDelegate,
             childCount: _itemsCount);
   }
 
-
-  Widget _removeAnimProvider(
-      AnimationType animationType, Widget child, Animation<double> animation) {
+  Widget itemBuilder(AnimationType animationType, Widget child,
+      Animation<double> animation, Animation<double>? resizeAnimation) {
     return SizeTransition(
-        sizeFactor: _resizeAnimation!,
+        sizeFactor: resizeAnimation ?? kAlwaysCompleteAnimation,
         child:
             AnimationProvider.buildAnimation(animationType, child, animation));
   }
 
-  Widget insertItemBuilderInList(BuildContext context, int itemIndex) {
-    final _ActiveItem? outgoingItem = _activeItemAt(_outgoingItems, itemIndex);
-    if (outgoingItem != null) {
-      final Animation<double> animation =
-          outgoingItem.controller?.view ?? kAlwaysCompleteAnimation;
-      return _removeAnimProvider(widget.insertAnimationType,
-          widget.itemBuilder(context, itemIndex), animation);
-    }
-    final _ActiveItem? incomingItem = _activeItemAt(_incomingItems, itemIndex);
+  Widget _removeItemBuilder(_ActiveItem outgoingItem, int itemIndex) {
+    final Animation<double> animation =
+        outgoingItem.controller?.view ?? kAlwaysCompleteAnimation;
+    final Animation<double> resizeAnimation = outgoingItem.resizeController!.view;
+    return itemBuilder(widget.insertAnimationType,
+        widget.itemBuilder(context, itemIndex), animation, resizeAnimation);
+  }
+
+  Widget _insertItemBuilder(_ActiveItem? incomingItem, int itemIndex) {
     final Animation<double> animation =
         incomingItem?.controller?.view ?? kAlwaysCompleteAnimation;
-    return AnimationProvider.buildAnimation(widget.insertAnimationType,
-        widget.itemBuilder(context, _itemIndexToIndex(itemIndex)), animation);
+    final Animation<double>? resizeAnimation =
+        incomingItem?.resizeController?.view;
+    return itemBuilder(
+        widget.insertAnimationType,
+        widget.itemBuilder(context, _itemIndexToIndex(itemIndex)),
+        animation,
+        resizeAnimation);
+  }
+
+  Widget itemBuilderDelegate(BuildContext context, int itemIndex) {
+    final _ActiveItem? outgoingItem = _activeItemAt(_outgoingItems, itemIndex);
+    if (outgoingItem != null) {
+      return _removeItemBuilder(outgoingItem, itemIndex);
+    }
+    final _ActiveItem? incomingItem = _activeItemAt(_incomingItems, itemIndex);
+    return _insertItemBuilder(incomingItem, itemIndex);
   }
 
   @override
@@ -244,16 +252,19 @@ class CustomSliverMotionListState extends State<CustomSliverMotionList>
   }
 
   @override
-  bool get wantKeepAlive => _resizeController?.isAnimating ?? false;
+  bool get wantKeepAlive => false;
 }
 
 class _ActiveItem implements Comparable<_ActiveItem> {
   final AnimationController? controller;
+  final AnimationController? resizeController;
   int itemIndex;
 
-  _ActiveItem.builder(this.controller, this.itemIndex);
+  _ActiveItem.builder(this.controller, this.itemIndex, this.resizeController);
 
-  _ActiveItem.index(this.itemIndex) : controller = null;
+  _ActiveItem.index(this.itemIndex)
+      : controller = null,
+        resizeController = null;
 
   @override
   int compareTo(_ActiveItem other) {
