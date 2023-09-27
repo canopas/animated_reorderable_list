@@ -95,14 +95,15 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(10),
-        child: CustomMotionList(
+        child: SliverMotionList(
           items: list,
-          itemBuilder: (BuildContext context, index) {
-            //final item= list[index];
+          scrollDirection: Axis.horizontal,
+          itemBuilder: (BuildContext context, int index) {
             return ItemListCard(index: index);
         },
-          insertAnimationType: appliedStyle,
-          removeAnimationType:  appliedStyle,
+          insertDuration: Duration(seconds: 3),
+          insertAnimation: appliedStyle,
+          removeAnimation:  AnimationType.scaleInLeft,
 
         ),
       ),
