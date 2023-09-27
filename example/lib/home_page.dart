@@ -97,7 +97,7 @@ class _HomePageState extends State<HomePage> {
         padding: const EdgeInsets.all(10),
         child: SliverMotionList(
           items: list,
-          itemBuilder: (BuildContext context, index) {
+          itemBuilder: (BuildContext context, int index) {
             //final item= list[index];
             return ItemListCard(index: index);
         },
