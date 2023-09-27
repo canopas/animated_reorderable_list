@@ -37,6 +37,7 @@ class SliverMotionList<E extends Object> extends StatelessWidget {
             removeDuration: removeDuration,
             resizeDuration: resizeDuration,
             areItemsTheSame: areItemsTheSame,
+            scrollDirection: scrollDirection,
           ),
         ]
     );

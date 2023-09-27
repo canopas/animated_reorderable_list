@@ -6,9 +6,10 @@ class CustomMotionList<E extends Object> extends MotionListBase<Widget, E> {
     Key? key,
     required List<E> items,
     required ItemBuilder itemBuilder,
-    Duration insertDuration = const Duration(milliseconds: 500),
-    Duration removeDuration = const Duration(milliseconds: 500),
-    Duration resizeDuration = const Duration(milliseconds: 500),
+    Duration insertDuration = const Duration(milliseconds: 300),
+    Duration removeDuration = const Duration(milliseconds: 300),
+    Duration resizeDuration = const Duration(milliseconds: 300),
+    Axis scrollDirection= Axis.vertical,
     AnimationType? insertAnimationType,
     AnimationType? removeAnimationType,
     EqualityChecker<E>? areItemsTheSame,
@@ -19,6 +20,7 @@ class CustomMotionList<E extends Object> extends MotionListBase<Widget, E> {
             insertDuration: insertDuration,
             removeDuration: removeDuration,
             resizeDuration: resizeDuration,
+            scrollDirection: scrollDirection,
             areItemsTheSame: areItemsTheSame,
             insertAnimationType: insertAnimationType,
             removeAnimationType: removeAnimationType);
@@ -34,17 +36,8 @@ class CustomMotionListState<E extends Object>
     return CustomSliverMotionList(
       key: listKey,
       initialCount: oldList.length,
-      insertAnimationType: insertAnimationType!,
-      removeAnimationType: removeAnimationType!,
-      // itemBuilder: (BuildContext context, int i) {
-      //   return buildItem(context,i);
-      // },
-      animatedWidgetBuilder: (BuildContext context,
-          Animation<double>? resizeAnimation,
-          Animation<double> animation,
-          int index) {
-        return buildItem(context, resizeAnimation, index, animation);
-      },
+      insertAnimationBuilder: insertItemBuilder,
+      removeAnimationBuilder: removeItemBuilder,
     );
   }
 }

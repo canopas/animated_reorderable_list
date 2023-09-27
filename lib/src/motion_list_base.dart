@@ -25,9 +25,10 @@ abstract class MotionListBase<W extends Widget, E extends Object>
   final InsertItemBuilder<W, E>? insertItemBuilder;
   final RemoveItemBuilder<W, E>? removeItemBuilder;
   final List<E> items;
-  final Duration? resizeDuration;
-  final Duration? insertDuration;
-  final Duration? removeDuration;
+  final Duration resizeDuration;
+  final Duration insertDuration;
+  final Duration removeDuration;
+  final Axis scrollDirection;
   final AnimationType? insertAnimationType;
   final AnimationType? removeAnimationType;
   final EqualityChecker<E>? areItemsTheSame;
@@ -37,10 +38,11 @@ abstract class MotionListBase<W extends Widget, E extends Object>
     required this.itemBuilder,
     this.insertItemBuilder,
     this.removeItemBuilder,
-    this.resizeDuration,
-    this.insertDuration,
-    this.removeDuration,
+    required this.resizeDuration,
+    required this.insertDuration,
+    required this.removeDuration,
     this.insertAnimationType,
+    required this.scrollDirection,
     this.removeAnimationType,
     this.areItemsTheSame}) :super(key: key);
 
@@ -64,25 +66,29 @@ abstract class MotionListBaseState<W extends Widget, B extends MotionListBase<
   @protected
   ItemBuilder<W, E> get itemBuilder => widget.itemBuilder;
 
-  @nonVirtual
-  @protected
-  InsertItemBuilder<W, E>? get insertItemBuilder => widget.insertItemBuilder;
+  // @nonVirtual
+  // @protected
+  // InsertItemBuilder<W, E>? get insertItemBuilder => widget.insertItemBuilder;
+  //
+  // @nonVirtual
+  // @protected
+  // RemoveItemBuilder<W, E>? get removeItemBuilder => widget.removeItemBuilder;
 
   @nonVirtual
   @protected
-  RemoveItemBuilder<W, E>? get removeItemBuilder => widget.removeItemBuilder;
+  Duration get resizeDuration => widget.resizeDuration;
 
   @nonVirtual
   @protected
-  Duration? get updateDuration => widget.resizeDuration;
+  Duration get insertDuration => widget.insertDuration;
 
   @nonVirtual
   @protected
-  Duration? get insertDuration => widget.insertDuration;
+  Duration get removeDuration => widget.removeDuration;
 
-  @nonVirtual
   @protected
-  Duration? get removeDuration => widget.removeDuration;
+  @nonVirtual
+  Axis get scrollDirection=> widget.scrollDirection;
 
   @nonVirtual
   @protected
@@ -116,9 +122,8 @@ abstract class MotionListBaseState<W extends Widget, B extends MotionListBase<
   }
 
   void _onChanged(int position, Object? payLoad, final List<E?> tmpList) {
-    print('on changed invoked');
     listKey.currentState!.removeItem(
-        position, duration: const Duration(milliseconds: 1000));
+        position, removeDuration: removeDuration);
     _onInserted(position, 1, tmpList);
   }
 
@@ -126,17 +131,17 @@ abstract class MotionListBaseState<W extends Widget, B extends MotionListBase<
       final List<E?> tmpList) {
     for (var loopCount = 0; loopCount < count; loopCount++) {
       listKey.currentState!.insertItem(
-          position, duration: const Duration(milliseconds: 1000));
+          position, insertDuration: insertDuration,resizeDuration: resizeDuration);
     }
     tmpList.insertAll(position, List<E?>.filled(count, null));
   }
 
   void _onRemoved(final int position, final int count, final List<E?> tmpList) {
     for (var loopcount = 0; loopcount < count; loopcount++) {
-      final oldItem = tmpList[position + loopcount];
+      //final oldItem = tmpList[position + loopcount];
       listKey.currentState!.removeItem(
           position + loopcount
-          , duration: const Duration(milliseconds: 1000));
+          , removeDuration: removeDuration,resizeDuration: resizeDuration);
     }
     tmpList.removeRange(position, position + count);
   }
@@ -152,22 +157,24 @@ abstract class MotionListBaseState<W extends Widget, B extends MotionListBase<
 
   @nonVirtual
   @protected
-  Widget buildItem(BuildContext context,
+  Widget insertItemBuilder(BuildContext context,
       Animation<double>? resizeAnimation, int index, Animation<double> animation) {
     return SizeTransition(
+      axis: scrollDirection,
       sizeFactor: resizeAnimation ?? kAlwaysCompleteAnimation,
       child: AnimationProvider.buildAnimation(
           insertAnimationType!, itemBuilder(context, index), animation),);
   }
 
-  // @nonVirtual
-  // @protected
-  // Widget buildItem(BuildContext context, Animation<double> animation, E item,
-  //     int index) {
-  //   return SizeTransition(
-  //       sizeFactor: resizeAnimation ?? kAlwaysCompleteAnimation,
-  //       child: AnimationProvider.buildAnimation(
-  //           animationType, child, animation));
-  // }
+  @nonVirtual
+  @protected
+  Widget removeItemBuilder(BuildContext context,
+      Animation<double>? resizeAnimation, int index, Animation<double> animation) {
+    return SizeTransition(
+      axis: scrollDirection,
+      sizeFactor: resizeAnimation ?? kAlwaysCompleteAnimation,
+      child: AnimationProvider.buildAnimation(
+          removeAnimationType!, itemBuilder(context, index), animation),);
+  }
 
 }

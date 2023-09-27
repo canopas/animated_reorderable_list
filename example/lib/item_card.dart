@@ -24,8 +24,8 @@ class ItemListCard extends StatelessWidget {
           child: Column(
             children: [
               Container(
-                height: 50,
-                width: MediaQuery.of(context).size.width,
+                width: 50,
+                height: MediaQuery.of(context).size.width,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   color: Colors.green,
