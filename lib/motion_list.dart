@@ -4,3 +4,4 @@ export 'provider/animation_type.dart';
 export 'src/custom_motion_list.dart';
 export 'src/custom_sliver_motion_list.dart';
 export 'src/motion_list_base.dart';
+export 'src/sliver_motion_list.dart';

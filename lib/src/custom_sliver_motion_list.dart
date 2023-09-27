@@ -15,6 +15,7 @@ class CustomSliverMotionList<E> extends StatefulWidget {
   final AnimatedItemBuilder? animatedItemBuilder;
   final ItemBuilder itemBuilder;
   final AnimationType insertAnimationType;
+  final AnimationType removeAnimationType;
   final int initialCount;
   final DelegateBuilder? delegateBuilder;
 
@@ -23,6 +24,7 @@ class CustomSliverMotionList<E> extends StatefulWidget {
       this.animatedItemBuilder,
       required this.itemBuilder,
       required this.insertAnimationType,
+        required this.removeAnimationType,
       this.initialCount = 0,
       this.delegateBuilder})
       : assert(initialCount >= 0),
@@ -220,7 +222,7 @@ class CustomSliverMotionListState extends State<CustomSliverMotionList>
     final Animation<double> animation =
         outgoingItem.controller?.view ?? kAlwaysCompleteAnimation;
     final Animation<double> resizeAnimation = outgoingItem.resizeController!.view;
-    return itemBuilder(widget.insertAnimationType,
+    return itemBuilder(widget.removeAnimationType,
         widget.itemBuilder(context, itemIndex), animation, resizeAnimation);
   }
 

@@ -7,8 +7,6 @@ class CustomMotionList<E extends Object> extends MotionListBase<Widget, E> {
     Key? key,
     required List<E> items,
     required ItemBuilder itemBuilder,
-    InsertItemBuilder<Widget, E>? insertItemBuilder,
-    RemoveItemBuilder<Widget, E>? removeItemBuilder,
     Duration insertDuration = const Duration(milliseconds: 500),
     Duration removeDuration = const Duration(milliseconds: 500),
     Duration resizeDuration = const Duration(milliseconds: 500),
@@ -19,8 +17,6 @@ class CustomMotionList<E extends Object> extends MotionListBase<Widget, E> {
       key: key,
       items: items,
       itemBuilder: itemBuilder,
-      insertItemBuilder: insertItemBuilder,
-      removeItemBuilder: removeItemBuilder,
       insertDuration: insertDuration,
       removeDuration: removeDuration,
       resizeDuration: resizeDuration,
@@ -29,24 +25,22 @@ class CustomMotionList<E extends Object> extends MotionListBase<Widget, E> {
       removeAnimationType: removeAnimationType);
 
   @override
-  _CustomMotionListState<E> createState() => _CustomMotionListState<E>();
+  CustomMotionListState<E> createState() => CustomMotionListState<E>();
 }
 
-class _CustomMotionListState<E extends Object>
+class CustomMotionListState<E extends Object>
     extends MotionListBaseState<Widget, CustomMotionList<E>, E> {
   @override
   Widget build(BuildContext context) {
-    return CustomScrollView(
-      slivers: [
+    return
         CustomSliverMotionList(
           key: listKey,
           initialCount: oldList.length,
           insertAnimationType:  insertAnimationType!,
+          removeAnimationType: removeAnimationType!,
           itemBuilder: (BuildContext context, int i) {
             return itemBuilder(context,i);
           },
-        ),
-      ],
     );
   }
 }
