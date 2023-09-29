@@ -1,7 +1,8 @@
 import 'package:flutter/cupertino.dart';
-import 'package:motion_list/motion_list.dart';
 
-class SliverMotionList<E extends Object> extends StatelessWidget {
+import '../motion_list.dart';
+
+class SliverGridMotionList<E extends Object> extends StatelessWidget {
   final List<E> items;
   final ItemBuilder itemBuilder;
   final AnimationType insertAnimation;
@@ -10,9 +11,10 @@ class SliverMotionList<E extends Object> extends StatelessWidget {
   final Duration insertDuration;
   final Duration removeDuration;
   final Duration resizeDuration;
+  final SliverGridDelegate sliverGridDelegate;
   final EqualityChecker? areItemsTheSame;
 
-  const SliverMotionList({Key? key,
+  const SliverGridMotionList({ Key? key,
     required this.items,
     required this.itemBuilder,
     this.insertAnimation = AnimationType.fadeIn,
@@ -20,16 +22,16 @@ class SliverMotionList<E extends Object> extends StatelessWidget {
     this.insertDuration = const Duration(milliseconds: 300),
     this.removeDuration = const Duration(milliseconds: 300),
     this.resizeDuration = const Duration(milliseconds: 300),
+    required this.sliverGridDelegate,
     this.scrollDirection = Axis.vertical,
-
-    this.areItemsTheSame});
+    this.areItemsTheSame}):super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return CustomScrollView(
         scrollDirection: scrollDirection,
         slivers: [
-          CustomMotionList(
+          CustomMotionList.grid(
             items: items,
             itemBuilder: itemBuilder,
             insertAnimationType: insertAnimation,
@@ -39,6 +41,7 @@ class SliverMotionList<E extends Object> extends StatelessWidget {
             resizeDuration: resizeDuration,
             areItemsTheSame: areItemsTheSame,
             scrollDirection: scrollDirection,
+            sliverGridDelegate: sliverGridDelegate,
           ),
         ]
     );

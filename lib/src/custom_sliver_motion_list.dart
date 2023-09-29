@@ -15,20 +15,18 @@ typedef AnimatedWidgetBuilder = Widget Function(BuildContext context,
     Animation<double>? resizeAnimation, int index, Animation<double> animation);
 
 class CustomSliverMotionList<E> extends StatefulWidget {
-  final AnimatedItemBuilder? animatedItemBuilder;
-  final ItemBuilder? itemBuilder;
   final AnimatedWidgetBuilder insertAnimationBuilder;
   final AnimatedWidgetBuilder removeAnimationBuilder;
   final int initialCount;
-  final DelegateBuilder? delegateBuilder;
+  final SliverGridDelegate? delegateBuilder;
+  final bool isGriView;
 
   const CustomSliverMotionList(
       {Key? key,
-      this.animatedItemBuilder,
-      this.itemBuilder,
-        required this.insertAnimationBuilder,
-        required this.removeAnimationBuilder,
+      required this.insertAnimationBuilder,
+      required this.removeAnimationBuilder,
       this.initialCount = 0,
+      required this.isGriView,
       this.delegateBuilder})
       : assert(initialCount >= 0),
         super(key: key);
@@ -120,7 +118,9 @@ class CustomSliverMotionListState extends State<CustomSliverMotionList>
     return index;
   }
 
-  void insertItem(int index, {Duration insertDuration = _kDuration, Duration resizeDuration= _kResizeDuration}) {
+  void insertItem(int index,
+      {Duration insertDuration = _kDuration,
+      Duration resizeDuration = _kResizeDuration}) {
     assert(index >= 0);
     final int itemIndex = _indexToItemIndex(index);
 
@@ -141,8 +141,10 @@ class CustomSliverMotionListState extends State<CustomSliverMotionList>
         AnimationController(vsync: this, duration: insertDuration);
     final _ActiveItem incomingItem =
         _ActiveItem.builder(controller, itemIndex, addResizeController);
+    print('  incoming item resize controller:    ${incomingItem.resizeController}');
     addResizeController.forward();
     addResizeController.addStatusListener((status) {
+      print('============================ $status');
       if (status == AnimationStatus.completed) {
         controller.forward().then<void>((_) {
           final activeItem =
@@ -160,7 +162,9 @@ class CustomSliverMotionListState extends State<CustomSliverMotionList>
     });
   }
 
-  void removeItem(int index, {Duration removeDuration = _kDuration, Duration resizeDuration= _kResizeDuration}) {
+  void removeItem(int index,
+      {Duration removeDuration = _kDuration,
+      Duration resizeDuration = _kResizeDuration}) {
     assert(index >= 0);
     final int itemIndex = _indexToItemIndex(index);
     if (itemIndex < 0 || itemIndex >= _itemsCount) {
@@ -172,9 +176,9 @@ class CustomSliverMotionListState extends State<CustomSliverMotionList>
         _removeActiveItemAt(_incomingItems, itemIndex);
     final AnimationController controller = incomingItem?.controller ??
         AnimationController(vsync: this, value: 1.0, duration: removeDuration);
-    final AnimationController resizeController =
-        incomingItem?.resizeController ??
-            AnimationController(vsync: this, value: 1.0, duration: resizeDuration);
+    final AnimationController resizeController = incomingItem
+            ?.resizeController ??
+        AnimationController(vsync: this, value: 1.0, duration: resizeDuration);
     controller.reverse();
     controller.addStatusListener((status) {
       if (status == AnimationStatus.dismissed) {
@@ -190,6 +194,7 @@ class CustomSliverMotionListState extends State<CustomSliverMotionList>
     });
 
     resizeController.addStatusListener((status) {
+      print('resizecontroller status -------------------- $status');
       if (status == AnimationStatus.completed) {
         final _ActiveItem? activeItem =
             _removeActiveItemAt(_outgoingItems, outgoingItem.itemIndex);
@@ -210,11 +215,9 @@ class CustomSliverMotionListState extends State<CustomSliverMotionList>
   }
 
   SliverChildDelegate _createDelegate() {
-    return widget.delegateBuilder?.call(itemBuilderDelegate, _itemsCount) ??
-        SliverChildBuilderDelegate(itemBuilderDelegate,
-            childCount: _itemsCount);
+    return SliverChildBuilderDelegate(itemBuilderDelegate,
+        childCount: _itemsCount);
   }
-
 
   Widget _removeItemBuilder(_ActiveItem outgoingItem, int itemIndex) {
     final Animation<double> animation =
@@ -222,7 +225,11 @@ class CustomSliverMotionListState extends State<CustomSliverMotionList>
     final Animation<double> resizeAnimation =
         outgoingItem.resizeController!.view;
     return widget.removeAnimationBuilder(
-        context, resizeAnimation,itemIndex, animation, );
+      context,
+      resizeAnimation,
+      itemIndex,
+      animation,
+    );
   }
 
   Widget _insertItemBuilder(_ActiveItem? incomingItem, int itemIndex) {
@@ -231,7 +238,11 @@ class CustomSliverMotionListState extends State<CustomSliverMotionList>
     final Animation<double>? resizeAnimation =
         incomingItem?.resizeController?.view;
     return widget.insertAnimationBuilder(
-        context, resizeAnimation,_itemIndexToIndex(itemIndex), animation, );
+      context,
+      resizeAnimation,
+      _itemIndexToIndex(itemIndex),
+      animation,
+    );
   }
 
   Widget itemBuilderDelegate(BuildContext context, int itemIndex) {
@@ -246,7 +257,11 @@ class CustomSliverMotionListState extends State<CustomSliverMotionList>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return SliverList(delegate: _createDelegate());
+    return widget.isGriView
+        ? SliverGrid(
+            gridDelegate: widget.delegateBuilder!,
+        delegate: _createDelegate())
+        : SliverList(delegate: _createDelegate());
   }
 
   @override

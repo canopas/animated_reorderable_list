@@ -1,5 +1,3 @@
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class ItemListCard extends StatelessWidget {
@@ -28,7 +26,7 @@ class ItemListCard extends StatelessWidget {
                 height: MediaQuery.of(context).size.width,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
-                  color: Colors.green,
+                  color: Colors.primaries[index % Colors.primaries.length],
                 ),
                 child:    Center(
                   child: Text('Item $index',style: const TextStyle(

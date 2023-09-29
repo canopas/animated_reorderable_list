@@ -1,8 +1,8 @@
 import 'package:example/item_card.dart';
+import 'package:example/utils/card_item.dart';
 import 'package:example/utils/extension.dart';
 import 'package:flutter/material.dart';
 import 'package:motion_list/motion_list.dart';
-
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -13,15 +13,15 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   AnimationType appliedStyle = AnimationType.fadeIn;
+
   //
   // List<String> list = ['sunny', 'family', "student"];
   // String nextItem = 'Added item';
-  List<int> list= [1,2,3];
-  int addedNumber=10;
-
+  List<int> list = [1, 2, 3];
+  int addedNumber = 10;
 
   void insert() {
-    addedNumber +=1;
+    addedNumber += 1;
 
     setState(() {
       list.insert(1, addedNumber);
@@ -97,15 +97,21 @@ class _HomePageState extends State<HomePage> {
         padding: const EdgeInsets.all(10),
         child: SliverMotionList(
           items: list,
-          scrollDirection: Axis.horizontal,
+          scrollDirection: Axis.vertical,
           itemBuilder: (BuildContext context, int index) {
-            return ItemListCard(index: index);
-        },
-          insertDuration: Duration(seconds: 3),
+            return CardItem(index: index);
+          },
           insertAnimation: appliedStyle,
-          removeAnimation:  AnimationType.scaleInLeft,
 
+          // sliverGridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 5
         ),
+
+        // sliverGridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        //     crossAxisCount: 4,
+        //     mainAxisSpacing: 10,
+        //     crossAxisSpacing: 10,
+        //     childAspectRatio: 1.5
+        // ),
       ),
     );
   }
