@@ -30,11 +30,6 @@ class SliverMotionList<E extends Object> extends StatelessWidget {
     return CustomScrollView(
         scrollDirection: scrollDirection,
         slivers: [
-          SliverAnimatedGrid(
-            initialItemCount: 10,
-              itemBuilder: (context, index, animation){
-            return itemBuilder(context,index);
-          }, gridDelegate: sliverGridDelegate!),
           CustomMotionList.grid(
             items: items,
             itemBuilder: itemBuilder,

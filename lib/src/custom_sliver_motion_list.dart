@@ -141,11 +141,8 @@ class CustomSliverMotionListState extends State<CustomSliverMotionList>
         AnimationController(vsync: this, duration: insertDuration);
     final _ActiveItem incomingItem =
         _ActiveItem.builder(controller, itemIndex, addResizeController);
-    print(
-        '  incoming item resize controller:    ${incomingItem.resizeController}');
     addResizeController.forward();
     addResizeController.addStatusListener((status) {
-      print('============================ $status');
       if (status == AnimationStatus.completed) {
         controller.forward().then<void>((_) {
           final activeItem =
@@ -196,7 +193,7 @@ class CustomSliverMotionListState extends State<CustomSliverMotionList>
 
     resizeController.addStatusListener((status) {
       print('resizecontroller status -------------------- $status');
-      if (status == AnimationStatus.completed) {
+      if (status == AnimationStatus.dismissed) {
         final _ActiveItem? activeItem =
             _removeActiveItemAt(_outgoingItems, outgoingItem.itemIndex);
 
@@ -216,7 +213,7 @@ class CustomSliverMotionListState extends State<CustomSliverMotionList>
   }
 
   SliverChildDelegate _createDelegate() {
-    print('delegate created');
+    print(_itemsCount);
     return SliverChildBuilderDelegate(itemBuilderDelegate,
         childCount: _itemsCount);
   }
@@ -263,10 +260,9 @@ class CustomSliverMotionListState extends State<CustomSliverMotionList>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    print(widget.isGriView);
     return widget.isGriView
         ? SliverGrid(
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 5), delegate: _createDelegate())
+            gridDelegate: widget.delegateBuilder!, delegate: _createDelegate())
         : SliverList(delegate: _createDelegate());
   }
 
