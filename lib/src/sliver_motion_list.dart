@@ -11,7 +11,6 @@ class SliverMotionList<E extends Object> extends StatelessWidget {
   final Duration removeDuration;
   final Duration resizeDuration;
   final EqualityChecker? areItemsTheSame;
-  final SliverGridDelegate? sliverGridDelegate;
 
   const SliverMotionList({Key? key,
     required this.items,
@@ -22,7 +21,6 @@ class SliverMotionList<E extends Object> extends StatelessWidget {
     this.removeDuration = const Duration(milliseconds: 300),
     this.resizeDuration = const Duration(milliseconds: 300),
     this.scrollDirection = Axis.vertical,
-    this.sliverGridDelegate,
     this.areItemsTheSame}):super(key: key);
 
   @override

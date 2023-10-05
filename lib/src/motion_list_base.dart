@@ -160,7 +160,7 @@ abstract class MotionListBaseState<
   Widget insertItemBuilder(BuildContext context,
       Animation<double>? resizeAnimation, int index, Animation<double> animation) {
     return SizeTransition(
-      axis: Axis.horizontal,
+      axis: scrollDirection,
       sizeFactor: resizeAnimation ?? kAlwaysCompleteAnimation,
       child: AnimationProvider.buildAnimation(
           insertAnimationType!, itemBuilder(context, index), animation),);
@@ -171,7 +171,7 @@ abstract class MotionListBaseState<
   Widget removeItemBuilder(BuildContext context,
       Animation<double>? resizeAnimation, int index, Animation<double> animation) {
     return SizeTransition(
-      axis: Axis.horizontal,
+      axis: scrollDirection,
       sizeFactor: resizeAnimation ?? kAlwaysCompleteAnimation,
       child: AnimationProvider.buildAnimation(
           removeAnimationType!, itemBuilder(context, index), animation),);
