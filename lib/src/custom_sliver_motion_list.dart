@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-import 'package:motion_list/motion_list.dart';
 
 const Duration _kDuration = Duration(milliseconds: 300);
 const Duration _kResizeDuration = Duration(milliseconds: 1000);
@@ -213,7 +212,6 @@ class CustomSliverMotionListState extends State<CustomSliverMotionList>
   }
 
   SliverChildDelegate _createDelegate() {
-    print(_itemsCount);
     return SliverChildBuilderDelegate(itemBuilderDelegate,
         childCount: _itemsCount);
   }
@@ -223,15 +221,11 @@ class CustomSliverMotionListState extends State<CustomSliverMotionList>
         outgoingItem.controller?.view ?? kAlwaysCompleteAnimation;
     final Animation<double>? resizeAnimation =
         outgoingItem.resizeController?.view;
-    return SizeTransition(
-      axis: Axis.vertical,
-      sizeFactor: resizeAnimation??kAlwaysCompleteAnimation,
-      child: widget.removeAnimationBuilder(
-        context,
-        resizeAnimation,
-        itemIndex,
-        animation,
-      ),
+    return widget.removeAnimationBuilder(
+      context,
+      resizeAnimation,
+      itemIndex,
+      animation,
     );
   }
 

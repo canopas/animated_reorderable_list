@@ -23,14 +23,14 @@ class SliverMotionList<E extends Object> extends StatelessWidget {
     this.resizeDuration = const Duration(milliseconds: 300),
     this.scrollDirection = Axis.vertical,
     this.sliverGridDelegate,
-    this.areItemsTheSame});
+    this.areItemsTheSame}):super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return CustomScrollView(
         scrollDirection: scrollDirection,
         slivers: [
-          CustomMotionList.grid(
+          CustomMotionList(
             items: items,
             itemBuilder: itemBuilder,
             insertAnimationType: insertAnimation,
@@ -40,7 +40,6 @@ class SliverMotionList<E extends Object> extends StatelessWidget {
             resizeDuration: resizeDuration,
             areItemsTheSame: areItemsTheSame,
             scrollDirection: scrollDirection,
-            sliverGridDelegate: sliverGridDelegate!,
           ),
         ]
     );

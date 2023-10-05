@@ -17,29 +17,25 @@ class ItemListCard extends StatelessWidget {
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap:onTap,
-        child: SizedBox(
-          // height: 80,
-          child: Column(
-            children: [
-              Container(
-                width: 50,
-                height: MediaQuery.of(context).size.width,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Colors.primaries[index % Colors.primaries.length],
-                ),
-                child:    Center(
-                  child: Text('Item $index',style: const TextStyle(
-                      fontSize: 25
-                  ),),
-                ),
+        child: Column(
+          children: [
+            Container(
+              width: 50,
+              height: MediaQuery.of(context).size.width,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: Colors.primaries[index % Colors.primaries.length],
               ),
-
-              const SizedBox(
-                height: 20,
-              )
-            ],
-          ),
+              child:    Center(
+                child: Text('Item $index',style: const TextStyle(
+                    fontSize: 25
+                ),),
+              ),
+            ),
+            const SizedBox(
+              height: 20,
+            )
+          ],
         ),
       ),
     );

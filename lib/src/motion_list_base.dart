@@ -140,8 +140,6 @@ abstract class MotionListBaseState<
 
   void _onRemoved(final int position, final int count, final List<E?> tmpList) {
     for (var loopcount = 0; loopcount < count; loopcount++) {
-      print('item removed');
-      //final oldItem = tmpList[position + loopcount];
       listKey.currentState!.removeItem(position + loopcount,
           removeDuration: removeDuration, resizeDuration: resizeDuration);
     }

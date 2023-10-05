@@ -1,13 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:motion_list/animation/animation.dart';
-import 'package:motion_list/animation/fade_in.dart';
-import 'package:motion_list/animation/fadein_left.dart';
-import 'package:motion_list/animation/fadein_right.dart';
-import 'package:motion_list/animation/landing.dart';
-import 'package:motion_list/animation/scale_in.dart';
-import 'package:motion_list/animation/size_in.dart';
-import 'package:motion_list/animation/slide_in.dart';
-
 import 'animation_type.dart';
 
 class AnimationProvider {

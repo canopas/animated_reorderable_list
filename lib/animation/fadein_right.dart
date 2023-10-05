@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:motion_list/animation/animation.dart';
 
 class FadeInRight extends StatelessWidget {
   final Animation<double> animation;
@@ -9,7 +8,7 @@ class FadeInRight extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SlideTransition(
-      position: Tween<Offset>(begin: Offset(1.0,0.0),end:Offset(0.0,0.0)).animate(animation),
+      position: Tween<Offset>(begin: const Offset(1.0,0.0),end:const Offset(0.0,0.0)).animate(animation),
       child: FadeTransition(
         opacity: animation,
         child: child,

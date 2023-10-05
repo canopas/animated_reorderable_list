@@ -1,4 +1,3 @@
-import 'package:example/item_card.dart';
 import 'package:example/utils/card_item.dart';
 import 'package:example/utils/extension.dart';
 import 'package:flutter/material.dart';
@@ -95,14 +94,14 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(10),
-        child: SliverMotionList(
+        child: SliverGridMotionList(
           items: list,
-          scrollDirection: Axis.vertical,
+          scrollDirection: Axis.horizontal,
           itemBuilder: (BuildContext context, int index) {
             return CardItem(index: index);
           },
           insertAnimation: appliedStyle,
-         sliverGridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 5)
+         sliverGridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 5)
         ),
       ),
     );
