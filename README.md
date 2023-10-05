@@ -29,6 +29,8 @@ SliverGridMotionList(
               crossAxisCount: 5),
         ),
 
+```
+
 ## Bugs and Feedback
 For bugs, questions and discussions please use the [Github Issues](https://github.com/cp-sneha-s/flutter_motion_list/issues).
 
