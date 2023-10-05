@@ -35,7 +35,8 @@ SliverGridMotionList(
 For bugs, questions and discussions please use the [Github Issues](https://github.com/cp-sneha-s/flutter_motion_list/issues).
 
 ## Credits
-flutter_motion_list is owned and maintained by the [Canopas team](https://canopas.com/). You can follow them on Twitter at [@canopassoftware](https://twitter.com/canopassoftware) for project updates and releases.
+**flutter_motion_list** is owned and maintained by the [Canopas team](https://canopas.com/). You can follow them on Twitter at [@canopassoftware](https://twitter.com/canopassoftware) for project updates and releases.
+
 Inspired by recyclerview-animators in Android.
 
 ## Licence
