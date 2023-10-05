@@ -173,10 +173,11 @@ class CustomSliverMotionListState extends State<CustomSliverMotionList>
     final _ActiveItem? incomingItem =
         _removeActiveItemAt(_incomingItems, itemIndex);
     final AnimationController controller = incomingItem?.controller ??
-        AnimationController(vsync: this, value: 0.0, duration: removeDuration);
+        AnimationController(vsync: this, value: 1.0, duration: removeDuration);
     final AnimationController resizeController = incomingItem
             ?.resizeController ??
-        AnimationController(vsync: this, value: 0.0, duration: resizeDuration);
+        AnimationController(vsync: this, value: 1.0, duration: resizeDuration);
+
     controller.reverse();
     controller.addStatusListener((status) {
       if (status == AnimationStatus.dismissed) {
@@ -192,7 +193,6 @@ class CustomSliverMotionListState extends State<CustomSliverMotionList>
     });
 
     resizeController.addStatusListener((status) {
-      print('resizecontroller status -------------------- $status');
       if (status == AnimationStatus.dismissed) {
         final _ActiveItem? activeItem =
             _removeActiveItemAt(_outgoingItems, outgoingItem.itemIndex);
@@ -221,11 +221,11 @@ class CustomSliverMotionListState extends State<CustomSliverMotionList>
   Widget _removeItemBuilder(_ActiveItem outgoingItem, int itemIndex) {
     final Animation<double> animation =
         outgoingItem.controller?.view ?? kAlwaysCompleteAnimation;
-    final Animation<double> resizeAnimation =
-        outgoingItem.resizeController!.view;
+    final Animation<double>? resizeAnimation =
+        outgoingItem.resizeController?.view;
     return SizeTransition(
-      axis: Axis.horizontal,
-      sizeFactor: resizeAnimation,
+      axis: Axis.vertical,
+      sizeFactor: resizeAnimation??kAlwaysCompleteAnimation,
       child: widget.removeAnimationBuilder(
         context,
         resizeAnimation,

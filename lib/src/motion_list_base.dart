@@ -2,7 +2,6 @@ import 'package:diffutil_dart/diffutil.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:motion_list/motion_list.dart';
-import 'package:motion_list/src/custom_sliver_motion_list.dart';
 
 typedef InsertItemBuilder<W extends Widget, E> = W Function(
     BuildContext context, AnimationType animationType, E item, int i);
@@ -141,6 +140,7 @@ abstract class MotionListBaseState<
 
   void _onRemoved(final int position, final int count, final List<E?> tmpList) {
     for (var loopcount = 0; loopcount < count; loopcount++) {
+      print('item removed');
       //final oldItem = tmpList[position + loopcount];
       listKey.currentState!.removeItem(position + loopcount,
           removeDuration: removeDuration, resizeDuration: resizeDuration);
