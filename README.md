@@ -1,6 +1,6 @@
 # flutter_motion_list
 
-A Flutter Listview with simple implementation with animation and smooth transition.
+A Flutter Animated Listview with simple implementation with animation and smooth transition.
 
 ## Features
 
