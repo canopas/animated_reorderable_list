@@ -11,6 +11,7 @@ class SliverMotionList<E extends Object> extends StatelessWidget {
   final Duration removeDuration;
   final Duration resizeDuration;
   final EqualityChecker? areItemsTheSame;
+  final SliverGridDelegate? sliverGridDelegate;
 
   const SliverMotionList({Key? key,
     required this.items,
@@ -21,7 +22,7 @@ class SliverMotionList<E extends Object> extends StatelessWidget {
     this.removeDuration = const Duration(milliseconds: 300),
     this.resizeDuration = const Duration(milliseconds: 300),
     this.scrollDirection = Axis.vertical,
-
+    this.sliverGridDelegate,
     this.areItemsTheSame});
 
   @override
@@ -29,7 +30,12 @@ class SliverMotionList<E extends Object> extends StatelessWidget {
     return CustomScrollView(
         scrollDirection: scrollDirection,
         slivers: [
-          CustomMotionList(
+          SliverAnimatedGrid(
+            initialItemCount: 10,
+              itemBuilder: (context, index, animation){
+            return itemBuilder(context,index);
+          }, gridDelegate: sliverGridDelegate!),
+          CustomMotionList.grid(
             items: items,
             itemBuilder: itemBuilder,
             insertAnimationType: insertAnimation,
@@ -39,6 +45,7 @@ class SliverMotionList<E extends Object> extends StatelessWidget {
             resizeDuration: resizeDuration,
             areItemsTheSame: areItemsTheSame,
             scrollDirection: scrollDirection,
+            sliverGridDelegate: sliverGridDelegate!,
           ),
         ]
     );

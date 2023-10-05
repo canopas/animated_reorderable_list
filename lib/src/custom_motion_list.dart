@@ -9,7 +9,6 @@ class CustomMotionList<E extends Object> extends MotionListBase<Widget, E> {
     Duration insertDuration = const Duration(milliseconds: 300),
     Duration removeDuration = const Duration(milliseconds: 300),
     Duration resizeDuration = const Duration(milliseconds: 300),
-
     Axis scrollDirection= Axis.vertical,
     AnimationType? insertAnimationType,
     AnimationType? removeAnimationType,

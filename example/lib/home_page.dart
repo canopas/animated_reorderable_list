@@ -102,16 +102,8 @@ class _HomePageState extends State<HomePage> {
             return CardItem(index: index);
           },
           insertAnimation: appliedStyle,
-
-          // sliverGridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 5
+         sliverGridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 5)
         ),
-
-        // sliverGridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        //     crossAxisCount: 4,
-        //     mainAxisSpacing: 10,
-        //     crossAxisSpacing: 10,
-        //     childAspectRatio: 1.5
-        // ),
       ),
     );
   }
