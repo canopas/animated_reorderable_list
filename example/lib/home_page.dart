@@ -90,14 +90,15 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(10),
-        child: SliverGridMotionList(
+        child: MotionGridViewBuilder(
           items: list,
           scrollDirection: Axis.vertical,
           itemBuilder: (BuildContext context, int index) {
             return ItemCard(index: index);
           },
-          insertAnimation: appliedStyle,
-          removeAnimation: appliedStyle,
+          insertDuration: Duration(milliseconds: 200),
+          insertAnimation: AnimationType.scaleInTop,
+          removeAnimation: AnimationType.fadeInDown,
           sliverGridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 5),
         ),

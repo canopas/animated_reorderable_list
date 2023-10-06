@@ -57,7 +57,7 @@ class CustomMotionListState<E extends Object>
     extends MotionListBaseState<Widget, CustomMotionList<E>, E> {
   @override
   Widget build(BuildContext context) {
-    return CustomSliverMotionList(
+    return MotionAnimationBuilder(
       key: listKey,
       initialCount: oldList.length,
       insertAnimationBuilder: insertItemBuilder,

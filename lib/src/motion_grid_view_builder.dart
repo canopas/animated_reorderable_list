@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 
 import '../motion_list.dart';
 
-class SliverGridMotionList<E extends Object> extends StatelessWidget {
+class MotionGridViewBuilder<E extends Object> extends StatelessWidget {
   final List<E> items;
   final ItemBuilder itemBuilder;
   final AnimationType insertAnimation;
@@ -14,7 +14,7 @@ class SliverGridMotionList<E extends Object> extends StatelessWidget {
   final SliverGridDelegate sliverGridDelegate;
   final EqualityChecker? areItemsTheSame;
 
-  const SliverGridMotionList({ Key? key,
+  const MotionGridViewBuilder({ Key? key,
     required this.items,
     required this.itemBuilder,
     this.insertAnimation = AnimationType.fadeIn,

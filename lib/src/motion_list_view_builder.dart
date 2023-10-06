@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:motion_list/motion_list.dart';
 
-class SliverMotionList<E extends Object> extends StatelessWidget {
+class MotionListViewBuilder<E extends Object> extends StatelessWidget {
   final List<E> items;
   final ItemBuilder itemBuilder;
   final AnimationType insertAnimation;
@@ -12,7 +12,7 @@ class SliverMotionList<E extends Object> extends StatelessWidget {
   final Duration resizeDuration;
   final EqualityChecker? areItemsTheSame;
 
-  const SliverMotionList({Key? key,
+  const MotionListViewBuilder({Key? key,
     required this.items,
     required this.itemBuilder,
     this.insertAnimation = AnimationType.fadeIn,

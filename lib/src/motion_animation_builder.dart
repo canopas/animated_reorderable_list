@@ -13,14 +13,14 @@ typedef AnimatedRemovedItemBuilder = Widget Function(
 typedef AnimatedWidgetBuilder = Widget Function(BuildContext context,
     Animation<double>? resizeAnimation, int index, Animation<double> animation);
 
-class CustomSliverMotionList<E> extends StatefulWidget {
+class MotionAnimationBuilder<E> extends StatefulWidget {
   final AnimatedWidgetBuilder insertAnimationBuilder;
   final AnimatedWidgetBuilder removeAnimationBuilder;
   final int initialCount;
   final SliverGridDelegate? delegateBuilder;
   final bool isGriView;
 
-  const CustomSliverMotionList(
+  const MotionAnimationBuilder(
       {Key? key,
       required this.insertAnimationBuilder,
       required this.removeAnimationBuilder,
@@ -31,11 +31,11 @@ class CustomSliverMotionList<E> extends StatefulWidget {
         super(key: key);
 
   @override
-  CustomSliverMotionListState createState() => CustomSliverMotionListState();
+  MotionAnimationBuilderState createState() => MotionAnimationBuilderState();
 
-  static CustomSliverMotionListState of(BuildContext context) {
-    final CustomSliverMotionListState? result =
-        context.findAncestorStateOfType<CustomSliverMotionListState>();
+  static MotionAnimationBuilderState of(BuildContext context) {
+    final MotionAnimationBuilderState? result =
+        context.findAncestorStateOfType<MotionAnimationBuilderState>();
     assert(() {
       if (result == null) {
         throw FlutterError(
@@ -55,12 +55,12 @@ class CustomSliverMotionList<E> extends StatefulWidget {
     return result!;
   }
 
-  static CustomSliverMotionListState? maybeOf(BuildContext context) {
-    return context.findAncestorStateOfType<CustomSliverMotionListState>();
+  static MotionAnimationBuilderState? maybeOf(BuildContext context) {
+    return context.findAncestorStateOfType<MotionAnimationBuilderState>();
   }
 }
 
-class CustomSliverMotionListState extends State<CustomSliverMotionList>
+class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
     with TickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   final List<_ActiveItem> _incomingItems = <_ActiveItem>[];
   final List<_ActiveItem> _outgoingItems = <_ActiveItem>[];

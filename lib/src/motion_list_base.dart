@@ -56,11 +56,11 @@ abstract class MotionListBaseState<
   late List<E> oldList;
 
   @protected
-  GlobalKey<CustomSliverMotionListState> listKey = GlobalKey();
+  GlobalKey<MotionAnimationBuilderState> listKey = GlobalKey();
 
   @nonVirtual
   @protected
-  CustomSliverMotionListState get list => listKey.currentState!;
+  MotionAnimationBuilderState get list => listKey.currentState!;
 
   @nonVirtual
   @protected
