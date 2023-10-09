@@ -39,13 +39,11 @@ class MotionAnimationBuilder<E> extends StatefulWidget {
     assert(() {
       if (result == null) {
         throw FlutterError(
-          'SliverAnimatedList.of() called with a context that does not contain a SliverAnimatedList.\n'
-          'No SliverAnimatedListState ancestor could be found starting from the '
-          'context that was passed to SliverAnimatedListState.of(). This can '
+          'MotionAnimationBuilderState.of() called with a context that does not contain a MotionAnimationBuilderState.\n'
+          'No MotionAnimationBuilderState ancestor could be found starting from the '
+          'context that was passed to MotionAnimationBuilderState.of(). This can '
           'happen when the context provided is from the same StatefulWidget that '
-          'built the AnimatedList. Please see the SliverAnimatedList documentation '
-          'for examples of how to refer to an AnimatedListState object: '
-          'https://api.flutter.dev/flutter/widgets/SliverAnimatedListState-class.html\n'
+          'built the AnimatedList.'
           'The context used was:\n'
           '  $context',
         );
