@@ -1,8 +1,8 @@
-import 'package:example/item_card.dart';
 import 'package:example/utils/extension.dart';
+import 'package:example/utils/item_card.dart';
+import 'package:example/utils/item_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:motion_list/motion_list.dart';
-
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -13,16 +13,11 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   AnimationType appliedStyle = AnimationType.fadeIn;
-  //
-  // List<String> list = ['sunny', 'family', "student"];
-  // String nextItem = 'Added item';
-  List<int> list= [1,2,3];
-  int addedNumber=10;
-
+  List<int> list = List.generate(4, (index) => index);
+  int addedNumber = 10;
 
   void insert() {
-    addedNumber +=1;
-
+    addedNumber += 1;
     setState(() {
       list.insert(1, addedNumber);
     });
@@ -95,16 +90,17 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(10),
-        child: SliverMotionList(
+        child: MotionGridViewBuilder(
           items: list,
-          scrollDirection: Axis.horizontal,
+          scrollDirection: Axis.vertical,
           itemBuilder: (BuildContext context, int index) {
-            return ItemListCard(index: index);
-        },
-          insertDuration: Duration(seconds: 3),
-          insertAnimation: appliedStyle,
-          removeAnimation:  AnimationType.scaleInLeft,
-
+            return ItemCard(index: index);
+          },
+          insertDuration: const Duration(milliseconds: 200),
+          insertAnimation: AnimationType.scaleInTop,
+          removeAnimation: AnimationType.fadeInDown,
+          sliverGridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 5),
         ),
       ),
     );

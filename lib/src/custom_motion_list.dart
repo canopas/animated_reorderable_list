@@ -24,6 +24,30 @@ class CustomMotionList<E extends Object> extends MotionListBase<Widget, E> {
             areItemsTheSame: areItemsTheSame,
             insertAnimationType: insertAnimationType,
             removeAnimationType: removeAnimationType);
+  const CustomMotionList.grid({
+    Key? key,
+    required List<E> items,
+    required ItemBuilder itemBuilder,
+    Duration insertDuration = const Duration(milliseconds: 300),
+    Duration removeDuration = const Duration(milliseconds: 300),
+    Duration resizeDuration = const Duration(milliseconds: 300),
+    required SliverGridDelegate sliverGridDelegate,
+    Axis scrollDirection= Axis.vertical,
+    AnimationType? insertAnimationType,
+    AnimationType? removeAnimationType,
+    EqualityChecker<E>? areItemsTheSame,
+  }) : super(
+      key: key,
+      items: items,
+      itemBuilder: itemBuilder,
+      insertDuration: insertDuration,
+      removeDuration: removeDuration,
+      resizeDuration: resizeDuration,
+      scrollDirection: scrollDirection,
+      areItemsTheSame: areItemsTheSame,
+      sliverGridDelegate: sliverGridDelegate,
+      insertAnimationType: insertAnimationType,
+      removeAnimationType: removeAnimationType);
 
   @override
   CustomMotionListState<E> createState() => CustomMotionListState<E>();
@@ -33,11 +57,13 @@ class CustomMotionListState<E extends Object>
     extends MotionListBaseState<Widget, CustomMotionList<E>, E> {
   @override
   Widget build(BuildContext context) {
-    return CustomSliverMotionList(
+    return MotionAnimationBuilder(
       key: listKey,
       initialCount: oldList.length,
       insertAnimationBuilder: insertItemBuilder,
       removeAnimationBuilder: removeItemBuilder,
+      delegateBuilder: sliverGridDelegate,
+      isGriView: sliverGridDelegate!=null?true:false,
     );
   }
 }
