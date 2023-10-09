@@ -28,7 +28,7 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
     return CustomScrollView(
         scrollDirection: scrollDirection,
         slivers: [
-          CustomMotionList(
+          MotionListImpl(
             items: items,
             itemBuilder: itemBuilder,
             insertAnimationType: insertAnimation,

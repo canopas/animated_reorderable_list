@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:motion_list/motion_list.dart';
 
-class CustomMotionList<E extends Object> extends MotionListBase<Widget, E> {
-  const CustomMotionList({
+class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
+  const MotionListImpl({
     Key? key,
     required List<E> items,
     required ItemBuilder itemBuilder,
@@ -24,7 +24,7 @@ class CustomMotionList<E extends Object> extends MotionListBase<Widget, E> {
             areItemsTheSame: areItemsTheSame,
             insertAnimationType: insertAnimationType,
             removeAnimationType: removeAnimationType);
-  const CustomMotionList.grid({
+  const MotionListImpl.grid({
     Key? key,
     required List<E> items,
     required ItemBuilder itemBuilder,
@@ -50,11 +50,11 @@ class CustomMotionList<E extends Object> extends MotionListBase<Widget, E> {
       removeAnimationType: removeAnimationType);
 
   @override
-  CustomMotionListState<E> createState() => CustomMotionListState<E>();
+  MotionListImplState<E> createState() => MotionListImplState<E>();
 }
 
-class CustomMotionListState<E extends Object>
-    extends MotionListBaseState<Widget, CustomMotionList<E>, E> {
+class MotionListImplState<E extends Object>
+    extends MotionListBaseState<Widget, MotionListImpl<E>, E> {
   @override
   Widget build(BuildContext context) {
     return MotionAnimationBuilder(

@@ -31,7 +31,7 @@ class MotionGridViewBuilder<E extends Object> extends StatelessWidget {
     return CustomScrollView(
         scrollDirection: scrollDirection,
         slivers: [
-          CustomMotionList.grid(
+          MotionListImpl.grid(
             items: items,
             itemBuilder: itemBuilder,
             insertAnimationType: insertAnimation,
