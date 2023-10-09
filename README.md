@@ -3,14 +3,17 @@
 A Flutter Animated Listview with simple implementation with animation and smooth transition.
 
 ## Features
+- Smooth animations when adding and removing items from the list.
+- List and Grid support
+- Easily customize animation styles and duration to Flutter lists
 
 ## Demo
 
 ### List Animations
-<img src="art/list.gif" width="32%"> <img src="art/list1.gif" width="32%"> 
+<img src="art/demo.gif" width="32%"> <img src="art/demo1.gif" width="32%"> 
 
 ### Grid Animations
-<img src="art/grid.gif" width="32%"> <img src="art/grid1.gif" width="32%">
+<img src="art/demo2.gif" width="32%"> <img src="art/demo2.gif" width="32%">
 
 ### How to use it?
 [Sample](https://github.com/cp-sneha-s/flutter_motion_list/tree/main/example) app demonstrates how simple the usage of the library actually is.

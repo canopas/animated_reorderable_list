@@ -15,7 +15,7 @@ class _HomePageState extends State<HomePage> {
   AnimationType appliedStyle = AnimationType.fadeIn;
   List<int> list = List.generate(12, (index) => index);
   int addedNumber = 10;
-  bool isGrid= false;
+  bool isGrid = false;
 
   void insert() {
     addedNumber += 1;
@@ -97,60 +97,70 @@ class _HomePageState extends State<HomePage> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.teal,
-                  ),
-                    onPressed: (){
-                        setState(() {
-                          if(isGrid!=false){
-                            isGrid= false;
-                          };
-                        });
-                }, child: const Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text('List',style: TextStyle(fontSize: 25),),
-                )),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.teal,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        if (isGrid != false) {
+                          isGrid = false;
+                        }
+                        ;
+                      });
+                    },
+                    child: const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Text(
+                        'List',
+                        style: TextStyle(fontSize: 25),
+                      ),
+                    )),
                 ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.teal
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.teal),
+                  onPressed: () {
+                    setState(() {
+                      if (isGrid != true) {
+                        isGrid = true;
+                      }
+                    });
+                  },
+                  child: const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text(
+                      'Grid',
+                      style: TextStyle(fontSize: 25),
+                    ),
                   ),
-                  onPressed: (){
-
-                  setState(() {
-                    if(isGrid!=true){
-                      isGrid= true;
-                    }
-                  });
-                }, child:  const Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text('Grid',style: TextStyle(fontSize: 25),),
-                ),),
+                ),
               ],
             ),
-            const SizedBox(height: 16,),
+            const SizedBox(
+              height: 16,
+            ),
             Expanded(
-              child: isGrid?MotionGridViewBuilder(
-                items: list,
-                scrollDirection: Axis.vertical,
-                itemBuilder: (BuildContext context, int index) {
-                  return ItemCard(index: index);
-                },
-                insertDuration: const Duration(milliseconds: 200),
-                insertAnimation:appliedStyle,
-                removeAnimation: appliedStyle,
-                sliverGridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 4),
-              ):
-              MotionListViewBuilder(
-                  items: list,
-                  itemBuilder: (BuildContext context, int index){
-                    return ItemTile(index: index);
-                  },
-              insertDuration: const Duration(milliseconds: 200),
-                insertAnimation: appliedStyle,
-                removeAnimation: appliedStyle,
-              ),
-
+              child: isGrid
+                  ? MotionGridViewBuilder(
+                      items: list,
+                      scrollDirection: Axis.vertical,
+                      itemBuilder: (BuildContext context, int index) {
+                        return ItemCard(index: index);
+                      },
+                      insertDuration: const Duration(milliseconds: 200),
+                      insertAnimation: appliedStyle,
+                      removeAnimation: appliedStyle,
+                      sliverGridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 4),
+                    )
+                  : MotionListViewBuilder(
+                      items: list,
+                      itemBuilder: (BuildContext context, int index) {
+                        return ItemTile(index: index);
+                      },
+                      insertDuration: const Duration(milliseconds: 200),
+                      insertAnimation: appliedStyle,
+                      removeAnimation: appliedStyle,
+                    ),
             ),
           ],
         ),
