@@ -96,7 +96,7 @@ class _HomePageState extends State<HomePage> {
           itemBuilder: (BuildContext context, int index) {
             return ItemCard(index: index);
           },
-          insertDuration: Duration(milliseconds: 200),
+          insertDuration: const Duration(milliseconds: 200),
           insertAnimation: AnimationType.scaleInTop,
           removeAnimation: AnimationType.fadeInDown,
           sliverGridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
