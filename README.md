@@ -10,10 +10,10 @@ A Flutter Animated Listview with simple implementation with animation and smooth
 ## Demo
 
 ### List Animations
-<img src="art/demo.gif" width="32%"> <img src="art/demo1.gif" width="32%"> 
+<img src="gif/demo.gif" width="32%"> <img src="gif/demo1.gif" width="32%"> 
 
 ### Grid Animations
-<img src="art/demo2.gif" width="32%"> <img src="art/demo2.gif" width="32%">
+<img src="gif/demo2.gif" width="32%"> <img src="gif/demo2.gif" width="32%">
 
 ### How to use it?
 [Sample](https://github.com/cp-sneha-s/flutter_motion_list/tree/main/example) app demonstrates how simple the usage of the library actually is.
