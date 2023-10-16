@@ -22,13 +22,13 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
   final Axis scrollDirection;
 
   /// The duration of the animation when an item was inserted into the list.
-  final Duration insertDuration;
+  final Duration? insertDuration;
 
   /// The duration of the animation when an item was removed from the list.
-  final Duration removeDuration;
+  final Duration? removeDuration;
 
   /// The duration of the list update its position.
-  final Duration resizeDuration;
+  final Duration? resizeDuration;
 
   ///
   ///Called by the DiffUtil to decide whether two object represent the same Item.
@@ -47,16 +47,17 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
       required this.itemBuilder,
       this.insertAnimation = AnimationType.fadeIn,
       this.removeAnimation,
-      this.insertDuration = const Duration(milliseconds: 300),
-      this.removeDuration = const Duration(milliseconds: 300),
-      this.resizeDuration = const Duration(milliseconds: 300),
-      this.scrollDirection = Axis.vertical,
+      this.insertDuration,
+      this.removeDuration,
+      this.resizeDuration,
+      this.scrollDirection= Axis.vertical,
       this.areItemsTheSame})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return CustomScrollView(scrollDirection: scrollDirection, slivers: [
+    return CustomScrollView(scrollDirection: scrollDirection,
+        slivers: [
       MotionListImpl(
         items: items,
         itemBuilder: itemBuilder,

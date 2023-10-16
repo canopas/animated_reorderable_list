@@ -21,7 +21,7 @@ class MotionGridViewBuilder<E extends Object> extends StatelessWidget {
   /// The axis along which the scroll view scrolls.
   ///
   /// Defaults to [Axis.vertical].
-  final Axis? scrollDirection;
+  final Axis scrollDirection;
 
   /// The duration of the animation when an item was inserted into the list.
   final Duration? insertDuration;
@@ -67,7 +67,7 @@ class MotionGridViewBuilder<E extends Object> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomScrollView(
-        scrollDirection: scrollDirection ?? Axis.vertical,
+        scrollDirection: scrollDirection,
         slivers: [
           MotionListImpl.grid(
             items: items,
