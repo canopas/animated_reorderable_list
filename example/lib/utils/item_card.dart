@@ -7,8 +7,8 @@ class ItemCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 100.0,
-      width: 100,
+      height: 150.0,
+      width: 150,
       child: Card(
         color: Colors.primaries[index % Colors.primaries.length],
         child: Center(
