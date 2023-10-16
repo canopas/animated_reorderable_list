@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/cupertino.dart';
 
 import '../motion_list.dart';
@@ -21,16 +23,16 @@ class MotionGridViewBuilder<E extends Object> extends StatelessWidget {
   /// The axis along which the scroll view scrolls.
   ///
   /// Defaults to [Axis.vertical].
-  final Axis scrollDirection;
+  final Axis? scrollDirection;
 
   /// The duration of the animation when an item was inserted into the list.
-  final Duration insertDuration;
+  final Duration? insertDuration;
 
   /// The duration of the animation when an item was removed from the list.
-  final Duration removeDuration;
+  final Duration? removeDuration;
 
   /// The duration of the list update its position.
-  final Duration resizeDuration;
+  final Duration? resizeDuration;
 
   /// Controls the layout of tiles in a grid.
   /// Given the current constraints on the grid,
@@ -56,9 +58,9 @@ class MotionGridViewBuilder<E extends Object> extends StatelessWidget {
       required this.itemBuilder,
       this.insertAnimation = AnimationType.fadeIn,
       this.removeAnimation,
-      this.insertDuration = const Duration(milliseconds: 300),
-      this.removeDuration = const Duration(milliseconds: 300),
-      this.resizeDuration = const Duration(milliseconds: 300),
+      this.insertDuration,
+      this.removeDuration,
+      this.resizeDuration,
       required this.sliverGridDelegate,
       this.scrollDirection = Axis.vertical,
       this.areItemsTheSame})
@@ -66,19 +68,21 @@ class MotionGridViewBuilder<E extends Object> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomScrollView(scrollDirection: scrollDirection, slivers: [
-      MotionListImpl.grid(
-        items: items,
-        itemBuilder: itemBuilder,
-        insertAnimationType: insertAnimation,
-        removeAnimationType: removeAnimation ?? insertAnimation,
-        insertDuration: insertDuration,
-        removeDuration: removeDuration,
-        resizeDuration: resizeDuration,
-        areItemsTheSame: areItemsTheSame,
-        scrollDirection: scrollDirection,
-        sliverGridDelegate: sliverGridDelegate,
-      ),
-    ]);
+    return CustomScrollView(
+        scrollDirection: scrollDirection ?? Axis.vertical,
+        slivers: [
+          MotionListImpl.grid(
+            items: items,
+            itemBuilder: itemBuilder,
+            insertAnimationType: insertAnimation,
+            removeAnimationType: removeAnimation ?? insertAnimation,
+            insertDuration: insertDuration,
+            removeDuration: removeDuration,
+            resizeDuration: resizeDuration,
+            areItemsTheSame: areItemsTheSame,
+            scrollDirection: scrollDirection,
+            sliverGridDelegate: sliverGridDelegate,
+          ),
+        ]);
   }
 }

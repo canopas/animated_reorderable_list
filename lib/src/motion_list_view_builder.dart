@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:motion_list/motion_list.dart';
 
 class MotionListViewBuilder<E extends Object> extends StatelessWidget {
-
   /// The current list of items that this[MotionGridViewBuilder] should represent.
   final List<E> items;
 
@@ -42,34 +41,33 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
   ///
   final EqualityChecker? areItemsTheSame;
 
-  const MotionListViewBuilder({Key? key,
-    required this.items,
-    required this.itemBuilder,
-    this.insertAnimation = AnimationType.fadeIn,
-    this.removeAnimation,
-    this.insertDuration = const Duration(milliseconds: 300),
-    this.removeDuration = const Duration(milliseconds: 300),
-    this.resizeDuration = const Duration(milliseconds: 300),
-    this.scrollDirection = Axis.vertical,
-    this.areItemsTheSame}):super(key: key);
+  const MotionListViewBuilder(
+      {Key? key,
+      required this.items,
+      required this.itemBuilder,
+      this.insertAnimation = AnimationType.fadeIn,
+      this.removeAnimation,
+      this.insertDuration = const Duration(milliseconds: 300),
+      this.removeDuration = const Duration(milliseconds: 300),
+      this.resizeDuration = const Duration(milliseconds: 300),
+      this.scrollDirection = Axis.vertical,
+      this.areItemsTheSame})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return CustomScrollView(
+    return CustomScrollView(scrollDirection: scrollDirection, slivers: [
+      MotionListImpl(
+        items: items,
+        itemBuilder: itemBuilder,
+        insertAnimationType: insertAnimation,
+        removeAnimationType: removeAnimation ?? insertAnimation,
+        insertDuration: insertDuration,
+        removeDuration: removeDuration,
+        resizeDuration: resizeDuration,
+        areItemsTheSame: areItemsTheSame,
         scrollDirection: scrollDirection,
-        slivers: [
-          MotionListImpl(
-            items: items,
-            itemBuilder: itemBuilder,
-            insertAnimationType: insertAnimation,
-            removeAnimationType: removeAnimation ?? insertAnimation,
-            insertDuration: insertDuration,
-            removeDuration: removeDuration,
-            resizeDuration: resizeDuration,
-            areItemsTheSame: areItemsTheSame,
-            scrollDirection: scrollDirection,
-          ),
-        ]
-    );
+      ),
+    ]);
   }
 }

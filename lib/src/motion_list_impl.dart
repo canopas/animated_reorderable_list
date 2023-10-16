@@ -6,10 +6,10 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
     Key? key,
     required List<E> items,
     required ItemBuilder itemBuilder,
-    Duration insertDuration = const Duration(milliseconds: 300),
-    Duration removeDuration = const Duration(milliseconds: 300),
-    Duration resizeDuration = const Duration(milliseconds: 300),
-    Axis scrollDirection= Axis.vertical,
+    Duration? insertDuration,
+    Duration? removeDuration,
+    Duration? resizeDuration,
+    Axis? scrollDirection,
     AnimationType? insertAnimationType,
     AnimationType? removeAnimationType,
     EqualityChecker<E>? areItemsTheSame,
@@ -24,30 +24,31 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
             areItemsTheSame: areItemsTheSame,
             insertAnimationType: insertAnimationType,
             removeAnimationType: removeAnimationType);
+
   const MotionListImpl.grid({
     Key? key,
     required List<E> items,
     required ItemBuilder itemBuilder,
-    Duration insertDuration = const Duration(milliseconds: 300),
-    Duration removeDuration = const Duration(milliseconds: 300),
-    Duration resizeDuration = const Duration(milliseconds: 300),
     required SliverGridDelegate sliverGridDelegate,
-    Axis scrollDirection= Axis.vertical,
+    Duration? insertDuration,
+    Duration? removeDuration,
+    Duration? resizeDuration,
+    Axis? scrollDirection,
     AnimationType? insertAnimationType,
     AnimationType? removeAnimationType,
     EqualityChecker<E>? areItemsTheSame,
   }) : super(
-      key: key,
-      items: items,
-      itemBuilder: itemBuilder,
-      insertDuration: insertDuration,
-      removeDuration: removeDuration,
-      resizeDuration: resizeDuration,
-      scrollDirection: scrollDirection,
-      areItemsTheSame: areItemsTheSame,
-      sliverGridDelegate: sliverGridDelegate,
-      insertAnimationType: insertAnimationType,
-      removeAnimationType: removeAnimationType);
+            key: key,
+            items: items,
+            itemBuilder: itemBuilder,
+            insertDuration: insertDuration,
+            removeDuration: removeDuration,
+            resizeDuration: resizeDuration,
+            scrollDirection: scrollDirection,
+            areItemsTheSame: areItemsTheSame,
+            sliverGridDelegate: sliverGridDelegate,
+            insertAnimationType: insertAnimationType,
+            removeAnimationType: removeAnimationType);
 
   @override
   MotionListImplState<E> createState() => MotionListImplState<E>();
@@ -63,7 +64,7 @@ class MotionListImplState<E extends Object>
       insertAnimationBuilder: insertItemBuilder,
       removeAnimationBuilder: removeItemBuilder,
       delegateBuilder: sliverGridDelegate,
-      isGriView: sliverGridDelegate!=null?true:false,
+      isGriView: sliverGridDelegate != null ? true : false,
     );
   }
 }
