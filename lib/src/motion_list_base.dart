@@ -3,30 +3,25 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:motion_list/motion_list.dart';
 
-typedef InsertItemBuilder<W extends Widget, E> = W Function(
-    BuildContext context, AnimationType animationType, E item, int i);
-
-typedef RemoveItemBuilder<W extends Widget, E> = W Function(
-    BuildContext context, AnimationType animationType, E item);
-
-typedef UpdateItemBuilder<W extends Widget, E> = W Function(
-    BuildContext context, AnimationType animationType, int i);
-
 typedef ItemBuilder<W extends Widget, E> = Widget Function(
     BuildContext context, int index);
 
 typedef EqualityChecker<E> = bool Function(E, E);
 
+const Duration _kInsertItemDuration = Duration(milliseconds: 300);
+
+const Duration _kRemoveItemDuration = Duration(milliseconds: 300);
+
+const Duration _kResizeDuration = Duration(milliseconds: 300);
+
 abstract class MotionListBase<W extends Widget, E extends Object>
     extends StatefulWidget {
   final ItemBuilder<W, E> itemBuilder;
-  final InsertItemBuilder<W, E>? insertItemBuilder;
-  final RemoveItemBuilder<W, E>? removeItemBuilder;
   final List<E> items;
-  final Duration resizeDuration;
-  final Duration insertDuration;
-  final Duration removeDuration;
-  final Axis scrollDirection;
+  final Duration? resizeDuration;
+  final Duration? insertDuration;
+  final Duration? removeDuration;
+  final Axis? scrollDirection;
   final AnimationType? insertAnimationType;
   final AnimationType? removeAnimationType;
   final EqualityChecker<E>? areItemsTheSame;
@@ -36,13 +31,11 @@ abstract class MotionListBase<W extends Widget, E extends Object>
       {Key? key,
       required this.items,
       required this.itemBuilder,
-      this.insertItemBuilder,
-      this.removeItemBuilder,
-      required this.resizeDuration,
-      required this.insertDuration,
-      required this.removeDuration,
+      this.resizeDuration,
+      this.insertDuration,
+      this.removeDuration,
       this.insertAnimationType,
-      required this.scrollDirection,
+      this.scrollDirection,
       this.sliverGridDelegate,
       this.removeAnimationType,
       this.areItemsTheSame})
@@ -66,33 +59,25 @@ abstract class MotionListBaseState<
   @protected
   ItemBuilder<W, E> get itemBuilder => widget.itemBuilder;
 
-  // @nonVirtual
-  // @protected
-  // InsertItemBuilder<W, E>? get insertItemBuilder => widget.insertItemBuilder;
-  //
-  // @nonVirtual
-  // @protected
-  // RemoveItemBuilder<W, E>? get removeItemBuilder => widget.removeItemBuilder;
-
   @nonVirtual
   @protected
   SliverGridDelegate? get sliverGridDelegate => widget.sliverGridDelegate;
 
   @nonVirtual
   @protected
-  Duration get resizeDuration => widget.resizeDuration;
+  Duration get resizeDuration => widget.resizeDuration ?? _kResizeDuration;
 
   @nonVirtual
   @protected
-  Duration get insertDuration => widget.insertDuration;
+  Duration get insertDuration => widget.insertDuration ?? _kInsertItemDuration;
 
   @nonVirtual
   @protected
-  Duration get removeDuration => widget.removeDuration;
+  Duration get removeDuration => widget.removeDuration ?? _kRemoveItemDuration;
 
   @protected
   @nonVirtual
-  Axis get scrollDirection => widget.scrollDirection;
+  Axis get scrollDirection => widget.scrollDirection ?? Axis.vertical;
 
   @nonVirtual
   @protected
@@ -157,23 +142,31 @@ abstract class MotionListBaseState<
 
   @nonVirtual
   @protected
-  Widget insertItemBuilder(BuildContext context,
-      Animation<double>? resizeAnimation, int index, Animation<double> animation) {
+  Widget insertItemBuilder(
+      BuildContext context,
+      Animation<double>? resizeAnimation,
+      int index,
+      Animation<double> animation) {
     return SizeTransition(
       axis: scrollDirection,
       sizeFactor: resizeAnimation ?? kAlwaysCompleteAnimation,
       child: AnimationProvider.buildAnimation(
-          insertAnimationType!, itemBuilder(context, index), animation),);
+          insertAnimationType!, itemBuilder(context, index), animation),
+    );
   }
 
   @nonVirtual
   @protected
-  Widget removeItemBuilder(BuildContext context,
-      Animation<double>? resizeAnimation, int index, Animation<double> animation) {
+  Widget removeItemBuilder(
+      BuildContext context,
+      Animation<double>? resizeAnimation,
+      int index,
+      Animation<double> animation) {
     return SizeTransition(
       axis: scrollDirection,
       sizeFactor: resizeAnimation ?? kAlwaysCompleteAnimation,
       child: AnimationProvider.buildAnimation(
-          removeAnimationType!, itemBuilder(context, index), animation),);
+          removeAnimationType!, itemBuilder(context, index), animation),
+    );
   }
 }

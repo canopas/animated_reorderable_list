@@ -105,7 +105,6 @@ class _HomePageState extends State<HomePage> {
                         if (isGrid != false) {
                           isGrid = false;
                         }
-                        ;
                       });
                     },
                     child: const Padding(

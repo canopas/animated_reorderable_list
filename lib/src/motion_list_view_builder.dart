@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:motion_list/motion_list.dart';
 
 class MotionListViewBuilder<E extends Object> extends StatelessWidget {
-
   /// The current list of items that this[MotionGridViewBuilder] should represent.
   final List<E> items;
 
@@ -23,13 +22,13 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
   final Axis scrollDirection;
 
   /// The duration of the animation when an item was inserted into the list.
-  final Duration insertDuration;
+  final Duration? insertDuration;
 
   /// The duration of the animation when an item was removed from the list.
-  final Duration removeDuration;
+  final Duration? removeDuration;
 
   /// The duration of the list update its position.
-  final Duration resizeDuration;
+  final Duration? resizeDuration;
 
   ///
   ///Called by the DiffUtil to decide whether two object represent the same Item.
@@ -42,34 +41,34 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
   ///
   final EqualityChecker? areItemsTheSame;
 
-  const MotionListViewBuilder({Key? key,
-    required this.items,
-    required this.itemBuilder,
-    this.insertAnimation = AnimationType.fadeIn,
-    this.removeAnimation,
-    this.insertDuration = const Duration(milliseconds: 300),
-    this.removeDuration = const Duration(milliseconds: 300),
-    this.resizeDuration = const Duration(milliseconds: 300),
-    this.scrollDirection = Axis.vertical,
-    this.areItemsTheSame}):super(key: key);
+  const MotionListViewBuilder(
+      {Key? key,
+      required this.items,
+      required this.itemBuilder,
+      this.insertAnimation = AnimationType.fadeIn,
+      this.removeAnimation,
+      this.insertDuration,
+      this.removeDuration,
+      this.resizeDuration,
+      this.scrollDirection= Axis.vertical,
+      this.areItemsTheSame})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return CustomScrollView(
-        scrollDirection: scrollDirection,
+    return CustomScrollView(scrollDirection: scrollDirection,
         slivers: [
-          MotionListImpl(
-            items: items,
-            itemBuilder: itemBuilder,
-            insertAnimationType: insertAnimation,
-            removeAnimationType: removeAnimation ?? insertAnimation,
-            insertDuration: insertDuration,
-            removeDuration: removeDuration,
-            resizeDuration: resizeDuration,
-            areItemsTheSame: areItemsTheSame,
-            scrollDirection: scrollDirection,
-          ),
-        ]
-    );
+      MotionListImpl(
+        items: items,
+        itemBuilder: itemBuilder,
+        insertAnimationType: insertAnimation,
+        removeAnimationType: removeAnimation ?? insertAnimation,
+        insertDuration: insertDuration,
+        removeDuration: removeDuration,
+        resizeDuration: resizeDuration,
+        areItemsTheSame: areItemsTheSame,
+        scrollDirection: scrollDirection,
+      ),
+    ]);
   }
 }
