@@ -56,9 +56,9 @@ class MotionGridViewBuilder<E extends Object> extends StatelessWidget {
       required this.itemBuilder,
       this.insertAnimation = AnimationType.fadeIn,
       this.removeAnimation,
-      this.insertDuration,
-      this.removeDuration,
-      this.resizeDuration,
+      this.insertDuration = const Duration(milliseconds: 300),
+      this.removeDuration = const Duration(milliseconds: 300),
+      this.resizeDuration = const Duration(milliseconds: 300),
       required this.sliverGridDelegate,
       this.scrollDirection = Axis.vertical,
       this.areItemsTheSame})
@@ -69,18 +69,18 @@ class MotionGridViewBuilder<E extends Object> extends StatelessWidget {
     return CustomScrollView(
         scrollDirection: scrollDirection,
         slivers: [
-          MotionListImpl.grid(
-            items: items,
-            itemBuilder: itemBuilder,
-            insertAnimationType: insertAnimation,
-            removeAnimationType: removeAnimation ?? insertAnimation,
-            insertDuration: insertDuration,
-            removeDuration: removeDuration,
-            resizeDuration: resizeDuration,
-            areItemsTheSame: areItemsTheSame,
-            scrollDirection: scrollDirection,
-            sliverGridDelegate: sliverGridDelegate,
-          ),
-        ]);
+      MotionListImpl.grid(
+        items: items,
+        itemBuilder: itemBuilder,
+        insertAnimationType: insertAnimation,
+        removeAnimationType: removeAnimation ?? insertAnimation,
+        insertDuration: insertDuration!,
+        removeDuration: removeDuration!,
+        resizeDuration: resizeDuration!,
+        areItemsTheSame: areItemsTheSame,
+        scrollDirection: scrollDirection,
+        sliverGridDelegate: sliverGridDelegate,
+      ),
+    ]);
   }
 }
