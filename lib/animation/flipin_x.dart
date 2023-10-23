@@ -2,13 +2,12 @@ import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 
-class FlipIn extends StatelessWidget {
+class FlipInX extends StatelessWidget {
   final Animation<double> animation;
   final Widget child;
 
-  FlipIn({Key? key, required this.animation, required this.child})
+  const FlipInX({Key? key, required this.animation, required this.child})
       : super(key: key);
-  var transform = Matrix4.identity();
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +16,7 @@ class FlipIn extends StatelessWidget {
       builder: (BuildContext context, Widget? child) {
         final rotateAnim = Tween(begin: pi / 2, end: 0.0).animate(animation);
         return Transform(
-          transform: Matrix4.rotationY(rotateAnim.value),
+          transform: Matrix4.rotationX(rotateAnim.value),
           alignment: Alignment.center,
           child: child,
         );

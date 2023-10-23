@@ -12,7 +12,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  AnimationType appliedStyle = AnimationType.flipIn;
+  AnimationType appliedStyle = AnimationType.fadeIn;
   List<int> list = List.generate(12, (index) => index);
   int addedNumber = 10;
   bool isGrid = false;
@@ -144,7 +144,6 @@ class _HomePageState extends State<HomePage> {
                       itemBuilder: (BuildContext context, int index) {
                         return ItemCard(index: index);
                       },
-                      insertDuration: const Duration(milliseconds: 800),
                       insertAnimation: appliedStyle,
                       removeAnimation:appliedStyle,
                       sliverGridDelegate:
@@ -156,7 +155,6 @@ class _HomePageState extends State<HomePage> {
                       itemBuilder: (BuildContext context, int index) {
                         return ItemTile(index: index);
                       },
-                      insertDuration: const Duration(seconds: 2),
                       insertAnimation: appliedStyle,
                       removeAnimation: appliedStyle,
                     ),
