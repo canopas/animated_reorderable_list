@@ -209,11 +209,6 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
     });
   }
 
-  SliverChildDelegate _createDelegate() {
-    return SliverChildBuilderDelegate(itemBuilderDelegate,
-        childCount: _itemsCount);
-  }
-
   Widget _removeItemBuilder(_ActiveItem outgoingItem, int itemIndex) {
     final Animation<double> animation =
         outgoingItem.controller?.view ?? kAlwaysCompleteAnimation;
@@ -232,6 +227,7 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
         incomingItem?.controller?.view ?? kAlwaysCompleteAnimation;
     final Animation<double>? resizeAnimation =
         incomingItem?.resizeController?.view;
+
     return widget.insertAnimationBuilder(
       context,
       resizeAnimation,
@@ -247,6 +243,11 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
     }
     final _ActiveItem? incomingItem = _activeItemAt(_incomingItems, itemIndex);
     return _insertItemBuilder(incomingItem, itemIndex);
+  }
+
+  SliverChildDelegate _createDelegate() {
+    return SliverChildBuilderDelegate(itemBuilderDelegate,
+        childCount: _itemsCount);
   }
 
   @override
