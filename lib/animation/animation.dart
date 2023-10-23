@@ -10,4 +10,4 @@ export 'scale_in_bottom.dart';
 export 'scale_in_left.dart';
 export 'scale_in_right.dart';
 export 'size_in.dart';
-export 'slide_in.dart';
+export 'slide_in_left.dart';

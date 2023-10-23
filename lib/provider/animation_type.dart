@@ -10,6 +10,9 @@ enum AnimationType{
   scaleInBottom,
   scaleInLeft,
   scaleInRight,
-  slideIn,
+  slideInLeft,
+  slideInRight,
+  slideInDown,
+  slideInUp,
   sizeIn
 }
