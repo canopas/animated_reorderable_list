@@ -5,6 +5,8 @@ enum AnimationType{
   fadeInDown,
   fadeInUp,
   landing,
+  overShootInLeft,
+  overShootInRight,
   scaleIn,
   scaleInTop,
   scaleInBottom,

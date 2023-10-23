@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:motion_list/animation/animation.dart';
+import '../animation/overshoot_in_left.dart';
+import '../animation/overshoot_in_right.dart';
 import 'animation_type.dart';
 
 class AnimationProvider {
@@ -18,6 +20,10 @@ class AnimationProvider {
         return FadeInUp(animation: animation, child: child);
       case(AnimationType.landing):
         return Landing(animation: animation, child: child);
+      case(AnimationType.overShootInLeft):
+        return OverShootInLeft(animation: animation, child: child);
+      case(AnimationType.overShootInRight):
+        return OverShootInRight(animation: animation, child: child);
       case(AnimationType.scaleIn):
         return ScaleIn(animation: animation, child: child);
       case(AnimationType.scaleInTop):
