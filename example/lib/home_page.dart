@@ -142,7 +142,8 @@ class _HomePageState extends State<HomePage> {
                       items: list,
                       scrollDirection: Axis.vertical,
                       itemBuilder: (BuildContext context, int index) {
-                        return ItemCard(index: index);
+                        return ItemCard(key: ValueKey(index),
+                            index: index);
                       },
                       insertDuration: const Duration(milliseconds: 200),
                       insertAnimation: appliedStyle,
@@ -154,6 +155,8 @@ class _HomePageState extends State<HomePage> {
                   : MotionListViewBuilder(
                       items: list,
                       itemBuilder: (BuildContext context, int index) {
+
+
                         return ItemTile(index: index);
                       },
                       insertDuration: const Duration(milliseconds: 200),

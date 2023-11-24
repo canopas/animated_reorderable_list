@@ -1,4 +1,3 @@
-import 'package:diffutil_dart/diffutil.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:motion_list/motion_list.dart';
@@ -40,6 +39,26 @@ abstract class MotionListBase<W extends Widget, E extends Object>
       this.removeAnimationType,
       this.areItemsTheSame})
       : super(key: key);
+
+  static MotionListBaseState of(BuildContext context) {
+    final MotionListBaseState? result =
+        context.findAncestorStateOfType<MotionListBaseState>();
+    assert(() {
+      if (result == null) {
+        throw FlutterError(
+          'MotionAnimationBuilderState.of() called with a context that does not contain a MotionAnimationBuilderState.\n'
+          'No MotionAnimationBuilderState ancestor could be found starting from the '
+          'context that was passed to MotionAnimationBuilderState.of(). This can '
+          'happen when the context provided is from the same StatefulWidget that '
+          'built the AnimatedList.'
+          'The context used was:\n'
+          '  $context',
+        );
+      }
+      return true;
+    }());
+    return result!;
+  }
 }
 
 abstract class MotionListBaseState<
@@ -99,45 +118,24 @@ abstract class MotionListBaseState<
   void didUpdateWidget(covariant B oldWidget) {
     super.didUpdateWidget(oldWidget);
     final newList = widget.items;
-    final diff = calculateListDiff(oldList, newList,
-            detectMoves: false, equalityChecker: widget.areItemsTheSame)
-        .getUpdates();
-    final tempList = List<E?>.from(oldList);
-    for (final update in diff) {
-      _onDiffUpdate(update, tempList);
+    _calcDiff(oldList, newList);
+  }
+
+  void _calcDiff(List<E> oldList, List<E> newList) {
+    for (int i = 0; i < oldList.length; i++) {
+      if (!newList.contains(oldList[i])) {
+        listKey.currentState!.removeItem(i,
+            removeDuration: removeDuration, resizeDuration: resizeDuration);
+        oldList.removeAt(i);
+      }
     }
-    oldList = List.from(newList);
-  }
-
-  void _onChanged(int position, Object? payLoad, final List<E?> tmpList) {
-    listKey.currentState!.removeItem(position, removeDuration: removeDuration);
-    _onInserted(position, 1, tmpList);
-  }
-
-  void _onInserted(
-      final int position, final int count, final List<E?> tmpList) {
-    for (var loopCount = 0; loopCount < count; loopCount++) {
-      listKey.currentState!.insertItem(position,
-          insertDuration: insertDuration, resizeDuration: resizeDuration);
+    for (int i = 0; i < newList.length; i++) {
+      if (!oldList.contains(newList[i])) {
+        listKey.currentState!.insertItem(i,
+            insertDuration: insertDuration, resizeDuration: resizeDuration);
+        oldList.insert(i, newList[i]);
+      }
     }
-    tmpList.insertAll(position, List<E?>.filled(count, null));
-  }
-
-  void _onRemoved(final int position, final int count, final List<E?> tmpList) {
-    for (var loopcount = 0; loopcount < count; loopcount++) {
-      listKey.currentState!.removeItem(position + loopcount,
-          removeDuration: removeDuration, resizeDuration: resizeDuration);
-    }
-    tmpList.removeRange(position, position + count);
-  }
-
-  void _onDiffUpdate(DiffUpdate update, List<E?> tmpList) {
-    update.when(
-        insert: (pos, count) => _onInserted(pos, count, tmpList),
-        remove: (pos, count) => _onRemoved(pos, count, tmpList),
-        change: (pos, payload) => _onChanged(pos, payload, tmpList),
-        move: (_, __) =>
-            throw UnimplementedError('Moves are currently not supported'));
   }
 
   @nonVirtual
@@ -148,6 +146,7 @@ abstract class MotionListBaseState<
       int index,
       Animation<double> animation) {
     return SizeTransition(
+      key: ValueKey(index),
       axis: scrollDirection,
       sizeFactor: resizeAnimation ?? kAlwaysCompleteAnimation,
       child: AnimationProvider.buildAnimation(
@@ -163,6 +162,7 @@ abstract class MotionListBaseState<
       int index,
       Animation<double> animation) {
     return SizeTransition(
+      key: ValueKey(index),
       axis: scrollDirection,
       sizeFactor: resizeAnimation ?? kAlwaysCompleteAnimation,
       child: AnimationProvider.buildAnimation(
