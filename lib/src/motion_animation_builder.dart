@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 
@@ -62,6 +64,8 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
     with TickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   final List<_ActiveItem> _incomingItems = <_ActiveItem>[];
   final List<_ActiveItem> _outgoingItems = <_ActiveItem>[];
+  Map<int, _ReorderableItemState> _items= <int, _ReorderableItemState>{};
+
   int _itemsCount = 0;
 
   @override
@@ -113,6 +117,48 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
       }
     }
     return index;
+  }
+
+  void _registerItem(_ReorderableItemState item){
+    _items[item.index]=item;
+    item.rebuild();
+  }
+
+  void _unregisterItem(int index, _ReorderableItemState item){
+    final _ReorderableItemState? currentItem = _items[index];
+    if(currentItem==item){
+      _items.remove(index);
+    }
+  }
+
+  Offset calculateNextDragOffset(int index, int insertIndex){
+
+    if(index<insertIndex) return Offset.zero;
+    final int direction= -1;
+    print("Box Size: ${_items[index]} : ${_itemOffsetAt(index+ direction) - _itemOffsetAt(index)}");
+
+    return _itemOffsetAt(index+ direction) - _itemOffsetAt(index);
+  }
+
+  Offset _itemOffsetAt(int index){
+    final box= _items[index]?.context.findRenderObject() as RenderBox?;
+    if(box==null) return Offset.zero;
+    return box.localToGlobal(Offset.zero);
+  }
+
+  void startDrag(int index){
+    final _ReorderableItemState item = _items[index]!;
+    for(final _ReorderableItemState childItem in _items.values){
+      print("ChildItem in startDrag: ${childItem.index}");
+     if(childItem == item || !childItem.mounted) continue;
+      childItem.updateGap(index, true);
+    }
+  }
+
+  void _resetItemGap(){
+    for(final _ReorderableItemState item in _items.values){
+      item.resetGap();
+    }
   }
 
   void insertItem(int index,
@@ -176,23 +222,15 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
         AnimationController(vsync: this, value: 1.0, duration: resizeDuration);
 
     controller.reverse();
-    controller.addStatusListener((status) {
-      if (status == AnimationStatus.dismissed) {
-        resizeController.reverse();
-      }
-    });
     final _ActiveItem outgoingItem =
-        _ActiveItem.builder(controller, itemIndex, resizeController);
-    setState(() {
-      _outgoingItems
-        ..add(outgoingItem)
-        ..sort();
-    });
+    _ActiveItem.builder(controller, itemIndex, resizeController);
+    controller.addStatusListener((status) {
 
-    resizeController.addStatusListener((status) {
       if (status == AnimationStatus.dismissed) {
+        startDrag(itemIndex);
+
         final _ActiveItem? activeItem =
-            _removeActiveItemAt(_outgoingItems, outgoingItem.itemIndex);
+        _removeActiveItemAt(_outgoingItems, outgoingItem.itemIndex);
 
         for (final _ActiveItem item in _incomingItems) {
           if (item.itemIndex > outgoingItem.itemIndex) item.itemIndex -= 1;
@@ -205,20 +243,42 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
         });
         activeItem?.controller?.dispose();
         activeItem?.resizeController?.dispose();
+        //resizeController.reverse();
       }
     });
+    setState(() {
+      _outgoingItems
+        ..add(outgoingItem)
+        ..sort();
+    });
+
+    resizeController.addStatusListener((status) {
+      if (status == AnimationStatus.dismissed) {
+
+      }
+    });
+    _resetItemGap();
+
   }
 
   SliverChildDelegate _createDelegate() {
-    return SliverChildBuilderDelegate(itemBuilderDelegate,
+    print("___________________________  Items in the list: $_itemsCount");
+
+    return SliverChildBuilderDelegate((context, index){
+      print("Index in create Delegate: $index");
+      final Widget child= itemBuilderDelegate(context, index);
+      return _ReorderableItem(index: index, child: child);
+    },
         childCount: _itemsCount);
   }
 
   Widget _removeItemBuilder(_ActiveItem outgoingItem, int itemIndex) {
     final Animation<double> animation =
         outgoingItem.controller?.view ?? kAlwaysCompleteAnimation;
+    // final Animation<double>? resizeAnimation =
+    //     outgoingItem.resizeController?.view;
     final Animation<double>? resizeAnimation =
-        outgoingItem.resizeController?.view;
+        kAlwaysCompleteAnimation;
     return widget.removeAnimationBuilder(
       context,
       resizeAnimation,
@@ -230,8 +290,10 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
   Widget _insertItemBuilder(_ActiveItem? incomingItem, int itemIndex) {
     final Animation<double> animation =
         incomingItem?.controller?.view ?? kAlwaysCompleteAnimation;
+    // final Animation<double>? resizeAnimation =
+    //     incomingItem?.resizeController?.view;
     final Animation<double>? resizeAnimation =
-        incomingItem?.resizeController?.view;
+       null;
     return widget.insertAnimationBuilder(
       context,
       resizeAnimation,
@@ -276,5 +338,113 @@ class _ActiveItem implements Comparable<_ActiveItem> {
   @override
   int compareTo(_ActiveItem other) {
     return itemIndex - other.itemIndex;
+  }
+}
+
+class _ReorderableItem extends StatefulWidget {
+  final int index;
+  final Widget child;
+  const _ReorderableItem({Key? key,required this.index,required this.child}):super(key: key);
+
+  @override
+  State<_ReorderableItem> createState() => _ReorderableItemState();
+}
+
+class _ReorderableItemState extends State<_ReorderableItem> {
+  late MotionAnimationBuilderState _listState;
+  Offset _startOffset= Offset.zero;
+  Offset _targetOffset= Offset.zero;
+  AnimationController? _offsetAnimation;
+  int get index=> widget.index;
+
+  @override
+  void initState() {
+    _listState= MotionAnimationBuilder.of(context);
+    _listState._registerItem(this);
+    super.initState();
+  }
+
+  @override
+  void didUpdateWidget(covariant _ReorderableItem oldWidget) {
+
+    if(oldWidget.index != index){
+      _listState._unregisterItem(index, this);
+      _listState._registerItem(this);
+    }
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
+  void dispose() {
+    _offsetAnimation?.dispose();
+    _listState._unregisterItem(index, this);
+    super.dispose();
+  }
+
+  @override
+
+  Widget build(BuildContext context) {
+    _listState._registerItem(this);
+    return Transform(transform: Matrix4.translationValues(offset.dx, offset.dy, 0.0),child:  widget.child,);
+  }
+
+  Offset get offset{
+    if(_offsetAnimation != null){
+      final double animValue= Curves.easeInOut.transform(_offsetAnimation!.value);
+      return Offset.lerp(_startOffset, _targetOffset, animValue)!;
+    }
+    return _targetOffset;
+  }
+  void resetGap(){
+    if(_offsetAnimation !=null){
+      _offsetAnimation!.dispose();
+      _offsetAnimation= null;
+    }
+    _startOffset= Offset.zero;
+    _targetOffset= Offset.zero;
+    rebuild();
+  }
+
+  void updateGap(int changedIndex, bool animate){
+    if(!mounted)return;
+   // if(index==changedIndex) return;
+    Offset newTargetOffset= _listState.calculateNextDragOffset(index, changedIndex);
+    print("New Target Offset: $newTargetOffset");
+    if(newTargetOffset == _targetOffset) return;
+    _targetOffset= newTargetOffset;
+    if (animate) {
+      if (_offsetAnimation == null) {
+        print("OffsetAnimation: $_offsetAnimation");
+        _offsetAnimation = AnimationController(
+            vsync: _listState, duration: Duration(seconds: 5))
+          ..addListener(rebuild)
+          ..addStatusListener((status) {
+            if (status == AnimationStatus.completed) {
+              _startOffset = _targetOffset;
+              _offsetAnimation?.dispose();
+              _offsetAnimation = null;
+            }
+          })
+          ..forward();
+      } else {
+        _startOffset = offset;
+        _offsetAnimation!.forward(from: 0.0);
+      }
+    } else {
+      if (_offsetAnimation != null) {
+        _offsetAnimation?.dispose();
+        _offsetAnimation = null;
+      }
+      _startOffset = _targetOffset;
+    }
+    rebuild();
+  }
+
+  void rebuild(){
+    if(mounted){
+      setState(() {
+
+      });
+    }
   }
 }
