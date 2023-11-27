@@ -133,7 +133,7 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
 
   Offset calculateNextDragOffset(int index, int insertIndex){
 
-    if(index<insertIndex) return Offset.zero;
+    if(index<=insertIndex) return Offset.zero;
     final int direction= -1;
     print("Box Size: ${_items[index]} : ${_itemOffsetAt(index+ direction) - _itemOffsetAt(index)}");
 
@@ -150,7 +150,7 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
     final _ReorderableItemState item = _items[index]!;
     for(final _ReorderableItemState childItem in _items.values){
       print("ChildItem in startDrag: ${childItem.index}");
-     if(childItem == item || !childItem.mounted) continue;
+      if(childItem == item || !childItem.mounted) continue;
       childItem.updateGap(index, true);
     }
   }
@@ -407,7 +407,7 @@ class _ReorderableItemState extends State<_ReorderableItem> {
 
   void updateGap(int changedIndex, bool animate){
     if(!mounted)return;
-   // if(index==changedIndex) return;
+
     Offset newTargetOffset= _listState.calculateNextDragOffset(index, changedIndex);
     print("New Target Offset: $newTargetOffset");
     if(newTargetOffset == _targetOffset) return;
