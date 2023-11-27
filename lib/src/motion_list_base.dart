@@ -118,6 +118,8 @@ abstract class MotionListBaseState<
   void didUpdateWidget(covariant B oldWidget) {
     super.didUpdateWidget(oldWidget);
     final newList = widget.items;
+    print("New List: ${newList}");
+    print("OLd List: ${oldList}");
     _calcDiff(oldList, newList);
   }
 
@@ -146,9 +148,9 @@ abstract class MotionListBaseState<
       int index,
       Animation<double> animation) {
     return SizeTransition(
-      key: ValueKey(index),
+     // key: ValueKey(index),
       axis: scrollDirection,
-      sizeFactor: resizeAnimation ?? kAlwaysCompleteAnimation,
+      sizeFactor: kAlwaysCompleteAnimation,
       child: AnimationProvider.buildAnimation(
           insertAnimationType!, itemBuilder(context, index), animation),
     );
@@ -162,9 +164,9 @@ abstract class MotionListBaseState<
       int index,
       Animation<double> animation) {
     return SizeTransition(
-      key: ValueKey(index),
+      //key: ValueKey(index),
       axis: scrollDirection,
-      sizeFactor: resizeAnimation ?? kAlwaysCompleteAnimation,
+      sizeFactor: kAlwaysCompleteAnimation,
       child: AnimationProvider.buildAnimation(
           removeAnimationType!, itemBuilder(context, index), animation),
     );
