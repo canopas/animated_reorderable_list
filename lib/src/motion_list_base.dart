@@ -147,12 +147,8 @@ abstract class MotionListBaseState<
       Animation<double>? resizeAnimation,
       int index,
       Animation<double> animation) {
-    return SizeTransition(
-      axis: scrollDirection,
-      sizeFactor: resizeAnimation ?? kAlwaysCompleteAnimation,
-      child: AnimationProvider.buildAnimation(
-          insertAnimationType!, itemBuilder(context, index), animation),
-    );
+    return AnimationProvider.buildAnimation(
+        insertAnimationType!, itemBuilder(context, index), animation);
   }
 
   @nonVirtual
