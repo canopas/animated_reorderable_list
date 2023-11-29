@@ -147,8 +147,12 @@ abstract class MotionListBaseState<
       Animation<double>? resizeAnimation,
       int index,
       Animation<double> animation) {
-    return AnimationProvider.buildAnimation(
-        insertAnimationType!, itemBuilder(context, index), animation);
+    return SizeTransition(
+      axis: scrollDirection,
+      sizeFactor: resizeAnimation??kAlwaysCompleteAnimation,
+      child: AnimationProvider.buildAnimation(
+          insertAnimationType!, itemBuilder(context, index), animation),
+    );
   }
 
   @nonVirtual
@@ -158,7 +162,11 @@ abstract class MotionListBaseState<
       Animation<double>? resizeAnimation,
       int index,
       Animation<double> animation) {
-    return AnimationProvider.buildAnimation(
-        removeAnimationType!, itemBuilder(context, index), animation);
+    return SizeTransition(
+      axis: scrollDirection,
+      sizeFactor: resizeAnimation??kAlwaysCompleteAnimation,
+      child: AnimationProvider.buildAnimation(
+          removeAnimationType!, itemBuilder(context, index), animation),
+    );
   }
 }
