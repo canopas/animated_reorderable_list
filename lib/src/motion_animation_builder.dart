@@ -142,7 +142,6 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
     if (index < insertIndex) return Offset.zero;
 
     final int direction = index > insertIndex ? -1 : 1;
-
     return _itemOffsetAt(index + direction) - _itemOffsetAt(index);
   }
 
@@ -166,6 +165,8 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
     }
   }
 
+  void removeItemWithDrag() {}
+
   void insertItem(int index,
       {Duration insertDuration = _kDuration,
       Duration resizeDuration = _kResizeDuration}) {
@@ -187,20 +188,20 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
     startDrag(itemIndex);
     //  addResizeController.addStatusListener((status) {
     // if (status == AnimationStatus.completed) {
-    controller.forward().then<void>((_) {
-      final activeItem =
-          _removeActiveItemAt(_incomingItems, incomingItem.itemIndex)!;
-      activeItem.controller!.dispose();
-    });
+    // controller.forward().then<void>((_) {
+    //   final activeItem =
+    //       _removeActiveItemAt(_incomingItems, incomingItem.itemIndex)!;
+    //   activeItem.controller!.dispose();
+    // });
     //}
     // });
-    setState(() {
-      _incomingItems
-        ..add(incomingItem)
-        ..sort();
-    });
-    _itemsCount += 1;
-    _resetItemGap();
+    // setState(() {
+    //   _incomingItems
+    //     ..add(incomingItem)
+    //     ..sort();
+    // });
+    // _itemsCount += 1;
+    // _resetItemGap();
   }
 
   void removeItem(int index,
@@ -395,16 +396,18 @@ class _ReorderableItemState extends State<_ReorderableItem> {
     if (animate) {
       if (_offsetAnimation == null) {
         _offsetAnimation = AnimationController(
-            vsync: _listState, duration: Duration(seconds: 5))
+            vsync: _listState, duration: Duration(seconds: 2))
           ..addListener(rebuild)
           ..addStatusListener((status) {
             if (status == AnimationStatus.completed) {
+              print(status);
+           //   _insertItem(Duration(seconds: 2), changedIndex);
               _startOffset = _targetOffset;
               _offsetAnimation?.dispose();
               _offsetAnimation = null;
             }
           })
-          ..forward();
+          ..forward(from: 0.0);
       } else {
         _startOffset = offset;
         _offsetAnimation!.forward(from: 0.0);
@@ -417,7 +420,26 @@ class _ReorderableItemState extends State<_ReorderableItem> {
       _startOffset = _targetOffset;
     }
     rebuild();
-    _listState._unregisterItem(changedIndex, this);
+  }
+
+  _ActiveItem _insertItem(Duration insertDuration, int itemIndex) {
+    final AnimationController controller =
+        AnimationController(vsync: _listState, duration: insertDuration);
+    final _ActiveItem incomingItem = _ActiveItem.builder(controller, itemIndex);
+    controller.forward().then<void>((_) {
+      final activeItem = _listState._removeActiveItemAt(
+          _listState._incomingItems, incomingItem.itemIndex)!;
+      activeItem.controller!.dispose();
+    });
+
+    setState(() {
+      _listState._incomingItems
+        ..add(incomingItem)
+        ..sort();
+    });
+    _listState._itemsCount += 1;
+    _listState._resetItemGap();
+    return incomingItem;
   }
 
   void rebuild() {
