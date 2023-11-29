@@ -78,6 +78,9 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
   @override
   void didUpdateWidget(covariant MotionAnimationBuilder oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if(oldWidget.initialCount!=widget.initialCount){
+
+    }
     print("Did update widget is called in MotionANimationBuilder");
   }
 
@@ -246,9 +249,9 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
         for (final _ActiveItem item in _outgoingItems) {
           if (item.itemIndex > outgoingItem.itemIndex) item.itemIndex -= 1;
         }
-        setState(() {
-          _itemsCount -= 1;
-        });
+        // setState(() {
+        //   _itemsCount -= 1;
+        // });
         activeItem?.controller?.dispose();
         //resizeController.reverse();
       }
@@ -267,6 +270,7 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
     return SliverChildBuilderDelegate((context, index){
       print("Index in create Delegate: $index");
       final Widget child= itemBuilderDelegate(context, index);
+      return child;
       return _ReorderableItem(index: index, child: child);
     },
         childCount: _itemsCount);
@@ -305,10 +309,14 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
   Widget itemBuilderDelegate(BuildContext context, int itemIndex) {
     final _ActiveItem? outgoingItem = _activeItemAt(_outgoingItems, itemIndex);
     if (outgoingItem != null) {
-      return _removeItemBuilder(outgoingItem, itemIndex);
+      final Widget child= _removeItemBuilder(outgoingItem, itemIndex);
+      return _ReorderableItem(
+          index: itemIndex,
+          child: child);
     }
     final _ActiveItem? incomingItem = _activeItemAt(_incomingItems, itemIndex);
-    return _insertItemBuilder(incomingItem, itemIndex);
+    final Widget child= _insertItemBuilder(incomingItem, itemIndex);
+    return _ReorderableItem(index: itemIndex, child: child);
   }
 
   @override
