@@ -130,7 +130,6 @@ abstract class MotionListBaseState<
       Animation<double>? resizeAnimation,
       int index,
       Animation<double> animation) {
-    print("Animation in List base in insert Item builder: ${animation.value}");
     return AnimationProvider.buildAnimation(
         insertAnimationType!, itemBuilder(context, index), animation);
   }
