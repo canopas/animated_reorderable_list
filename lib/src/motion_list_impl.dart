@@ -56,6 +56,8 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
 
 class MotionListImplState<E extends Object>
     extends MotionListBaseState<Widget, MotionListImpl<E>, E> {
+
+
   @override
   Widget build(BuildContext context) {
     return MotionAnimationBuilder(

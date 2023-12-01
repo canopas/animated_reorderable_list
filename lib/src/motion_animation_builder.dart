@@ -3,6 +3,8 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 
+enum Operation { insertion, deletion }
+
 const Duration _kDuration = Duration(milliseconds: 300);
 const Duration _kResizeDuration = Duration(milliseconds: 1000);
 
@@ -67,19 +69,26 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
   Map<int, _ReorderableItemState> _items = <int, _ReorderableItemState>{};
 
   int _itemsCount = 0;
+  int changeIndex = 0;
 
   @override
   void initState() {
     super.initState();
     _itemsCount = widget.initialCount;
-    print("INIT state method is called in MotionAnimationBuilder");
   }
 
   @override
   void didUpdateWidget(covariant MotionAnimationBuilder oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.initialCount != widget.initialCount) {}
-    print("Did update widget is called in MotionANimationBuilder");
+    if (oldWidget.initialCount != widget.initialCount) {
+      // _items.clear();
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    print("did change dependencies is called in parent class");
   }
 
   @override
@@ -138,11 +147,17 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
     }
   }
 
-  Offset calculateNextDragOffset(int index, int insertIndex) {
-    if (index < insertIndex) return Offset.zero;
+  Offset calculateNextDragOffsetForDeletion(int index, int removeIndex) {
+    if (index < removeIndex) return Offset.zero;
+    const int direction = 1;
+    return _itemOffsetAt(index - direction) - _itemOffsetAt(index);
+  }
 
-    final int direction = index > insertIndex ? -1 : 1;
-    return _itemOffsetAt(index + direction) - _itemOffsetAt(index);
+  Offset calculateNextDragOffsetForInsertion(int index, int insertIndex) {
+    if (index < insertIndex) return Offset.zero;
+    const int direction = 1;
+    print("ItemOffsetAt:  ${_itemOffsetAt(index)}");
+    return _itemOffsetAt((index) + direction) - _itemOffsetAt(index);
   }
 
   Offset _itemOffsetAt(int index) {
@@ -151,11 +166,12 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
     return box.localToGlobal(Offset.zero);
   }
 
-  void startDrag(int index) {
+  void startDrag(int index, Operation operation,_ActiveItem activeItem) {
+   // print("___________________ Items count in start drag: ${_items.length}");
     final _ReorderableItemState item = _items[index]!;
     for (final _ReorderableItemState childItem in _items.values) {
       if (childItem == item || !childItem.mounted) continue;
-      childItem.updateGap(index, true);
+      childItem.updateGap(index, true, operation,activeItem);
     }
   }
 
@@ -165,7 +181,6 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
     }
   }
 
-  void removeItemWithDrag() {}
 
   void insertItem(int index,
       {Duration insertDuration = _kDuration,
@@ -184,24 +199,50 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
     }
     final AnimationController controller =
         AnimationController(vsync: this, duration: insertDuration);
-    final _ActiveItem incomingItem = _ActiveItem.builder(controller, itemIndex);
-    startDrag(itemIndex);
+    final _ActiveItem incomingItem =
+        _ActiveItem.builder(controller, itemIndex, Operation.insertion);
+     // setState(() {
+        _incomingItems
+          ..add(incomingItem)
+          ..sort();
+     // });
+
+    if (mounted) {
+      setState(() {
+        _itemsCount++;
+      });
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        startDrag(itemIndex, Operation.insertion,incomingItem);
+      });
+    }
+
+
     //  addResizeController.addStatusListener((status) {
     // if (status == AnimationStatus.completed) {
-    // controller.forward().then<void>((_) {
-    //   final activeItem =
-    //       _removeActiveItemAt(_incomingItems, incomingItem.itemIndex)!;
-    //   activeItem.controller!.dispose();
-    // });
-    //}
-    // });
-    // setState(() {
-    //   _incomingItems
-    //     ..add(incomingItem)
-    //     ..sort();
-    // });
-    // _itemsCount += 1;
-    // _resetItemGap();
+    //   controller.forward().then<void>((_) {
+    //     final activeItem =
+    //     _removeActiveItemAt(_incomingItems, incomingItem.itemIndex)!;
+    //     activeItem.controller!.dispose();
+    //   });
+    //   //}
+    //   //   });
+    //   setState(() {
+    //     _incomingItems
+    //       ..add(incomingItem)
+    //       ..sort();
+    //   });
+    //   _itemsCount += 1;
+    //   _resetItemGap();
+
+  _resetItemGap();
+  }
+
+  void addItem(_ActiveItem item) {
+    if (_items.containsKey(item.itemIndex)) {
+      for (final i in _items.keys) {
+        if (i < item.itemIndex) continue;
+      }
+    }
   }
 
   void removeItem(int index,
@@ -220,10 +261,11 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
         AnimationController(vsync: this, value: 1.0, duration: removeDuration);
 
     controller.reverse();
-    final _ActiveItem outgoingItem = _ActiveItem.builder(controller, itemIndex);
+    final _ActiveItem outgoingItem =
+        _ActiveItem.builder(controller, itemIndex, Operation.deletion);
     controller.addStatusListener((status) {
       if (status == AnimationStatus.dismissed) {
-        startDrag(itemIndex);
+        startDrag(itemIndex, Operation.deletion,outgoingItem);
 
         final _ActiveItem? activeItem =
             _removeActiveItemAt(_outgoingItems, outgoingItem.itemIndex);
@@ -247,9 +289,11 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
   }
 
   SliverChildDelegate _createDelegate() {
+    print("_________________  Item counts in create delegate: $_itemsCount");
+
     return SliverChildBuilderDelegate((context, index) {
       final Widget child = itemBuilderDelegate(context, index);
-      return child;
+      return _ReorderableItem(index: index, child: child);
     }, childCount: _itemsCount);
   }
 
@@ -270,6 +314,7 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
   Widget _insertItemBuilder(_ActiveItem? incomingItem, int itemIndex) {
     final Animation<double> animation =
         incomingItem?.controller?.view ?? kAlwaysCompleteAnimation;
+    //print("Incoming item controller in insertItemBuilder: ${incomingItem?.controller}");
     final Animation<double>? resizeAnimation = null;
     return widget.insertAnimationBuilder(
       context,
@@ -283,16 +328,18 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
     final _ActiveItem? outgoingItem = _activeItemAt(_outgoingItems, itemIndex);
     if (outgoingItem != null) {
       final Widget child = _removeItemBuilder(outgoingItem, itemIndex);
-      return _ReorderableItem(index: itemIndex, child: child);
+      return child;
     }
     final _ActiveItem? incomingItem = _activeItemAt(_incomingItems, itemIndex);
+    print("Incmoing item in ItemBuilderDelegate: ${incomingItem}");
     final Widget child = _insertItemBuilder(incomingItem, itemIndex);
-    return _ReorderableItem(index: itemIndex, child: child);
+    return child;
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    print("Build is called");
     return widget.isGriView
         ? SliverGrid(
             gridDelegate: widget.delegateBuilder!, delegate: _createDelegate())
@@ -306,10 +353,13 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
 class _ActiveItem implements Comparable<_ActiveItem> {
   final AnimationController? controller;
   int itemIndex;
+  Operation? operation;
 
-  _ActiveItem.builder(this.controller, this.itemIndex);
+  _ActiveItem.builder(this.controller, this.itemIndex, this.operation);
 
-  _ActiveItem.index(this.itemIndex) : controller = null;
+  _ActiveItem.index(this.itemIndex)
+      : controller = null,
+        operation = null;
 
   @override
   int compareTo(_ActiveItem other) {
@@ -343,8 +393,11 @@ class _ReorderableItemState extends State<_ReorderableItem> {
     super.initState();
   }
 
+
   @override
   void didUpdateWidget(covariant _ReorderableItem oldWidget) {
+    // print(
+    //     "Did update widget is called: old index: ${oldWidget.index}  --- new Index: ${index}");
     if (oldWidget.index != index) {
       _listState._unregisterItem(index, this);
       _listState._registerItem(this);
@@ -361,7 +414,7 @@ class _ReorderableItemState extends State<_ReorderableItem> {
 
   @override
   Widget build(BuildContext context) {
-    _listState._registerItem(this);
+     _listState._registerItem(this);
     return Transform(
       transform: Matrix4.translationValues(offset.dx, offset.dy, 0.0),
       child: widget.child,
@@ -387,10 +440,17 @@ class _ReorderableItemState extends State<_ReorderableItem> {
     rebuild();
   }
 
-  void updateGap(int changedIndex, bool animate) {
+  Offset calculateNextDragOffset(Operation operation, changeIndex) {
+    return operation == Operation.insertion
+        ? _listState.calculateNextDragOffsetForInsertion(index, changeIndex)
+        : _listState.calculateNextDragOffsetForDeletion(index, changeIndex);
+  }
+
+  void updateGap(int changeIndex, bool animate, Operation operation, _ActiveItem incomingItem) {
     if (!mounted) return;
-    Offset newTargetOffset =
-        _listState.calculateNextDragOffset(index, changedIndex);
+
+    Offset newTargetOffset = calculateNextDragOffset(operation, changeIndex);
+    print("New target Offset: $newTargetOffset    ---index: $index");
     if (newTargetOffset == _targetOffset) return;
     _targetOffset = newTargetOffset;
     if (animate) {
@@ -400,8 +460,17 @@ class _ReorderableItemState extends State<_ReorderableItem> {
           ..addListener(rebuild)
           ..addStatusListener((status) {
             if (status == AnimationStatus.completed) {
-              print(status);
-           //   _insertItem(Duration(seconds: 2), changedIndex);
+              if(incomingItem.controller != null){
+                incomingItem.controller!.forward().then<void>((_) {
+                  print(incomingItem.controller!.status);
+                  print(incomingItem.controller!.value);
+                  final activeItem = _listState._removeActiveItemAt(
+                      _listState._incomingItems, incomingItem.itemIndex)!;
+                  activeItem.controller!.dispose();
+                });
+              }
+
+                 //_insertItem(Duration(seconds: 5), changeIndex,incomingItem);
               _startOffset = _targetOffset;
               _offsetAnimation?.dispose();
               _offsetAnimation = null;
@@ -425,19 +494,25 @@ class _ReorderableItemState extends State<_ReorderableItem> {
   _ActiveItem _insertItem(Duration insertDuration, int itemIndex) {
     final AnimationController controller =
         AnimationController(vsync: _listState, duration: insertDuration);
-    final _ActiveItem incomingItem = _ActiveItem.builder(controller, itemIndex);
+    final _ActiveItem incomingItem =
+        _ActiveItem.builder(controller, itemIndex, Operation.insertion);
+    setState(() {
+      _listState._incomingItems
+        ..add(incomingItem)
+        ..sort();
+      //_listState._itemsCount += 1;
+    });
+    controller.addListener(() {rebuild();});
     controller.forward().then<void>((_) {
+      print(controller.status);
+      print(controller.value);
       final activeItem = _listState._removeActiveItemAt(
           _listState._incomingItems, incomingItem.itemIndex)!;
       activeItem.controller!.dispose();
     });
 
-    setState(() {
-      _listState._incomingItems
-        ..add(incomingItem)
-        ..sort();
-    });
-    _listState._itemsCount += 1;
+
+    print("Incoming items length: ${_listState._incomingItems}");
     _listState._resetItemGap();
     return incomingItem;
   }
