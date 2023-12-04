@@ -171,12 +171,12 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
 
   Offset _itemOffsetAt(int index) {
     final box = _items[index]?.context.findRenderObject() as RenderBox?;
+    print("BOX OFFSEt: Index: $index ----- box: $box");
     if (box == null) return Offset.zero;
     return box.localToGlobal(Offset.zero);
   }
 
   void startDrag(int index, Operation operation, _ActiveItem activeItem) {
-    // print("___________________ Items count in start drag: ${_items.length}");
     final _ReorderableItemState item = _items[index]!;
     for (final _ReorderableItemState childItem in _items.values) {
       if (childItem == item || !childItem.mounted) continue;
@@ -184,7 +184,7 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
         index,
         true,
         operation,
-        activeItem,
+        activeItem
       );
     }
   }
@@ -220,13 +220,6 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
       ..sort();
     // });
 
-    // for (final entry in childrenMap.entries) {
-    //   print("MAp length:  ${childrenMap.length}");
-    //   print("ItemCount:  ${_itemsCount}");
-    //
-    //   childrenMap[entry.key] =
-    //       entry.value.copywith(oldOffset: _itemOffsetAt(entry.key));
-    // }
 
     addItem(incomingItem);
 
@@ -234,16 +227,33 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
       setState(() {
         _itemsCount++;
       });
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        startDrag(itemIndex, Operation.insertion, incomingItem);
-      });
-    }
 
-    // for (final entry in childrenMap.entries) {
-    //
-    //   childrenMap[entry.key] = entry.value
-    //       .copywith(oldIndex: entry.key, oldOffset: _itemOffsetAt(entry.key));
-    // }
+
+    }
+      //  for (final entry in childrenMap.entries) {
+      //
+      //   childrenMap[entry.key] = entry.value
+      //       .copywith(oldIndex: entry.key, updatedOffset: _itemOffsetAt(entry.key));
+      // }
+      //
+      //  setState(() {
+      //
+      //  });
+
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      childrenMap.forEach((key, value) {
+        childrenMap[key]= childrenMap[key]!.copywith(updatedOffset: _itemOffsetAt(key));
+        setState(() {
+
+        });
+        print(childrenMap[key]);
+      });
+
+      startDrag(itemIndex, Operation.insertion, incomingItem);
+
+    });
+
 
     //  addResizeController.addStatusListener((status) {
     // if (status == AnimationStatus.completed) {
@@ -271,29 +281,30 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
       for (final entry in childrenMap.entries) {
         if (entry.key < item.itemIndex) {
           updatedChildrenMap[entry.key] = childrenMap[entry.key]!;
-        }
-        ;
+        };
         if (entry.key == item.itemIndex) {
           updatedChildrenMap[entry.key] = ReorderableEntity(
+            key: ValueKey(entry.key),
               oldOffset: Offset.zero,
               updatedOffset: Offset.zero,
               oldIndex: entry.key,
               updatedIndex: entry.key);
           updatedChildrenMap[entry.key + 1] = childrenMap[entry.key]!
-              .copywith(oldOffset: _itemOffsetAt(entry.key));
+              .copywith(key:ValueKey(entry.key+1),oldOffset: _itemOffsetAt(entry.key));
         } else {
           updatedChildrenMap[entry.key + 1] = childrenMap[entry.key]!.copywith(
+            key:ValueKey(entry.key+1),
             updatedIndex: entry.key + 1,
             oldOffset: _itemOffsetAt(entry.key),
           );
         }
       }
     }
-    childrenMap.clear();
-    childrenMap.addAll(updatedChildrenMap);
     setState(() {
-
+      childrenMap.clear();
+      childrenMap.addAll(updatedChildrenMap);
     });
+
   }
 
   void removeItem(int index,
@@ -340,12 +351,14 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
   }
 
   SliverChildDelegate _createDelegate() {
+    print(childrenMap.length);
     return SliverChildBuilderDelegate((context, index) {
       final Widget child = itemBuilderDelegate(context, index);
       return _ReorderableItem(
+        key: childrenMap[index]!.key,
         index: index,
-        child: child,
         reorderableEntity: childrenMap[index]!,
+        child: child,
       );
     }, childCount: _itemsCount);
   }
@@ -423,9 +436,10 @@ class _ReorderableItem extends StatefulWidget {
   final int index;
   final Widget child;
   final ReorderableEntity reorderableEntity;
+  final Key key;
 
   const _ReorderableItem(
-      {Key? key,
+      {required this.key,
       required this.index,
       required this.child,
       required this.reorderableEntity})
@@ -456,21 +470,17 @@ class _ReorderableItemState extends State<_ReorderableItem> {
   @override
   void didUpdateWidget(covariant _ReorderableItem oldWidget) {
     super.didUpdateWidget(oldWidget);
-
-    // print(
-    //     "Did update widget is called: old index: ${oldWidget.index}  --- new Index: ${index}");
-   // print("Before updating childrenMap: $reorderableEntity");
-
-    reorderableEntity = _listState.childrenMap[reorderableEntity.updatedIndex]!.copywith(
-        updatedIndex: index, updatedOffset: _listState._itemOffsetAt(index));
-   // print("After updating childrenMap: $reorderableEntity");
+    // reorderableEntity = _listState.childrenMap[index]!.copywith(
+    //   updatedOffset: _listState._itemOffsetAt(index));
+    // print("------------------ DId update widget: $index");
+    // print("Index: $index  ------ ReorderableEntity: ${reorderableEntity}");
     if (oldWidget.index != index) {
       _listState._unregisterItem(index, this);
       _listState._registerItem(this);
     }
-    // _listState.childrenMap.update(index, (value) => reorderableEntity);
-     print("did update $index");
+    //updateGap(1, true, Operation.insertion, );
   }
+
 
   @override
   void dispose() {
@@ -482,10 +492,6 @@ class _ReorderableItemState extends State<_ReorderableItem> {
   @override
   Widget build(BuildContext context) {
     _listState._registerItem(this);
-    final box = context.findRenderObject() as RenderBox?;
-
-   var offset1 =  box?.localToGlobal(Offset.zero);
-  //  print("-------------------- build method $index: ${offset1} -------- ${offset}");
     return Transform(
       transform: Matrix4.translationValues(offset.dx, offset.dy, 0.0),
       child: widget.child,
@@ -496,8 +502,6 @@ class _ReorderableItemState extends State<_ReorderableItem> {
     if (_offsetAnimation != null) {
       final double animValue =
           Curves.easeInOut.transform(_offsetAnimation!.value);
-     // return _targetOffset;
-
       return Offset.lerp(_startOffset, _targetOffset, animValue)!;
     }
     return _targetOffset;
@@ -519,22 +523,17 @@ class _ReorderableItemState extends State<_ReorderableItem> {
         : _listState.calculateNextDragOffsetForDeletion(index, changeIndex);
   }
 
-  void updateGap(int changeIndex, bool animate, Operation operation,
-      _ActiveItem incomingItem) {
+  void updateGap(int changeIndex, bool animate, Operation operation,_ActiveItem incomingItem
+     ) {
     if (!mounted) return;
     if (index < changeIndex) return;
-    Offset offsetFromEntity =calculateNextDragOffset(Operation.insertion, changeIndex);
-
-    var newTargetOffset= reorderableEntity.updatedOffset - reorderableEntity.oldOffset;
-    print(" index $index New target offset: $newTargetOffset  ---- OffsetFromEntity: $offsetFromEntity");
+    reorderableEntity= _listState.childrenMap[index]!;
+    var offsetFromEntity=  reorderableEntity.oldOffset- reorderableEntity.updatedOffset;
+    print("Index: $index ---- OffsetFromEntity: $offsetFromEntity");
+    print("index: $index ---------------StartOffset: ${reorderableEntity.oldOffset} --------  new offset: ${reorderableEntity.updatedOffset}");
    // Offset newStartOffset = reorderableEntity.oldOffset;
-    if (newTargetOffset == _targetOffset) return;
-    _targetOffset = newTargetOffset;
-     _startOffset = reorderableEntity.oldOffset;
-   //  print("----------------------");
-    // print("targetOffset: ${reorderableEntity.updatedOffset}");
-    // print("start Offset: $_startOffset");
-    // print("Index: $index Differece between both: $newTargetOffset");
+   // if (newTargetOffset == _targetOffset) return;
+    _startOffset = offsetFromEntity;
     if (animate) {
       if (_offsetAnimation == null) {
         _offsetAnimation = AnimationController(
@@ -552,7 +551,7 @@ class _ReorderableItemState extends State<_ReorderableItem> {
               }
 
               //_insertItem(Duration(seconds: 5), changeIndex,incomingItem);
-              _startOffset = _targetOffset;
+              //_startOffset = _targetOffset;
               _offsetAnimation?.dispose();
               _offsetAnimation = null;
             }
@@ -567,37 +566,11 @@ class _ReorderableItemState extends State<_ReorderableItem> {
         _offsetAnimation?.dispose();
         _offsetAnimation = null;
       }
-     // _startOffset = _targetOffset;
+      _startOffset = _targetOffset;
     }
-   // rebuild();
+    rebuild();
   }
 
-  _ActiveItem _insertItem(Duration insertDuration, int itemIndex) {
-    final AnimationController controller =
-        AnimationController(vsync: _listState, duration: insertDuration);
-    final _ActiveItem incomingItem =
-        _ActiveItem.builder(controller, itemIndex, Operation.insertion);
-    setState(() {
-      _listState._incomingItems
-        ..add(incomingItem)
-        ..sort();
-      //_listState._itemsCount += 1;
-    });
-    controller.addListener(() {
-      rebuild();
-    });
-    controller.forward().then<void>((_) {
-      print(controller.status);
-      print(controller.value);
-      final activeItem = _listState._removeActiveItemAt(
-          _listState._incomingItems, incomingItem.itemIndex)!;
-      activeItem.controller!.dispose();
-    });
-
-    // print("Incoming items length: ${_listState._incomingItems}");
-    _listState._resetItemGap();
-    return incomingItem;
-  }
 
   void rebuild() {
     if (mounted) {

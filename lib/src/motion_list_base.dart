@@ -95,13 +95,58 @@ abstract class MotionListBaseState<
     oldList = List.from(widget.items);
   }
 
+  // @override
+  // void didUpdateWidget(covariant B oldWidget) {
+  //   super.didUpdateWidget(oldWidget);
+  //   final newList = widget.items;
+  //   _calcDiff(oldList, newList);
+  //
+  //  // oldList = List.from(newList);
+  // }
   @override
   void didUpdateWidget(covariant B oldWidget) {
     super.didUpdateWidget(oldWidget);
     final newList = widget.items;
-    _calcDiff(oldList, newList);
+    final diff = calculateListDiff(oldList, newList,
+        detectMoves: false, equalityChecker: widget.areItemsTheSame)
+        .getUpdates();
+    final tempList = List<E?>.from(oldList);
+    for (final update in diff) {
+      _onDiffUpdate(update, tempList);
+    }
+    oldList = List.from(newList);
+  }
 
-   // oldList = List.from(newList);
+  void _onChanged(int position, Object? payLoad, final List<E?> tmpList) {
+    listKey.currentState!.removeItem(position, removeDuration: removeDuration);
+    _onInserted(position, 1, tmpList);
+  }
+
+
+  void _onInserted(
+      final int position, final int count, final List<E?> tmpList) {
+    for (var loopCount = 0; loopCount < count; loopCount++) {
+      listKey.currentState!.insertItem(position,
+          insertDuration: insertDuration, resizeDuration: resizeDuration);
+    }
+    tmpList.insertAll(position, List<E?>.filled(count, null));
+  }
+
+  void _onRemoved(final int position, final int count, final List<E?> tmpList) {
+    for (var loopcount = 0; loopcount < count; loopcount++) {
+      listKey.currentState!.removeItem(position + loopcount,
+          removeDuration: removeDuration, resizeDuration: resizeDuration);
+    }
+    tmpList.removeRange(position, position + count);
+  }
+
+  void _onDiffUpdate(DiffUpdate update, List<E?> tmpList) {
+    update.when(
+        insert: (pos, count) => _onInserted(pos, count, tmpList),
+        remove: (pos, count) => _onRemoved(pos, count, tmpList),
+        change: (pos, payload) => _onChanged(pos, payload, tmpList),
+        move: (_, __) =>
+        throw UnimplementedError('Moves are currently not supported'));
   }
 
   void _calcDiff(List<E> oldList, List<E> newList) {
