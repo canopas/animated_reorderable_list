@@ -15,8 +15,7 @@ typedef DelegateBuilder = SliverChildBuilderDelegate Function(
 typedef AnimatedRemovedItemBuilder = Widget Function(
     BuildContext context, Animation<double> animation);
 
-typedef AnimatedWidgetBuilder = Widget Function(BuildContext context,
-    Animation<double>? resizeAnimation, int index, Animation<double> animation);
+typedef AnimatedWidgetBuilder = Widget Function(BuildContext context, int index, Animation<double> animation);
 
 class MotionAnimationBuilder<E> extends StatefulWidget {
   final AnimatedWidgetBuilder insertAnimationBuilder;
@@ -180,12 +179,7 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
     final _ReorderableItemState item = _items[index]!;
     for (final _ReorderableItemState childItem in _items.values) {
       if (childItem == item || !childItem.mounted) continue;
-      childItem.updateGap(
-        index,
-        true,
-        operation,
-        activeItem
-      );
+      childItem.updateGap(index, true, operation, activeItem);
     }
   }
 
@@ -220,40 +214,33 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
       ..sort();
     // });
 
-
     addItem(incomingItem);
 
     if (mounted) {
       setState(() {
         _itemsCount++;
       });
-
-
     }
-      //  for (final entry in childrenMap.entries) {
-      //
-      //   childrenMap[entry.key] = entry.value
-      //       .copywith(oldIndex: entry.key, updatedOffset: _itemOffsetAt(entry.key));
-      // }
-      //
-      //  setState(() {
-      //
-      //  });
-
+    //  for (final entry in childrenMap.entries) {
+    //
+    //   childrenMap[entry.key] = entry.value
+    //       .copywith(oldIndex: entry.key, updatedOffset: _itemOffsetAt(entry.key));
+    // }
+    //
+    //  setState(() {
+    //
+    //  });
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       childrenMap.forEach((key, value) {
-        childrenMap[key]= childrenMap[key]!.copywith(updatedOffset: _itemOffsetAt(key));
-        setState(() {
-
-        });
+        childrenMap[key] =
+            childrenMap[key]!.copywith(updatedOffset: _itemOffsetAt(key));
+        setState(() {});
         print(childrenMap[key]);
       });
 
       startDrag(itemIndex, Operation.insertion, incomingItem);
-
     });
-
 
     //  addResizeController.addStatusListener((status) {
     // if (status == AnimationStatus.completed) {
@@ -281,19 +268,21 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
       for (final entry in childrenMap.entries) {
         if (entry.key < item.itemIndex) {
           updatedChildrenMap[entry.key] = childrenMap[entry.key]!;
-        };
+        }
+        ;
         if (entry.key == item.itemIndex) {
           updatedChildrenMap[entry.key] = ReorderableEntity(
-            key: ValueKey(entry.key),
+              key: ValueKey(entry.key),
               oldOffset: Offset.zero,
               updatedOffset: Offset.zero,
               oldIndex: entry.key,
               updatedIndex: entry.key);
-          updatedChildrenMap[entry.key + 1] = childrenMap[entry.key]!
-              .copywith(key:ValueKey(entry.key+1),oldOffset: _itemOffsetAt(entry.key));
+          updatedChildrenMap[entry.key + 1] = childrenMap[entry.key]!.copywith(
+              key: ValueKey(entry.key + 1),
+              oldOffset: _itemOffsetAt(entry.key));
         } else {
           updatedChildrenMap[entry.key + 1] = childrenMap[entry.key]!.copywith(
-            key:ValueKey(entry.key+1),
+            key: ValueKey(entry.key + 1),
             updatedIndex: entry.key + 1,
             oldOffset: _itemOffsetAt(entry.key),
           );
@@ -304,7 +293,6 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
       childrenMap.clear();
       childrenMap.addAll(updatedChildrenMap);
     });
-
   }
 
   void removeItem(int index,
@@ -351,7 +339,6 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
   }
 
   SliverChildDelegate _createDelegate() {
-    print(childrenMap.length);
     return SliverChildBuilderDelegate((context, index) {
       final Widget child = itemBuilderDelegate(context, index);
       return _ReorderableItem(
@@ -366,12 +353,8 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
   Widget _removeItemBuilder(_ActiveItem outgoingItem, int itemIndex) {
     final Animation<double> animation =
         outgoingItem.controller?.view ?? kAlwaysCompleteAnimation;
-    // final Animation<double>? resizeAnimation =
-    //     outgoingItem.resizeController?.view;
-    final Animation<double>? resizeAnimation = kAlwaysCompleteAnimation;
     return widget.removeAnimationBuilder(
       context,
-      resizeAnimation,
       itemIndex,
       animation,
     );
@@ -380,11 +363,8 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
   Widget _insertItemBuilder(_ActiveItem? incomingItem, int itemIndex) {
     final Animation<double> animation =
         incomingItem?.controller?.view ?? kAlwaysCompleteAnimation;
-    //print("Incoming item controller in insertItemBuilder: ${incomingItem?.controller}");
-    final Animation<double>? resizeAnimation = null;
     return widget.insertAnimationBuilder(
       context,
-      resizeAnimation,
       _itemIndexToIndex(itemIndex),
       animation,
     );
@@ -397,7 +377,6 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
       return child;
     }
     final _ActiveItem? incomingItem = _activeItemAt(_incomingItems, itemIndex);
-    // print("Incmoing item in ItemBuilderDelegate: ${incomingItem}");
     final Widget child = _insertItemBuilder(incomingItem, itemIndex);
     return child;
   }
@@ -462,7 +441,6 @@ class _ReorderableItemState extends State<_ReorderableItem> {
   void initState() {
     _listState = MotionAnimationBuilder.of(context);
     _listState._registerItem(this);
-    // print("widget.reorderableEntity : ${widget.reorderableEntity}");
     reorderableEntity = widget.reorderableEntity;
     super.initState();
   }
@@ -470,17 +448,11 @@ class _ReorderableItemState extends State<_ReorderableItem> {
   @override
   void didUpdateWidget(covariant _ReorderableItem oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // reorderableEntity = _listState.childrenMap[index]!.copywith(
-    //   updatedOffset: _listState._itemOffsetAt(index));
-    // print("------------------ DId update widget: $index");
-    // print("Index: $index  ------ ReorderableEntity: ${reorderableEntity}");
     if (oldWidget.index != index) {
       _listState._unregisterItem(index, this);
       _listState._registerItem(this);
     }
-    //updateGap(1, true, Operation.insertion, );
   }
-
 
   @override
   void dispose() {
@@ -523,27 +495,25 @@ class _ReorderableItemState extends State<_ReorderableItem> {
         : _listState.calculateNextDragOffsetForDeletion(index, changeIndex);
   }
 
-  void updateGap(int changeIndex, bool animate, Operation operation,_ActiveItem incomingItem
-     ) {
+  void updateGap(int changeIndex, bool animate, Operation operation,
+      _ActiveItem incomingItem) {
     if (!mounted) return;
     if (index < changeIndex) return;
-    reorderableEntity= _listState.childrenMap[index]!;
-    var offsetFromEntity=  reorderableEntity.oldOffset- reorderableEntity.updatedOffset;
-    print("Index: $index ---- OffsetFromEntity: $offsetFromEntity");
-    print("index: $index ---------------StartOffset: ${reorderableEntity.oldOffset} --------  new offset: ${reorderableEntity.updatedOffset}");
-   // Offset newStartOffset = reorderableEntity.oldOffset;
-   // if (newTargetOffset == _targetOffset) return;
+    reorderableEntity = _listState.childrenMap[index]!;
+    var offsetFromEntity =
+        reorderableEntity.oldOffset - reorderableEntity.updatedOffset;
+    // Offset newStartOffset = reorderableEntity.oldOffset;
+    // if (newTargetOffset == _targetOffset) return;
     _startOffset = offsetFromEntity;
     if (animate) {
       if (_offsetAnimation == null) {
         _offsetAnimation = AnimationController(
             vsync: _listState, duration: Duration(seconds: 2))
-           ..addListener(rebuild)
+          ..addListener(rebuild)
           ..addStatusListener((status) {
             if (status == AnimationStatus.completed) {
               if (incomingItem.controller != null) {
                 incomingItem.controller!.forward().then<void>((_) {
-
                   final activeItem = _listState._removeActiveItemAt(
                       _listState._incomingItems, incomingItem.itemIndex)!;
                   activeItem.controller!.dispose();
@@ -551,7 +521,7 @@ class _ReorderableItemState extends State<_ReorderableItem> {
               }
 
               //_insertItem(Duration(seconds: 5), changeIndex,incomingItem);
-              //_startOffset = _targetOffset;
+              _startOffset = _targetOffset;
               _offsetAnimation?.dispose();
               _offsetAnimation = null;
             }
@@ -570,7 +540,6 @@ class _ReorderableItemState extends State<_ReorderableItem> {
     }
     rebuild();
   }
-
 
   void rebuild() {
     if (mounted) {
