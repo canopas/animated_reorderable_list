@@ -172,7 +172,6 @@ abstract class MotionListBaseState<
   @protected
   Widget insertItemBuilder(
       BuildContext context,
-      Animation<double>? resizeAnimation,
       int index,
       Animation<double> animation) {
     return AnimationProvider.buildAnimation(
@@ -183,7 +182,6 @@ abstract class MotionListBaseState<
   @protected
   Widget removeItemBuilder(
       BuildContext context,
-      Animation<double>? resizeAnimation,
       int index,
       Animation<double> animation) {
     return AnimationProvider.buildAnimation(
