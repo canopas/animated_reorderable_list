@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 
-class ReorderableEntity {
+class ReorderableItem {
   final Key key;
   final Offset oldOffset;
   final Offset updatedOffset;
@@ -8,7 +8,7 @@ class ReorderableEntity {
   final int updatedIndex;
   final Widget? child;
 
-  ReorderableEntity(
+  ReorderableItem(
       {required this.key,
       required this.oldOffset,
       required this.updatedOffset,
@@ -16,14 +16,14 @@ class ReorderableEntity {
       required this.updatedIndex,
        this.child});
 
-  ReorderableEntity copywith(
+  ReorderableItem copywith(
       {Key? key,
         Offset? oldOffset,
       Offset? updatedOffset,
       int? oldIndex,
       int? updatedIndex,
       Widget? child}) {
-    return ReorderableEntity(
+    return ReorderableItem(
       key: key??this.key,
         oldOffset: oldOffset ?? this.oldOffset,
         updatedOffset: updatedOffset ?? this.updatedOffset,
