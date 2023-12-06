@@ -4,8 +4,8 @@ A Flutter Animated Listview with simple implementation with animation and smooth
 
 ## Features
 - Smooth animations when adding and removing items from the list.
-- List and Grid support
-- Easily customize animation styles and duration to Flutter lists 
+- List and Grid support.
+- Easily customize animation styles and duration to Flutter list.
 
 ## Demo
 

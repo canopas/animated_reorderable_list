@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 
 import '../motion_list.dart';
 
@@ -50,37 +51,85 @@ class MotionGridViewBuilder<E extends Object> extends StatelessWidget {
   ///
   final EqualityChecker? areItemsTheSame;
 
+  /// {@template flutter.widgets.scroll_view.reverse}
+  /// Whether the scroll view scrolls in the reading direction.
+  ///
+  /// For example, if the reading direction is left-to-right and
+  /// [scrollDirection] is [Axis.horizontal], then the scroll view scrolls from
+  /// left to right when [reverse] is false and from right to left when
+  /// [reverse] is true.
+  ///
+  /// Similarly, if [scrollDirection] is [Axis.vertical], then the scroll view
+  /// scrolls from top to bottom when [reverse] is false and from bottom to top
+  /// when [reverse] is true.
+  ///
+  /// Defaults to false.
+  /// {@endtemplate}
+  final bool reverse;
+
+  /// [ScrollController] to get the current scroll position.
+  final ScrollController? controller;
+
+  /// When this is true, the scroll view is scrollable even if it does not have
+  /// sufficient content to actually scroll. Otherwise, by default the user can
+  /// only scroll the view if it has sufficient content. See [physics].
+  final bool? primary;
+  final ScrollPhysics? physics;
+  final ScrollBehavior? scrollBehavior;
+  final String? restorationId;
+  final ScrollViewKeyboardDismissBehavior keyboardDismissBehavior;
+  final Clip clipBehavior;
+  final DragStartBehavior dragStartBehavior;
+
   const MotionGridViewBuilder(
       {Key? key,
       required this.items,
       required this.itemBuilder,
       this.insertAnimation = AnimationType.fadeIn,
       this.removeAnimation,
-      this.insertDuration,
-      this.removeDuration,
-      this.resizeDuration,
+      this.insertDuration = const Duration(milliseconds: 300),
+      this.removeDuration = const Duration(milliseconds: 300),
+      this.resizeDuration = const Duration(milliseconds: 300),
       required this.sliverGridDelegate,
       this.scrollDirection = Axis.vertical,
-      this.areItemsTheSame})
+        this.controller,
+        this.reverse=false,
+      this.areItemsTheSame,
+      this.primary,
+      this.physics,
+      this.scrollBehavior,
+      this.restorationId,
+      this.keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.manual,
+      this.dragStartBehavior = DragStartBehavior.start,
+      this.clipBehavior = Clip.hardEdge})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return CustomScrollView(
         scrollDirection: scrollDirection,
+        reverse: reverse,
+        controller: controller,
+        primary: primary,
+        physics: physics,
+        scrollBehavior: scrollBehavior,
+        restorationId: restorationId,
+        keyboardDismissBehavior: keyboardDismissBehavior,
+        dragStartBehavior: dragStartBehavior,
+        clipBehavior: clipBehavior,
         slivers: [
-          MotionListImpl.grid(
-            items: items,
-            itemBuilder: itemBuilder,
-            insertAnimationType: insertAnimation,
-            removeAnimationType: removeAnimation ?? insertAnimation,
-            insertDuration: insertDuration,
-            removeDuration: removeDuration,
-            resizeDuration: resizeDuration,
-            areItemsTheSame: areItemsTheSame,
-            scrollDirection: scrollDirection,
-            sliverGridDelegate: sliverGridDelegate,
-          ),
-        ]);
+      MotionListImpl.grid(
+        items: items,
+        itemBuilder: itemBuilder,
+        insertAnimationType: insertAnimation,
+        removeAnimationType: removeAnimation ?? insertAnimation,
+        insertDuration: insertDuration!,
+        removeDuration: removeDuration!,
+        resizeDuration: resizeDuration!,
+        areItemsTheSame: areItemsTheSame,
+        scrollDirection: scrollDirection,
+        sliverGridDelegate: sliverGridDelegate,
+      ),
+    ]);
   }
 }
