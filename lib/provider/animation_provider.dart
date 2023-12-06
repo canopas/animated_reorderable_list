@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:motion_list/animation/animation.dart';
+import '../animation/flipin_x.dart';
+import '../animation/flipin_y.dart';
 import '../animation/slide_in_down.dart';
 import '../animation/slide_in_right.dart';
 import '../animation/slide_in_up.dart';
@@ -19,6 +21,10 @@ class AnimationProvider {
         return FadeInDown(animation: animation, child: child);
       case(AnimationType.fadeInUp):
         return FadeInUp(animation: animation, child: child);
+      case(AnimationType.flipInY):
+        return FlipInY(animation:animation,child:child);
+      case(AnimationType.flipInX):
+        return FlipInX(animation:animation,child:child);
       case(AnimationType.landing):
         return Landing(animation: animation, child: child);
       case(AnimationType.scaleIn):

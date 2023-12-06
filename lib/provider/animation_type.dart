@@ -4,6 +4,8 @@ enum AnimationType{
   fadeInRight,
   fadeInDown,
   fadeInUp,
+  flipInY,
+  flipInX,
   landing,
   scaleIn,
   scaleInTop,

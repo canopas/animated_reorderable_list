@@ -144,9 +144,8 @@ class _HomePageState extends State<HomePage> {
                       itemBuilder: (BuildContext context, int index) {
                         return ItemCard(index: index);
                       },
-                      insertDuration: const Duration(milliseconds: 200),
                       insertAnimation: appliedStyle,
-                      removeAnimation: appliedStyle,
+                      removeAnimation:appliedStyle,
                       sliverGridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 4),
@@ -156,7 +155,6 @@ class _HomePageState extends State<HomePage> {
                       itemBuilder: (BuildContext context, int index) {
                         return ItemTile(index: index);
                       },
-                      insertDuration: const Duration(milliseconds: 200),
                       insertAnimation: appliedStyle,
                       removeAnimation: appliedStyle,
                     ),
