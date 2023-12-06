@@ -7,6 +7,7 @@ class ReorderableItem {
   final int oldIndex;
   final int updatedIndex;
    bool visible;
+   bool isNew;
   final Widget? child;
 
   ReorderableItem(
@@ -16,6 +17,7 @@ class ReorderableItem {
       required this.oldIndex,
       required this.updatedIndex,
         this.visible= true,
+        this.isNew = false,
        this.child});
 
   ReorderableItem copywith(
@@ -25,6 +27,7 @@ class ReorderableItem {
       int? oldIndex,
       int? updatedIndex,
         bool? visible,
+        bool? isNew,
       Widget? child}) {
     return ReorderableItem(
       key: key??this.key,
@@ -33,6 +36,7 @@ class ReorderableItem {
         oldIndex: oldIndex ?? this.oldIndex,
         updatedIndex: updatedIndex ?? this.updatedIndex,
         visible: visible?? this.visible,
+        isNew: isNew??this.isNew,
         child: child ?? this.child);
   }
 
