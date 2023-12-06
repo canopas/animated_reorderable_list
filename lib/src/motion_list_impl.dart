@@ -66,7 +66,7 @@ class MotionListImplState<E extends Object>
       insertAnimationBuilder: insertItemBuilder,
       removeAnimationBuilder: removeItemBuilder,
       delegateBuilder: sliverGridDelegate,
-      isGriView: sliverGridDelegate != null ? true : false,
+      //isGriView: sliverGridDelegate != null ? true : false,
     );
   }
 }
