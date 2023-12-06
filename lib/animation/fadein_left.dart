@@ -8,7 +8,7 @@ class FadeInLeft extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return   SlideIn(
+    return   SlideInLeft(
       animation: animation,
       child: FadeTransition(
         opacity:animation,
