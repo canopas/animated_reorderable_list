@@ -195,20 +195,21 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
     //   });
     //   setState(() {});
     // });
-    final activeItem = _removeActiveItemAt(_incomingItems, incomingItem.index)!;
-    activeItem.animationController!.dispose();
+
   }
 
-  void startInsertAnimation(_ReorderableItem incomingItem) {
-    if (incomingItem.animationController != null) {
-      incomingItem.animationController!.forward();
-      incomingItem.animationController!.addStatusListener((status) {
-        if (status == AnimationStatus.completed) {
-          final activeItem =
-              _removeActiveItemAt(_incomingItems, incomingItem.index)!;
-          activeItem.animationController!.dispose();
-        }
-      });
+  void startInsertAnimation(_ReorderableItem? incomingItem) {
+    if(incomingItem != null){
+      if (incomingItem.animationController != null) {
+        incomingItem.animationController!.forward();
+        incomingItem.animationController!.addStatusListener((status) {
+          if (status == AnimationStatus.completed) {
+            final activeItem =
+            _removeActiveItemAt(_incomingItems, incomingItem.index)!;
+            activeItem.animationController!.dispose();
+          }
+        });
+      }
     }
   }
 
@@ -367,6 +368,7 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
           animationController: incomingItem?.animationController,
           onDragCompleteCallback: onDragComplete,
           onCreateCallback: _onCreated,
+          onEndAnimation: () => startInsertAnimation(incomingItem),
           child: child,
         );
       }
@@ -414,6 +416,7 @@ class _ReorderableItem extends StatefulWidget
   final AnimationController? animationController;
   final OnDragCompleteCallback? onDragCompleteCallback;
   final OnCreateCallback? onCreateCallback;
+  final VoidCallback? onEndAnimation;
 
   _ReorderableItem({
     Key? key,
@@ -423,20 +426,23 @@ class _ReorderableItem extends StatefulWidget
     required this.animationController,
     required this.onDragCompleteCallback,
     required this.onCreateCallback,
+    this.onEndAnimation,
   }) : super(key: key);
 
   _ReorderableItem.builder(this.index, this.animationController)
       : child = null,
         reorderableItem = null,
         onDragCompleteCallback = null,
-        onCreateCallback = null;
+        onCreateCallback = null,
+        onEndAnimation = null;
 
   _ReorderableItem.index(this.index)
       : child = null,
         reorderableItem = null,
         animationController = null,
         onDragCompleteCallback = null,
-        onCreateCallback = null;
+        onCreateCallback = null,
+        onEndAnimation = null;
 
   @override
   State<_ReorderableItem> createState() => _ReorderableItemState();
@@ -475,7 +481,11 @@ class _ReorderableItemState extends State<_ReorderableItem>
           if (widget.animationController != null) {
             widget.animationController!.forward().then((value) {
               if (widget.animationController!.status ==
-                  AnimationStatus.completed) {}
+                  AnimationStatus.completed) {
+                if(widget.onEndAnimation != null){
+                  widget.onEndAnimation!.call();
+                }
+              }
             });
           }
 
