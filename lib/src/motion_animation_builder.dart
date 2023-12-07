@@ -7,6 +7,8 @@ import 'package:motion_list/src/reorderable_entity.dart';
 typedef OnDragCompleteCallback = void Function(ReorderableItem reorderableItem);
 typedef OnCreateCallback = ReorderableItem? Function(
     ReorderableItem reorderableItem);
+typedef StartInsertAnimationCallback = void Function(
+    _ReorderableItem reorderableItem);
 
 enum Operation { insertion, deletion }
 
@@ -197,6 +199,19 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
     activeItem.animationController!.dispose();
   }
 
+  void startInsertAnimation(_ReorderableItem incomingItem) {
+    if (incomingItem.animationController != null) {
+      incomingItem.animationController!.forward();
+      incomingItem.animationController!.addStatusListener((status) {
+        if (status == AnimationStatus.completed) {
+          final activeItem =
+              _removeActiveItemAt(_incomingItems, incomingItem.index)!;
+          activeItem.animationController!.dispose();
+        }
+      });
+    }
+  }
+
   void addItem(int itemIndex) {
     final updatedChildrenMap = <int, ReorderableItem>{};
     if (childrenMap.containsKey(itemIndex)) {
@@ -261,13 +276,13 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
         }
         deleteItem(outgoingItem.index);
 
-        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-          childrenMap.forEach((key, value) {
-            childrenMap[key] =
-                childrenMap[key]!.copywith(updatedOffset: _itemOffsetAt(key));
-          });
-          setState(() {});
-        });
+        // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        //   childrenMap.forEach((key, value) {
+        //     childrenMap[key] =
+        //         childrenMap[key]!.copywith(updatedOffset: _itemOffsetAt(key));
+        //   });
+        //   setState(() {});
+        // });
 
         final _ReorderableItem? activeItem =
             _removeActiveItemAt(_outgoingItems, outgoingItem.index);
@@ -312,7 +327,6 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
         updatedOffset: updatedOffset,
       );
     }
-
   }
 
   ReorderableItem? _onCreated(ReorderableItem reorderableItem) {
@@ -345,7 +359,6 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
       } else {
         final _ReorderableItem? incomingItem =
             _activeItemAt(_incomingItems, index);
-        print("Create delegate: ${incomingItem?.animationController}");
         final Widget child = _insertItemBuilder(incomingItem, index);
         return _ReorderableItem(
           key: childrenMap[index]!.key,
@@ -380,19 +393,6 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
     );
   }
 
-  Widget itemBuilderDelegate(BuildContext context, int itemIndex) {
-    final _ReorderableItem? outgoingItem =
-        _activeItemAt(_outgoingItems, itemIndex);
-    if (outgoingItem != null) {
-      final Widget child = _removeItemBuilder(outgoingItem, itemIndex);
-      return child;
-    }
-    final _ReorderableItem? incomingItem =
-        _activeItemAt(_incomingItems, itemIndex);
-    final Widget child = _insertItemBuilder(incomingItem, itemIndex);
-    return child;
-  }
-
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -415,15 +415,15 @@ class _ReorderableItem extends StatefulWidget
   final OnDragCompleteCallback? onDragCompleteCallback;
   final OnCreateCallback? onCreateCallback;
 
-  _ReorderableItem(
-      {Key? key,
-      required this.index,
-      required this.reorderableItem,
-      required this.child,
-      required this.animationController,
-      required this.onDragCompleteCallback,
-      required this.onCreateCallback})
-      : super(key: key);
+  _ReorderableItem({
+    Key? key,
+    required this.index,
+    required this.reorderableItem,
+    required this.child,
+    required this.animationController,
+    required this.onDragCompleteCallback,
+    required this.onCreateCallback,
+  }) : super(key: key);
 
   _ReorderableItem.builder(this.index, this.animationController)
       : child = null,
@@ -461,8 +461,6 @@ class _ReorderableItemState extends State<_ReorderableItem>
   void initState() {
     _listState = MotionAnimationBuilder.of(context);
     _listState._registerItem(this);
-    print("${widget.animationController}");
-
     reorderableItem = widget.reorderableItem!;
     _handleCreated();
     _offsetAnimationController =
@@ -477,13 +475,12 @@ class _ReorderableItemState extends State<_ReorderableItem>
           if (widget.animationController != null) {
             widget.animationController!.forward().then((value) {
               if (widget.animationController!.status ==
-                  AnimationStatus.completed) {
-                widget.animationController!.dispose();
-              }
+                  AnimationStatus.completed) {}
             });
           }
 
-          widget.onDragCompleteCallback!(reorderableItem.copywith(updatedIndex: index));
+          widget.onDragCompleteCallback!(
+              reorderableItem.copywith(updatedIndex: index));
         }
       });
     if (reorderableItem.isNew) {
