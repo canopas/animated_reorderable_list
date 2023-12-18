@@ -111,6 +111,7 @@ abstract class MotionListBaseState<
         detectMoves: false, equalityChecker: widget.areItemsTheSame)
         .getUpdates();
     final tempList = List<E?>.from(oldList);
+    print("XXX didUpdateWidget oldList ${oldList.length} newList ${newList.length} diff ${diff.length}");
     for (final update in diff) {
       _onDiffUpdate(update, tempList);
     }
@@ -129,7 +130,7 @@ abstract class MotionListBaseState<
       listKey.currentState!.insertItem(position,
           insertDuration: insertDuration, resizeDuration: resizeDuration);
     }
-    tmpList.insertAll(position, List<E?>.filled(count, null));
+   // tmpList.insertAll(position, List<E?>.filled(count, null));
   }
 
   void _onRemoved(final int position, final int count, final List<E?> tmpList) {
@@ -137,7 +138,7 @@ abstract class MotionListBaseState<
       listKey.currentState!.removeItem(position + loopcount,
           removeDuration: removeDuration, resizeDuration: resizeDuration);
     }
-    tmpList.removeRange(position, position + count);
+   // tmpList.removeRange(position, position + count);
   }
 
   void _onDiffUpdate(DiffUpdate update, List<E?> tmpList) {

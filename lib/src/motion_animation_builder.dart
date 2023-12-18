@@ -1,4 +1,5 @@
 import 'dart:ffi';
+import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -104,6 +105,7 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
   _ReorderableItem? _removeActiveItemAt(
       List<_ReorderableItem> items, int itemIndex) {
     final int i = binarySearch(items, _ReorderableItem.index(itemIndex));
+
     return i == -1 ? null : items.removeAt(i);
   }
 
@@ -180,35 +182,42 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
       ..sort();
     addItem(incomingItem.index);
 
+    print("XXXX ${_incomingItems.length}");
     if (mounted) {
       setState(() {
         _itemsCount++;
       });
     }
-    // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-    //   childrenMap.forEach((key, value) {
-    //     childrenMap[key] = childrenMap[key]!.copywith(
-    //         updatedOffset: _itemOffsetAt(key),
-    //         visible: value.visible == false ? true : value.visible);
-    //     print("--------------------------- Updated offset in insertItem: ${_itemOffsetAt(key)}");
-    //
-    //   });
-    //   setState(() {});
-    // });
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      childrenMap.forEach((key, value) {
+        childrenMap[key] = childrenMap[key]!.copywith(
+            updatedOffset: _itemOffsetAt(key),
+            visible: value.visible == false ? true : value.visible);
+      //  print("--------------------------- Updated offset in insertItem: ${_itemOffsetAt(key)}");
+
+      });
+      setState(() {});
+    });
 
   }
 
   void startInsertAnimation(_ReorderableItem? incomingItem) {
+
     if(incomingItem != null){
       if (incomingItem.animationController != null) {
-        incomingItem.animationController!.forward();
+
         incomingItem.animationController!.addStatusListener((status) {
+          print("XXX remove... status $status");
           if (status == AnimationStatus.completed) {
             final activeItem =
             _removeActiveItemAt(_incomingItems, incomingItem.index)!;
             activeItem.animationController!.dispose();
+            print("XXX after inserted ${_incomingItems.length}");
           }
         });
+
+        incomingItem.animationController!.forward();
       }
     }
   }
@@ -268,6 +277,7 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
       ..add(outgoingItem)
       ..sort();
 
+    print("XXX _outgoingItems ${_outgoingItems.length}");
     controller.addStatusListener((status) {
       if (status == AnimationStatus.dismissed) {
         if (mounted) {
@@ -276,14 +286,6 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
           });
         }
         deleteItem(outgoingItem.index);
-
-        // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        //   childrenMap.forEach((key, value) {
-        //     childrenMap[key] =
-        //         childrenMap[key]!.copywith(updatedOffset: _itemOffsetAt(key));
-        //   });
-        //   setState(() {});
-        // });
 
         final _ReorderableItem? activeItem =
             _removeActiveItemAt(_outgoingItems, outgoingItem.index);
@@ -361,6 +363,8 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
         final _ReorderableItem? incomingItem =
             _activeItemAt(_incomingItems, index);
         final Widget child = _insertItemBuilder(incomingItem, index);
+
+      //  print("_createDelegate items ${_incomingItems.length} incoming ${incomingItem!=null} index $index");
         return _ReorderableItem(
           key: childrenMap[index]!.key,
           index: index,
@@ -478,22 +482,13 @@ class _ReorderableItemState extends State<_ReorderableItem>
       })
       ..addStatusListener((status) {
         if (status == AnimationStatus.completed) {
-          if (widget.animationController != null) {
-            widget.animationController!.forward().then((value) {
-              if (widget.animationController!.status ==
-                  AnimationStatus.completed) {
-                if(widget.onEndAnimation != null){
-                  widget.onEndAnimation!.call();
-                }
-              }
-            });
-          }
-
-          widget.onDragCompleteCallback!(
-              reorderableItem.copywith(updatedIndex: index));
+            widget.onEndAnimation?.call();
+          widget.onDragCompleteCallback?.call(
+              reorderableItem.copywith(updatedIndex: index,isNew: false));
         }
       });
     if (reorderableItem.isNew) {
+      print("is new index $index");
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
         _updateAnimationTranslation();
       });
@@ -504,7 +499,9 @@ class _ReorderableItemState extends State<_ReorderableItem>
   @override
   void didUpdateWidget(covariant _ReorderableItem oldWidget) {
     super.didUpdateWidget(oldWidget);
-  //  _offsetAnimationController.reset();
+    print("XXX old ${oldWidget.reorderableItem} new ${widget.reorderableItem}");
+    if(oldWidget.reorderableItem?.oldIndex != widget.reorderableItem!.oldIndex){
+   _offsetAnimationController.reset();}
     reorderableItem = widget.reorderableItem!;
     if (oldWidget.index != index) {
       _listState._unregisterItem(index, this);
