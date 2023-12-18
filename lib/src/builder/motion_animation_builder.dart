@@ -1,9 +1,6 @@
-import 'dart:ffi';
-import 'dart:math';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-import 'package:motion_list/src/reorderable_entity.dart';
+import 'package:motion_list/src/model/reorderable_entity.dart';
 
 typedef OnDragCompleteCallback = void Function(ReorderableItem reorderableItem);
 typedef OnCreateCallback = ReorderableItem? Function(
@@ -191,7 +188,7 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       childrenMap.forEach((key, value) {
-        childrenMap[key] = childrenMap[key]!.copywith(
+        childrenMap[key] = childrenMap[key]!.copyWith(
             updatedOffset: _itemOffsetAt(key),
             visible: value.visible == false ? true : value.visible);
       //  print("--------------------------- Updated offset in insertItem: ${_itemOffsetAt(key)}");
@@ -227,7 +224,7 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
     if (childrenMap.containsKey(itemIndex)) {
       for (final entry in childrenMap.entries) {
         if (entry.key < itemIndex) {
-          updatedChildrenMap[entry.key] = childrenMap[entry.key]!.copywith(
+          updatedChildrenMap[entry.key] = childrenMap[entry.key]!.copyWith(
             visible: false,
           );
         } else if (entry.key == itemIndex) {
@@ -238,12 +235,12 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
               oldIndex: entry.key,
               updatedIndex: entry.key,
               visible: false);
-          updatedChildrenMap[entry.key + 1] = childrenMap[entry.key]!.copywith(
+          updatedChildrenMap[entry.key + 1] = childrenMap[entry.key]!.copyWith(
               key: ValueKey(entry.key + 1),
               updatedIndex: entry.key + 1,
               visible: false);
         } else {
-          updatedChildrenMap[entry.key + 1] = childrenMap[entry.key]!.copywith(
+          updatedChildrenMap[entry.key + 1] = childrenMap[entry.key]!.copyWith(
               key: ValueKey(entry.key + 1),
               updatedIndex: entry.key + 1,
               visible: false);
@@ -310,7 +307,7 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
         } else if (entry.key == itemIndex) {
           continue;
         } else {
-          updatedChildrenMap[entry.key - 1] = childrenMap[entry.key]!.copywith(
+          updatedChildrenMap[entry.key - 1] = childrenMap[entry.key]!.copyWith(
             key: ValueKey(entry.key - 1),
             updatedIndex: entry.key - 1,
           );
@@ -324,7 +321,7 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
   void onDragComplete(ReorderableItem reorderableItem) {
     final updatedOffset = _itemOffsetAt(reorderableItem.updatedIndex);
     if (updatedOffset != null) {
-      childrenMap[reorderableItem.updatedIndex] = reorderableItem.copywith(
+      childrenMap[reorderableItem.updatedIndex] = reorderableItem.copyWith(
         oldOffset: updatedOffset,
         oldIndex: reorderableItem.updatedIndex,
         updatedOffset: updatedOffset,
@@ -335,7 +332,7 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
   ReorderableItem? _onCreated(ReorderableItem reorderableItem) {
     final offset = _itemOffsetAt(reorderableItem.updatedIndex);
     if (offset != null) {
-      final updatedReorderableItem = reorderableItem.copywith(
+      final updatedReorderableItem = reorderableItem.copyWith(
           oldOffset: _itemOffsetAt(reorderableItem.oldIndex),
           updatedOffset: _itemOffsetAt(reorderableItem.updatedIndex));
       childrenMap[reorderableItem.updatedIndex] = updatedReorderableItem;
@@ -353,7 +350,7 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
         return _ReorderableItem(
           key: childrenMap[index]!.key,
           index: index,
-          reorderableItem: childrenMap[index]!.copywith(isNew: true),
+          reorderableItem: childrenMap[index]!.copyWith(isNew: true),
           animationController: outgoingItem.animationController,
           onDragCompleteCallback: onDragComplete,
           onCreateCallback: _onCreated,
@@ -368,7 +365,7 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
         return _ReorderableItem(
           key: childrenMap[index]!.key,
           index: index,
-          reorderableItem: childrenMap[index]!.copywith(isNew: true),
+          reorderableItem: childrenMap[index]!.copyWith(isNew: true),
           animationController: incomingItem?.animationController,
           onDragCompleteCallback: onDragComplete,
           onCreateCallback: _onCreated,
@@ -482,9 +479,9 @@ class _ReorderableItemState extends State<_ReorderableItem>
       })
       ..addStatusListener((status) {
         if (status == AnimationStatus.completed) {
-            widget.onEndAnimation?.call();
+          widget.onEndAnimation?.call();
           widget.onDragCompleteCallback?.call(
-              reorderableItem.copywith(updatedIndex: index,isNew: false));
+              reorderableItem.copyWith(updatedIndex: index, isNew: false));
         }
       });
     if (reorderableItem.isNew) {

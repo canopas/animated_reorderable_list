@@ -6,8 +6,8 @@ class ReorderableItem {
   final Offset updatedOffset;
   final int oldIndex;
   final int updatedIndex;
-   bool visible;
-   bool isNew;
+  bool visible;
+  bool isNew;
   final Widget? child;
 
   ReorderableItem(
@@ -16,32 +16,32 @@ class ReorderableItem {
       required this.updatedOffset,
       required this.oldIndex,
       required this.updatedIndex,
-        this.visible= true,
-        this.isNew = false,
-       this.child});
+      this.visible = true,
+      this.isNew = false,
+      this.child});
 
-  ReorderableItem copywith(
+  ReorderableItem copyWith(
       {Key? key,
-        Offset? oldOffset,
+      Offset? oldOffset,
       Offset? updatedOffset,
       int? oldIndex,
       int? updatedIndex,
-        bool? visible,
-        bool? isNew,
+      bool? visible,
+      bool? isNew,
       Widget? child}) {
     return ReorderableItem(
-      key: key??this.key,
+        key: key ?? this.key,
         oldOffset: oldOffset ?? this.oldOffset,
         updatedOffset: updatedOffset ?? this.updatedOffset,
         oldIndex: oldIndex ?? this.oldIndex,
         updatedIndex: updatedIndex ?? this.updatedIndex,
-        visible: visible?? this.visible,
-        isNew: isNew??this.isNew,
+        visible: visible ?? this.visible,
+        isNew: isNew ?? this.isNew,
         child: child ?? this.child);
   }
 
   @override
- String toString(){
+  String toString() {
     return "Key: $key, oldOffset: $oldOffset, updatedOffset: $updatedOffset, oldIndex: $oldIndex, updatedIndex: $updatedIndex ";
   }
 }
