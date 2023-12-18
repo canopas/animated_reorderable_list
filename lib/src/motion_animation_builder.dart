@@ -504,7 +504,7 @@ class _ReorderableItemState extends State<_ReorderableItem>
   @override
   void didUpdateWidget(covariant _ReorderableItem oldWidget) {
     super.didUpdateWidget(oldWidget);
-    _offsetAnimationController.reset();
+  //  _offsetAnimationController.reset();
     reorderableItem = widget.reorderableItem!;
     if (oldWidget.index != index) {
       _listState._unregisterItem(index, this);
