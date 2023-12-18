@@ -3,6 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:motion_list/motion_list.dart';
 
+import 'motion_animation_builder.dart';
+
 typedef ItemBuilder<W extends Widget, E> = Widget Function(
     BuildContext context, int index);
 

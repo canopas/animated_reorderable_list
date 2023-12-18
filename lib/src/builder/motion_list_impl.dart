@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:motion_list/motion_list.dart';
 
+import 'motion_animation_builder.dart';
+
 class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
   const MotionListImpl({
     Key? key,
@@ -56,7 +58,6 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
 
 class MotionListImplState<E extends Object>
     extends MotionListBaseState<Widget, MotionListImpl<E>, E> {
-
 
   @override
   Widget build(BuildContext context) {
