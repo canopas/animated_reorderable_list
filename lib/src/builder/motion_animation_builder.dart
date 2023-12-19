@@ -143,7 +143,6 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
 
   void registerItem(ReorderableWidgetState item) {
     _items[item.index] = item;
-    item.rebuild();
   }
 
   void unregisterItem(int index, ReorderableWidgetState item) {
@@ -183,36 +182,40 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
       ..sort();
     addItem(incomingItem.index);
 
-    print("XXXX ${_incomingItems.length}");
+    //  print("XXXX ${_incomingItems.length}");
     if (mounted) {
       setState(() {
         _itemsCount++;
       });
     }
 
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      childrenMap.forEach((key, value) {
-        childrenMap[key] = childrenMap[key]!.copyWith(
-            updatedOffset: _itemOffsetAt(key),
-            visible: value.visible == false ? true : value.visible);
-      //  print("--------------------------- Updated offset in insertItem: ${_itemOffsetAt(key)}");
-
-      });
-      setState(() {});
+    Future.delayed(const Duration(seconds: 2), () {
+      print("startInsertAnimation");
+      startInsertAnimation(incomingItem);
     });
 
+    // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    //   childrenMap.forEach((key, value) {
+    //     childrenMap[key] = childrenMap[key]!.copyWith(
+    //         updatedOffset: _itemOffsetAt(key),
+    //         visible: value.visible == false ? true : value.visible);
+    //     //  print("--------------------------- Updated offset in insertItem: ${_itemOffsetAt(key)}");
+    //   });
+    //   setState(() {});
+    // });
   }
 
   void startInsertAnimation(ReorderableWidget? incomingItem) {
     if (incomingItem != null) {
       if (incomingItem.animationController != null) {
         incomingItem.animationController!.addStatusListener((status) {
-          print("XXX remove... status $status");
+          print(
+              "XXX startInsertAnimation... incomingItem ${incomingItem?.index} status $status");
+
           if (status == AnimationStatus.completed) {
             final activeItem =
                 _removeActiveItemAt(_incomingItems, incomingItem.index)!;
             activeItem.animationController!.dispose();
-            print("XXX after inserted ${_incomingItems.length}");
           }
         });
 
@@ -276,7 +279,7 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
       ..add(outgoingItem)
       ..sort();
 
-    print("XXX _outgoingItems ${_outgoingItems.length}");
+    //print("XXX _outgoingItems ${_outgoingItems.length}");
     controller.addStatusListener((status) {
       if (status == AnimationStatus.dismissed) {
         if (mounted) {
@@ -323,16 +326,14 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
   void onDragComplete(ReorderableItem reorderableItem) {
     final updatedOffset = _itemOffsetAt(reorderableItem.updatedIndex);
     if (updatedOffset != null) {
-      childrenMap[reorderableItem.updatedIndex] = reorderableItem.copyWith(
-        oldOffset: updatedOffset,
-        oldIndex: reorderableItem.updatedIndex,
-        updatedOffset: updatedOffset,
-      );
+      childrenMap[reorderableItem.updatedIndex] = reorderableItem;
     }
   }
 
   ReorderableItem? _onCreated(ReorderableItem reorderableItem) {
     final offset = _itemOffsetAt(reorderableItem.updatedIndex);
+    final oldOffset = _itemOffsetAt(reorderableItem.oldIndex);
+    print("_onCreated offset ${offset} oldOffset $oldOffset");
     if (offset != null) {
       final updatedReorderableItem = reorderableItem.copyWith(
           oldOffset: _itemOffsetAt(reorderableItem.oldIndex),
@@ -347,34 +348,25 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
     return SliverChildBuilderDelegate((context, index) {
       final ReorderableWidget? outgoingItem =
           _activeItemAt(_outgoingItems, index);
-      if (outgoingItem != null) {
-        final Widget child = _removeItemBuilder(outgoingItem, index);
-        return ReorderableWidget(
-          key: childrenMap[index]!.key,
-          index: index,
-          reorderableItem: childrenMap[index]!.copyWith(isNew: true),
-          animationController: outgoingItem.animationController,
-          onDragCompleteCallback: onDragComplete,
-          onCreateCallback: _onCreated,
-          child: child,
-        );
-      } else {
-        final ReorderableWidget? incomingItem =
-            _activeItemAt(_incomingItems, index);
-        final Widget child = _insertItemBuilder(incomingItem, index);
 
-      //  print("_createDelegate items ${_incomingItems.length} incoming ${incomingItem!=null} index $index");
-        return ReorderableWidget(
-          key: childrenMap[index]!.key,
-          index: index,
-          reorderableItem: childrenMap[index]!.copyWith(isNew: true),
-          animationController: incomingItem?.animationController,
-          onDragCompleteCallback: onDragComplete,
-          onCreateCallback: _onCreated,
-          onEndAnimation: () => startInsertAnimation(incomingItem),
-          child: child,
-        );
-      }
+      final ReorderableWidget? incomingItem =
+          _activeItemAt(_incomingItems, index);
+
+      final Widget child = outgoingItem != null
+          ? _removeItemBuilder(outgoingItem, index)
+          : _insertItemBuilder(incomingItem, index);
+
+      return ReorderableWidget(
+        key: childrenMap[index]!.key,
+        index: index,
+        reorderableItem: childrenMap[index],
+        animationController: incomingItem?.animationController,
+        onDragCompleteCallback: onDragComplete,
+        onCreateCallback: _onCreated,
+        /*   onEndAnimation: () =>
+            incomingItem != null ? startInsertAnimation(incomingItem) : null,*/
+        child: child,
+      );
     }, childCount: _itemsCount);
   }
 

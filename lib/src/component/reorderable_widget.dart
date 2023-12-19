@@ -60,12 +60,14 @@ class ReorderableWidgetState extends State<ReorderableWidget>
 
   @override
   void initState() {
+    print("initState $index old ${widget.reorderableItem?.updatedOffset}");
     _listState = MotionAnimationBuilder.of(context);
     _listState.registerItem(this);
     reorderableItem = widget.reorderableItem!;
     _handleCreated();
     _offsetAnimationController =
         AnimationController(vsync: this, duration: const Duration(seconds: 2));
+
     _animationOffset = Tween<Offset>(begin: Offset.zero, end: Offset.zero)
         .animate(_offsetAnimationController)
       ..addListener(() {
@@ -73,34 +75,47 @@ class ReorderableWidgetState extends State<ReorderableWidget>
       })
       ..addStatusListener((status) {
         if (status == AnimationStatus.completed) {
+          print("XXX -- completed $index");
           widget.onEndAnimation?.call();
-          widget.onDragCompleteCallback?.call(
-              reorderableItem.copyWith(updatedIndex: index, isNew: false));
+          final updatedOffset = itemOffset();
+          reorderableItem = reorderableItem.copyWith(
+              oldOffset: updatedOffset,
+              updatedOffset: updatedOffset,
+              oldIndex: index);
+          widget.onDragCompleteCallback?.call(reorderableItem);
         }
       });
-    if (reorderableItem.isNew) {
-      print("is new index $index");
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        _updateAnimationTranslation();
-      });
-    }
+
+    // if (reorderableItem.isNew) {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      if (reorderableItem.oldIndex == reorderableItem.updatedIndex) {
+        _offsetAnimationController.forward();
+      }
+    });
+    // }
     super.initState();
   }
 
   @override
   void didUpdateWidget(covariant ReorderableWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
-    print("XXX old ${oldWidget.reorderableItem} new ${widget.reorderableItem}");
-    if (oldWidget.reorderableItem?.oldIndex !=
-        widget.reorderableItem!.oldIndex) {
-      _offsetAnimationController.reset();
-    }
+    //   print("XXX old ${oldWidget.reorderableItem} new ${widget.reorderableItem}");
+    // if (oldWidget.reorderableItem?.oldIndex !=
+    //     widget.reorderableItem!.oldIndex) {
+    //  print("didUpdateWidget reset $index");
+
+    // }
+    print(
+        "need update ${oldWidget.reorderableItem?.updatedIndex != reorderableItem.updatedIndex}");
+
     reorderableItem = widget.reorderableItem!;
+    _updateAnimationTranslation();
+
     if (oldWidget.index != index) {
       _listState.unregisterItem(index, this);
       _listState.registerItem(this);
+      rebuild();
     }
-    _updateAnimationTranslation();
   }
 
   void _handleCreated() {
@@ -115,20 +130,16 @@ class ReorderableWidgetState extends State<ReorderableWidget>
   }
 
   void _updateAnimationTranslation() {
-    if (reorderableItem.oldIndex == reorderableItem.updatedIndex) {
-      _animationOffset = Tween<Offset>(begin: Offset.zero, end: Offset.zero)
-          .animate(_offsetAnimationController);
-      _offsetAnimationController.forward();
-    } else {
-      final originalOffset = reorderableItem.oldOffset;
-      final updatedOffset = itemOffset();
+    final originalOffset = reorderableItem.oldOffset;
+    final updatedOffset = itemOffset();
+    Offset offsetDiff = originalOffset - updatedOffset;
 
-      Offset offsetDiff = originalOffset - updatedOffset;
+    if (offsetDiff.dx != 0 || offsetDiff.dy != 0) {
+      print("_updateAnimationTranslation $index ");
+      _offsetAnimationController.reset();
       _animationOffset = Tween<Offset>(begin: offsetDiff, end: Offset.zero)
           .animate(_offsetAnimationController);
-      if (offsetDiff.dx != 0 || offsetDiff.dy != 0) {
-        _offsetAnimationController.forward();
-      }
+      _offsetAnimationController.forward();
     }
   }
 

@@ -113,7 +113,6 @@ abstract class MotionListBaseState<
         detectMoves: false, equalityChecker: widget.areItemsTheSame)
         .getUpdates();
     final tempList = List<E?>.from(oldList);
-    print("XXX didUpdateWidget oldList ${oldList.length} newList ${newList.length} diff ${diff.length}");
     for (final update in diff) {
       _onDiffUpdate(update, tempList);
     }
