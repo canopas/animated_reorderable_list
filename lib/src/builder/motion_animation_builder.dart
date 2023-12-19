@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:motion_list/src/model/reorderable_entity.dart';
 
 import '../component/reorderable_widget.dart';
@@ -104,14 +103,13 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
 
   ReorderableWidget? _removeActiveItemAt(
       List<ReorderableWidget> items, int itemIndex) {
-    final int i = binarySearch(items, ReorderableWidget.index(itemIndex));
-
+    final i = items.indexWhere((element) => element.index == itemIndex);
     return i == -1 ? null : items.removeAt(i);
   }
 
   ReorderableWidget? _activeItemAt(
       List<ReorderableWidget> items, int itemIndex) {
-    final int i = binarySearch(items, ReorderableWidget.index(itemIndex));
+    final i = items.indexWhere((element) => element.index == itemIndex);
     return i == -1 ? null : items[i];
   }
 
@@ -159,8 +157,7 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
   }
 
   Future<void> insertItem(int index,
-      {Duration insertDuration = _kDuration,
-      Duration resizeDuration = _kResizeDuration}) async {
+      {Duration insertDuration = _kDuration}) async {
     assert(index >= 0);
     final int itemIndex = _indexToItemIndex(index);
 
@@ -190,28 +187,10 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
     }
 
     Future.delayed(const Duration(seconds: 2), () {
-      print("startInsertAnimation");
-      startInsertAnimation(incomingItem);
+      final activeItem =
+          _removeActiveItemAt(_incomingItems, incomingItem.index);
+      activeItem?.animateEntry();
     });
-  }
-
-  void startInsertAnimation(ReorderableWidget? incomingItem) {
-    if (incomingItem != null) {
-      if (incomingItem.animationController != null) {
-        incomingItem.animationController!.addStatusListener((status) {
-          print(
-              "XXX startInsertAnimation... incomingItem ${incomingItem?.index} status $status");
-
-          if (status == AnimationStatus.completed) {
-            final activeItem =
-                _removeActiveItemAt(_incomingItems, incomingItem.index)!;
-            activeItem.animationController!.dispose();
-          }
-        });
-
-        incomingItem.animationController!.forward();
-      }
-    }
   }
 
   void addItem(int itemIndex) {
@@ -224,22 +203,22 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
           );
         } else if (entry.key == itemIndex) {
           updatedChildrenMap[entry.key] = ReorderableItem(
-              key: ValueKey(entry.key),
-              oldOffset: Offset.zero,
-              updatedOffset: Offset.zero,
-              oldIndex: entry.key,
-              updatedIndex: entry.key,
-              visible: false);
+            key: ValueKey(entry.key),
+            oldOffset: Offset.zero,
+            updatedOffset: Offset.zero,
+            oldIndex: entry.key,
+            updatedIndex: entry.key,
+          );
           updatedChildrenMap[entry.key + 1] = childrenMap[entry.key]!.copyWith(
-              key: ValueKey(entry.key + 1),
-              oldOffset: _itemOffsetAt(entry.key),
-              updatedIndex: entry.key + 1,
-              visible: false);
+            key: ValueKey(entry.key + 1),
+            oldOffset: _itemOffsetAt(entry.key),
+            updatedIndex: entry.key + 1,
+          );
         } else {
           updatedChildrenMap[entry.key + 1] = childrenMap[entry.key]!.copyWith(
-              key: ValueKey(entry.key + 1),
-              updatedIndex: entry.key + 1,
-              visible: false);
+            key: ValueKey(entry.key + 1),
+            updatedIndex: entry.key + 1,
+          );
         }
       }
     }
@@ -247,9 +226,7 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
     childrenMap.addAll(updatedChildrenMap);
   }
 
-  void removeItem(int index,
-      {Duration removeDuration = _kDuration,
-      Duration resizeDuration = _kResizeDuration}) {
+  void removeItem(int index, {Duration removeDuration = _kDuration}) {
     assert(index >= 0);
     final int itemIndex = _indexToItemIndex(index);
     if (itemIndex < 0 || itemIndex >= _itemsCount) {
@@ -270,7 +247,6 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
       ..add(outgoingItem)
       ..sort();
 
-    //print("XXX _outgoingItems ${_outgoingItems.length}");
     controller.addStatusListener((status) {
       if (status == AnimationStatus.dismissed) {
         if (mounted) {
@@ -352,8 +328,6 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
         animationController: incomingItem?.animationController,
         onDragCompleteCallback: onDragComplete,
         onCreateCallback: _onCreated,
-        /*   onEndAnimation: () =>
-            incomingItem != null ? startInsertAnimation(incomingItem) : null,*/
         child: child,
       );
     }, childCount: _itemsCount);

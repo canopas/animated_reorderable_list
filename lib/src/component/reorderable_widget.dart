@@ -11,7 +11,6 @@ class ReorderableWidget extends StatefulWidget
   final AnimationController? animationController;
   final OnDragCompleteCallback? onDragCompleteCallback;
   final OnCreateCallback? onCreateCallback;
-  final VoidCallback? onEndAnimation;
 
   ReorderableWidget({
     Key? key,
@@ -21,23 +20,13 @@ class ReorderableWidget extends StatefulWidget
     required this.animationController,
     required this.onDragCompleteCallback,
     required this.onCreateCallback,
-    this.onEndAnimation,
   }) : super(key: key);
 
   ReorderableWidget.builder(this.index, this.animationController)
       : child = null,
         reorderableItem = null,
         onDragCompleteCallback = null,
-        onCreateCallback = null,
-        onEndAnimation = null;
-
-  ReorderableWidget.index(this.index)
-      : child = null,
-        reorderableItem = null,
-        animationController = null,
-        onDragCompleteCallback = null,
-        onCreateCallback = null,
-        onEndAnimation = null;
+        onCreateCallback = null;
 
   @override
   State<ReorderableWidget> createState() => ReorderableWidgetState();
@@ -45,6 +34,15 @@ class ReorderableWidget extends StatefulWidget
   @override
   int compareTo(ReorderableWidget other) {
     return index - other.index;
+  }
+
+  void animateEntry() {
+    animationController?.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        animationController?.dispose();
+      }
+    });
+    animationController?.forward();
   }
 }
 
@@ -74,7 +72,6 @@ class ReorderableWidgetState extends State<ReorderableWidget>
       })
       ..addStatusListener((status) {
         if (status == AnimationStatus.completed) {
-          widget.onEndAnimation?.call();
           final updatedOffset = itemOffset();
           reorderableItem = reorderableItem.copyWith(
               oldOffset: updatedOffset,

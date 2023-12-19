@@ -110,64 +110,40 @@ abstract class MotionListBaseState<
     super.didUpdateWidget(oldWidget);
     final newList = widget.items;
     final diff = calculateListDiff(oldList, newList,
-        detectMoves: false, equalityChecker: widget.areItemsTheSame)
+            detectMoves: false, equalityChecker: widget.areItemsTheSame)
         .getUpdates();
-    final tempList = List<E?>.from(oldList);
     for (final update in diff) {
-      _onDiffUpdate(update, tempList);
+      _onDiffUpdate(update);
     }
     oldList = List.from(newList);
   }
 
-  void _onChanged(int position, Object? payLoad, final List<E?> tmpList) {
-    listKey.currentState!.removeItem(position, removeDuration: removeDuration);
-    _onInserted(position, 1, tmpList);
+  void _onChanged(int position, Object? payLoad) {
+    listKey.currentState!.removeItem(position);
+    _onInserted(position, 1);
   }
 
-
-  void _onInserted(
-      final int position, final int count, final List<E?> tmpList) {
-    for (var loopCount = 0; loopCount < count; loopCount++) {
-      listKey.currentState!.insertItem(position,
-          insertDuration: insertDuration, resizeDuration: resizeDuration);
+  void _onInserted(final int position, final int count) {
+    for (var i = 0; i < count; i++) {
+      listKey.currentState!
+          .insertItem(position, insertDuration: insertDuration);
     }
-   // tmpList.insertAll(position, List<E?>.filled(count, null));
   }
 
-  void _onRemoved(final int position, final int count, final List<E?> tmpList) {
-    for (var loopcount = 0; loopcount < count; loopcount++) {
-      listKey.currentState!.removeItem(position + loopcount,
-          removeDuration: removeDuration, resizeDuration: resizeDuration);
+  void _onRemoved(final int position, final int count) {
+    for (var i = 0; i < count; i++) {
+      listKey.currentState!
+          .removeItem(position + i, removeDuration: removeDuration);
     }
-   // tmpList.removeRange(position, position + count);
   }
 
-  void _onDiffUpdate(DiffUpdate update, List<E?> tmpList) {
+  void _onDiffUpdate(DiffUpdate update) {
     update.when(
-        insert: (pos, count) => _onInserted(pos, count, tmpList),
-        remove: (pos, count) => _onRemoved(pos, count, tmpList),
-        change: (pos, payload) => _onChanged(pos, payload, tmpList),
+        insert: (pos, count) => _onInserted(pos, count),
+        remove: (pos, count) => _onRemoved(pos, count),
+        change: (pos, payload) => _onChanged(pos, payload),
         move: (_, __) =>
-        throw UnimplementedError('Moves are currently not supported'));
-  }
-
-  void _calcDiff(List<E> oldList, List<E> newList) {
-    for (int i = 0; i < oldList.length; i++) {
-      if (!newList.contains(oldList[i])) {
-        listKey.currentState!.removeItem(i,
-            removeDuration: removeDuration, resizeDuration: resizeDuration);
-        oldList.removeAt(i);
-      }
-    }
-    for (int i = 0; i < newList.length; i++) {
-      if (!oldList.contains(newList[i])) {
-        listKey.currentState!.insertItem(i,
-            insertDuration: insertDuration, resizeDuration: resizeDuration);
-        oldList.insert(i, newList[i]);
-      }
-    }
-    setState(() {
-    });
+            throw UnimplementedError('Moves are currently not supported'));
   }
 
   @nonVirtual
