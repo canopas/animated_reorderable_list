@@ -121,7 +121,11 @@ class ReorderableWidgetState extends State<ReorderableWidget>
     Offset offsetDiff = originalOffset - updatedOffset;
 
     if (offsetDiff.dx != 0 || offsetDiff.dy != 0) {
-      // print("_updateAnimationTranslation $index ");
+      if (_offsetAnimationController.isAnimating) {
+        final currentAnimationOffset = _animationOffset.value;
+        final newOriginalOffset = currentAnimationOffset - offsetDiff;
+        offsetDiff = offsetDiff + newOriginalOffset;
+      }
       _offsetAnimationController.reset();
 
       _animationOffset = Tween<Offset>(begin: offsetDiff, end: Offset.zero)
