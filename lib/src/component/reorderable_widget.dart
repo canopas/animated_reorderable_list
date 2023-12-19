@@ -60,7 +60,6 @@ class ReorderableWidgetState extends State<ReorderableWidget>
 
   @override
   void initState() {
-    print("initState $index old ${widget.reorderableItem?.updatedOffset}");
     _listState = MotionAnimationBuilder.of(context);
     _listState.registerItem(this);
     reorderableItem = widget.reorderableItem!;
@@ -75,7 +74,6 @@ class ReorderableWidgetState extends State<ReorderableWidget>
       })
       ..addStatusListener((status) {
         if (status == AnimationStatus.completed) {
-          print("XXX -- completed $index");
           widget.onEndAnimation?.call();
           final updatedOffset = itemOffset();
           reorderableItem = reorderableItem.copyWith(
@@ -86,28 +84,16 @@ class ReorderableWidgetState extends State<ReorderableWidget>
         }
       });
 
-    // if (reorderableItem.isNew) {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      if (reorderableItem.oldIndex == reorderableItem.updatedIndex) {
-        _offsetAnimationController.forward();
-      }
+      _updateAnimationTranslation();
     });
-    // }
+
     super.initState();
   }
 
   @override
   void didUpdateWidget(covariant ReorderableWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
-    //   print("XXX old ${oldWidget.reorderableItem} new ${widget.reorderableItem}");
-    // if (oldWidget.reorderableItem?.oldIndex !=
-    //     widget.reorderableItem!.oldIndex) {
-    //  print("didUpdateWidget reset $index");
-
-    // }
-    print(
-        "need update ${oldWidget.reorderableItem?.updatedIndex != reorderableItem.updatedIndex}");
-
     reorderableItem = widget.reorderableItem!;
     _updateAnimationTranslation();
 
@@ -135,8 +121,9 @@ class ReorderableWidgetState extends State<ReorderableWidget>
     Offset offsetDiff = originalOffset - updatedOffset;
 
     if (offsetDiff.dx != 0 || offsetDiff.dy != 0) {
-      print("_updateAnimationTranslation $index ");
+      // print("_updateAnimationTranslation $index ");
       _offsetAnimationController.reset();
+
       _animationOffset = Tween<Offset>(begin: offsetDiff, end: Offset.zero)
           .animate(_offsetAnimationController);
       _offsetAnimationController.forward();

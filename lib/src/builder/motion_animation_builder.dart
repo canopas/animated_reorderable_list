@@ -242,6 +242,7 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
               visible: false);
           updatedChildrenMap[entry.key + 1] = childrenMap[entry.key]!.copyWith(
               key: ValueKey(entry.key + 1),
+              oldOffset: _itemOffsetAt(entry.key),
               updatedIndex: entry.key + 1,
               visible: false);
         } else {
@@ -332,8 +333,6 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
 
   ReorderableItem? _onCreated(ReorderableItem reorderableItem) {
     final offset = _itemOffsetAt(reorderableItem.updatedIndex);
-    final oldOffset = _itemOffsetAt(reorderableItem.oldIndex);
-    print("_onCreated offset ${offset} oldOffset $oldOffset");
     if (offset != null) {
       final updatedReorderableItem = reorderableItem.copyWith(
           oldOffset: _itemOffsetAt(reorderableItem.oldIndex),
