@@ -193,16 +193,6 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
       print("startInsertAnimation");
       startInsertAnimation(incomingItem);
     });
-
-    // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-    //   childrenMap.forEach((key, value) {
-    //     childrenMap[key] = childrenMap[key]!.copyWith(
-    //         updatedOffset: _itemOffsetAt(key),
-    //         visible: value.visible == false ? true : value.visible);
-    //     //  print("--------------------------- Updated offset in insertItem: ${_itemOffsetAt(key)}");
-    //   });
-    //   setState(() {});
-    // });
   }
 
   void startInsertAnimation(ReorderableWidget? incomingItem) {
