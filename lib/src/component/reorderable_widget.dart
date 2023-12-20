@@ -12,6 +12,7 @@ class ReorderableWidget extends StatefulWidget
   final OnDragCompleteCallback? onDragCompleteCallback;
   final OnCreateCallback? onCreateCallback;
   final VoidCallback? onEndAnimation;
+  final OffsetBuilder? offsetBuilder;
 
   ReorderableWidget({
     Key? key,
@@ -21,6 +22,7 @@ class ReorderableWidget extends StatefulWidget
     required this.animationController,
     required this.onDragCompleteCallback,
     required this.onCreateCallback,
+    this.offsetBuilder,
     this.onEndAnimation,
   }) : super(key: key);
 
@@ -29,6 +31,7 @@ class ReorderableWidget extends StatefulWidget
         reorderableItem = null,
         onDragCompleteCallback = null,
         onCreateCallback = null,
+  offsetBuilder=null,
         onEndAnimation = null;
 
   ReorderableWidget.index(this.index)
@@ -37,7 +40,9 @@ class ReorderableWidget extends StatefulWidget
         animationController = null,
         onDragCompleteCallback = null,
         onCreateCallback = null,
-        onEndAnimation = null;
+        offsetBuilder=null,
+
+      onEndAnimation = null;
 
   @override
   State<ReorderableWidget> createState() => ReorderableWidgetState();
@@ -70,6 +75,10 @@ class ReorderableWidgetState extends State<ReorderableWidget>
     _animationOffset = Tween<Offset>(begin: Offset.zero, end: Offset.zero)
         .animate(_offsetAnimationController)
       ..addListener(() {
+        if(widget.offsetBuilder != null){
+          widget.offsetBuilder!.call(context,index,_animationOffset.value);
+          //  print("$index ------- ${_animationOffset.value}");
+        }
         setState(() {});
       })
       ..addStatusListener((status) {
@@ -121,17 +130,17 @@ class ReorderableWidgetState extends State<ReorderableWidget>
     Offset offsetDiff = originalOffset - updatedOffset;
 
     if (offsetDiff.dx != 0 || offsetDiff.dy != 0) {
-      if (_offsetAnimationController.isAnimating) {
-        final currentAnimationOffset = _animationOffset.value;
-        final newOriginalOffset = currentAnimationOffset - offsetDiff;
-        offsetDiff = offsetDiff + newOriginalOffset;
-      }
+      // if (_offsetAnimationController.isAnimating) {
+      //   final currentAnimationOffset = _animationOffset.value;
+      //   final newOriginalOffset = currentAnimationOffset - offsetDiff;
+      //   offsetDiff = offsetDiff + newOriginalOffset;
+      // }
       _offsetAnimationController.reset();
-
       _animationOffset = Tween<Offset>(begin: offsetDiff, end: Offset.zero)
           .animate(_offsetAnimationController);
       _offsetAnimationController.forward();
     }
+
   }
 
   Offset itemOffset() {

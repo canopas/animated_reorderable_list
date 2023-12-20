@@ -23,6 +23,7 @@ typedef AnimatedRemovedItemBuilder = Widget Function(
 
 typedef AnimatedWidgetBuilder = Widget Function(
     BuildContext context, int index, Animation<double> animation);
+typedef OffsetBuilder =  Function(BuildContext context, int index, Offset offset);
 
 class MotionAnimationBuilder<E> extends StatefulWidget {
   final AnimatedWidgetBuilder insertAnimationBuilder;
@@ -190,7 +191,7 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
     }
 
     Future.delayed(const Duration(seconds: 2), () {
-      print("startInsertAnimation");
+      //print("startInsertAnimation");
       startInsertAnimation(incomingItem);
     });
   }
@@ -199,8 +200,8 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
     if (incomingItem != null) {
       if (incomingItem.animationController != null) {
         incomingItem.animationController!.addStatusListener((status) {
-          print(
-              "XXX startInsertAnimation... incomingItem ${incomingItem?.index} status $status");
+          // print(
+          //     "XXX startInsertAnimation... incomingItem ${incomingItem?.index} status $status");
 
           if (status == AnimationStatus.completed) {
             final activeItem =
@@ -314,6 +315,13 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
     childrenMap.addAll(updatedChildrenMap);
   }
 
+
+  void updateOffset(BuildContext context, int index, Offset updateOffset){
+    ReorderableItem reorderableItem= childrenMap[index]!;
+    childrenMap[index]= reorderableItem.copyWith(updatedOffset: updateOffset);
+  }
+
+
   void onDragComplete(ReorderableItem reorderableItem) {
     final updatedOffset = _itemOffsetAt(reorderableItem.updatedIndex);
     if (updatedOffset != null) {
@@ -324,8 +332,9 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
   ReorderableItem? _onCreated(ReorderableItem reorderableItem) {
     final offset = _itemOffsetAt(reorderableItem.updatedIndex);
     if (offset != null) {
+      print("${reorderableItem.updatedIndex} --------- ${childrenMap[reorderableItem.oldIndex]!.updatedOffset}");
       final updatedReorderableItem = reorderableItem.copyWith(
-          oldOffset: _itemOffsetAt(reorderableItem.oldIndex),
+          oldOffset: childrenMap[reorderableItem.oldIndex]!.updatedOffset,
           updatedOffset: _itemOffsetAt(reorderableItem.updatedIndex));
       childrenMap[reorderableItem.updatedIndex] = updatedReorderableItem;
       return updatedReorderableItem;
@@ -352,6 +361,7 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
         animationController: incomingItem?.animationController,
         onDragCompleteCallback: onDragComplete,
         onCreateCallback: _onCreated,
+        offsetBuilder: updateOffset,
         /*   onEndAnimation: () =>
             incomingItem != null ? startInsertAnimation(incomingItem) : null,*/
         child: child,
