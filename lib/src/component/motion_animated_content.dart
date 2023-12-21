@@ -4,9 +4,9 @@ import 'package:motion_list/src/model/motion_data.dart';
 import '../builder/motion_animation_builder.dart';
 import '../builder/motion_builder.dart';
 
-const Duration _kDragDuration = Duration(milliseconds: 300);
-const Duration _kEntryDuration = Duration(milliseconds: 300);
-const Duration _kExitDuration = Duration(milliseconds: 300);
+const Duration _kDragDuration = Duration(milliseconds: 1000);
+const Duration _kEntryDuration = Duration(milliseconds: 1000);
+const Duration _kExitDuration = Duration(milliseconds: 1000);
 
 class MotionAnimatedContent extends StatefulWidget {
   final int index;
@@ -54,15 +54,19 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
       duration: _kEntryDuration,
       reverseDuration: _kExitDuration,
       vsync: this,
-    );
+    )..addStatusListener((status) {
+        if (status == AnimationStatus.completed ||
+            status == AnimationStatus.dismissed) {
+          widget.updateMotionData?.call(widget.motionData);
+        }
+      });
 
     _positionController =
         AnimationController(vsync: this, duration: _kDragDuration)
           ..addStatusListener((status) {
-            // print("status $status for ${widget.index}");
             if (status == AnimationStatus.completed ||
                 status == AnimationStatus.dismissed) {
-              // widget.updateMotionData?.call(widget.motionData);
+              widget.updateMotionData?.call(widget.motionData);
             }
           });
 
@@ -73,11 +77,7 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
       });
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      widget.updateMotionData?.call(widget.motionData);
-      if (widget.motionData.enter) {
-        _visibilityController.forward();
-        print("forward visbility controller ${widget.index}");
-      }
+      _updateAnimationTranslation();
     });
 
     super.initState();
@@ -94,34 +94,65 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
     }
     final currentOffset = itemOffset();
 
-    print(
-        "OLD -- ${oldWidget.index} - ${oldMotionData.target} current $currentOffset  \n   NEW -- ${newMotionData.target}");
-    // if (!oldMotionData.enter && newMotionData.enter) {
-    //   _visibilityController.value = 0.0;
-    //   _visibilityController.forward(); // TODO  should start after drag complete
-    // } else if (!oldMotionData.exit && newMotionData.exit) {
-    //   _visibilityController.reverse();
-    // }
-
-    if (oldMotionData.target != newMotionData.target &&
-        newMotionData.target != currentOffset) {
-      // final offsetToMove = oldMotionData.offset < newMotionData.offset
-      //     ? newMotionData.nextItemOffset
-      //     : newMotionData.frontItemOffset;
-
-      // final currentOffset = newMotionData.offset;
-      Offset offsetDiff = newMotionData.target - currentOffset;
-      print("offsetDiff $offsetDiff");
-      if (offsetDiff.dx != 0 || offsetDiff.dy != 0) {
-        _positionController.reset();
-
-        _offsetAnimation = Tween<Offset>(begin: offsetDiff, end: Offset.zero)
-            .animate(_positionController);
-        _positionController.forward();
-      }
+    //  print("current $currentOffset");
+    print("OLD - ${oldMotionData.enter}   \n   NEW - ${newMotionData.enter}");
+    if (newMotionData.enter) {
+      _visibilityController.reset();
+      _visibilityController.value = 0.0;
+      print(" ------ object enter animation----- $index");
+      Future.delayed(_kDragDuration, () {
+        _visibilityController.forward();
+      });
+    } else if (!oldMotionData.exit && newMotionData.exit) {
+      Future.delayed(_kDragDuration, () {
+        _visibilityController.reset();
+        _visibilityController.value = 1.0;
+        _visibilityController.reverse();
+      });
     }
 
+    // if (oldMotionData.target != newMotionData.target &&
+    //     newMotionData.target != currentOffset) {
+    // final offsetToMove = oldMotionData.offset < newMotionData.offset
+    //     ? newMotionData.nextItemOffset
+    //     : newMotionData.frontItemOffset;
+
+    // final currentOffset = newMotionData.offset;
+
+    _updateAnimationTranslation();
     super.didUpdateWidget(oldWidget);
+  }
+
+  void _updateAnimationTranslation() {
+    final currentOffset = itemOffset();
+
+    Offset offsetDiff = widget.motionData.target - currentOffset;
+    print("offsetDiff $offsetDiff");
+    if (offsetDiff.dx != 0 || offsetDiff.dy != 0) {
+      _positionController.reset();
+
+      _offsetAnimation = Tween<Offset>(begin: offsetDiff, end: Offset.zero)
+          .animate(_positionController);
+      _positionController.forward();
+      //}
+    }
+
+    // final originalOffset = widget.reorderableItem!.oldOffset;
+    // final updatedOffset = itemOffset();
+    // Offset offsetDiff = originalOffset - updatedOffset;
+    //
+    // if (offsetDiff.dx != 0 || offsetDiff.dy != 0) {
+    //   // if (_offsetAnimationController.isAnimating) {
+    //   //   final currentAnimationOffset = _animationOffset.value;
+    //   //   final newOriginalOffset = currentAnimationOffset - offsetDiff;
+    //   //   offsetDiff = offsetDiff + newOriginalOffset;
+    //   // }
+    //   _offsetAnimationController.reset();
+    //
+    //   _animationOffset = Tween<Offset>(begin: offsetDiff, end: Offset.zero)
+    //       .animate(_offsetAnimationController);
+    //   _offsetAnimationController.forward();
+    // }
   }
 
   Offset itemOffset() {

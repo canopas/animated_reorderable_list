@@ -130,10 +130,9 @@ abstract class MotionListBaseState<
   }
 
   void _onRemoved(final int position, final int count) {
-    // for (var i = 0; i < count; i++) {
-    //   listKey.currentState!
-    //       .removeItem(position + i, removeDuration: removeDuration);
-    // }
+    for (var i = 0; i < count; i++) {
+      listKey.currentState!.removeItem(position + i);
+    }
   }
 
   void _onDiffUpdate(DiffUpdate update) {
