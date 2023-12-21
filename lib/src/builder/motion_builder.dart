@@ -77,7 +77,7 @@ class MotionBuilderState extends State<MotionBuilder>
       nextItemOffset: _itemOffsetAt(itemIndex + 1) ?? Offset.zero,
     );
     final updatedChildrenMap = <int, MotionData>{};
-    // print("old map ${childrenMap}");
+    //    print("old map ${childrenMap}");
     if (childrenMap.containsKey(itemIndex)) {
       for (final entry in childrenMap.entries) {
         if (entry.key == itemIndex) {
@@ -86,17 +86,17 @@ class MotionBuilderState extends State<MotionBuilder>
           updatedChildrenMap[itemIndex] = incomingItem;
           updatedChildrenMap[entry.key + 1] = entry.value.copyWith(
             index: entry.key + 1,
-            frontItemOffset: _itemOffsetAt(entry.key),
-            nextItemOffset: _itemOffsetAt(entry.key + 2),
-            offset: _itemOffsetAt(entry.key + 1) ?? Offset.zero,
+            frontItemOffset: _itemOffsetAt(entry.key) ?? Offset.zero,
+            nextItemOffset: _itemOffsetAt(entry.key + 2) ?? Offset.zero,
+            offset: _itemOffsetAt(entry.key) ?? Offset.zero,
           );
         } else if (entry.key > itemIndex) {
           //print("forward ${entry.key} to ${entry.key + 1}");
           updatedChildrenMap[entry.key + 1] = entry.value.copyWith(
             index: entry.key + 1,
-            offset: _itemOffsetAt(entry.key + 1) ?? Offset.zero,
-            frontItemOffset: _itemOffsetAt(entry.key),
-            nextItemOffset: _itemOffsetAt(entry.key + 2),
+            offset: _itemOffsetAt(entry.key) ?? Offset.zero,
+            frontItemOffset: _itemOffsetAt(entry.key) ?? Offset.zero,
+            nextItemOffset: _itemOffsetAt(entry.key + 2) ?? Offset.zero,
           );
         } else {
           //print("else ${entry.key}");
@@ -149,7 +149,6 @@ class MotionBuilderState extends State<MotionBuilder>
       removeAnimationBuilder: widget.removeAnimationBuilder,
       child: widget.itemBuilder(context, index),
       updateMotionData: (MotionData) {
-        // print("updateMotionData");
         childrenMap[index] = MotionData.copyWith(
           offset: _itemOffsetAt(index),
           frontItemOffset: _itemOffsetAt(index - 1),
@@ -157,6 +156,8 @@ class MotionBuilderState extends State<MotionBuilder>
           enter: false,
           exit: false,
         );
+
+        print("updateMotionData ${childrenMap[index]}");
       },
     );
   }

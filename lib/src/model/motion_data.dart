@@ -40,13 +40,13 @@ class MotionData {
           runtimeType == other.runtimeType &&
           index == other.index &&
           current == other.current &&
-          // frontItemOffset == other.frontItemOffset &&
-          // nextItemOffset == other.nextItemOffset &&
+          frontItemOffset == other.frontItemOffset &&
+          nextItemOffset == other.nextItemOffset &&
           exit == other.exit &&
           enter == other.enter;
 
   @override
   String toString() {
-    return "offset: $current, index: $index /*enter $enter exit $exit*/";
+    return "index: $index  offset: $current, frontItemOffset: $frontItemOffset, nextItemOffset: $nextItemOffset";
   }
 }

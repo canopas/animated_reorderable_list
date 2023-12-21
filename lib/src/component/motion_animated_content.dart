@@ -9,6 +9,7 @@ const Duration _kEntryDuration = Duration(milliseconds: 1000);
 const Duration _kExitDuration = Duration(milliseconds: 1000);
 
 class MotionAnimatedContent extends StatefulWidget {
+  final Key key;
   final int index;
   final MotionData motionData;
   final bool enter;
@@ -19,7 +20,7 @@ class MotionAnimatedContent extends StatefulWidget {
   final Function(MotionData)? updateMotionData;
 
   const MotionAnimatedContent(
-      {Key? key,
+      {required this.key,
       required this.index,
       required this.motionData,
       required this.enter,
@@ -75,9 +76,10 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
         setState(() {});
       });
 
-    // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-    //   _updateAnimationTranslation();
-    // });
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      widget.updateMotionData?.call(widget.motionData);
+      // _updateAnimationTranslation();
+    });
 
     _visibilityController.value = 0.0;
     // print(" ------ object enter animation----- $index");
@@ -125,33 +127,41 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
     // final currentOffset = newMotionData.offset;
 
     //  _updateAnimationTranslation();
+    // print("didUpdateWidget for  $index old $oldMotionData new $newMotionData");
 
-    if (oldWidget.motionData.current != widget.motionData.current) {
-      print("didUpdateWidget for  $index");
+    //  if (oldWidget.index != widget.index) {
+    //
+    //    final target = widget.motionData.current > oldWidget.motionData.current
+    //        ? widget.motionData.nextItemOffset
+    //        : widget.motionData.frontItemOffset;
+    //   // Offset offsetDiff =target -itemOffset();
+    //
+    //    Offset offsetDiff = target - widget.motionData.current;
+    // //   print("offsetDiff $offsetDiff");
+    //    if (offsetDiff.dx != 0 || offsetDiff.dy != 0) {
+    //      _positionController.reset();
+    //
+    //      _offsetAnimation = Tween<Offset>(begin: offsetDiff, end: Offset.zero)
+    //          .animate(_positionController);
+    //      _positionController.forward();
+    //      //}
+    //    }
+    //  }
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      //widget.updateMotionData?.call(widget.motionData);
+      // _updateAnimationTranslation();
+      _updateAnimationTranslation();
+    });
 
-      final target = widget.motionData.current > oldWidget.motionData.current
-          ? widget.motionData.nextItemOffset
-          : widget.motionData.frontItemOffset;
-
-      Offset offsetDiff = target - widget.motionData.current;
-      print("offsetDiff $offsetDiff");
-      if (offsetDiff.dx != 0 || offsetDiff.dy != 0) {
-        _positionController.reset();
-
-        _offsetAnimation = Tween<Offset>(begin: offsetDiff, end: Offset.zero)
-            .animate(_positionController);
-        _positionController.forward();
-        //}
-      }
-    }
     super.didUpdateWidget(oldWidget);
   }
 
   void _updateAnimationTranslation() {
     final currentOffset = itemOffset();
 
-    Offset offsetDiff = currentOffset - widget.motionData.current;
-    print("offsetDiff $offsetDiff");
+    ///Offset offsetDiff = currentOffset - widget.motionData.current;
+    Offset offsetDiff = widget.motionData.current - currentOffset;
+    print("offsetDiff $offsetDiff index ${widget.index}");
     if (offsetDiff.dx != 0 || offsetDiff.dy != 0) {
       _positionController.reset();
 
@@ -182,11 +192,13 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
   Offset itemOffset() {
     final box = context.findRenderObject() as RenderBox?;
     if (box == null) return Offset.zero;
+
     return box.localToGlobal(Offset.zero);
   }
 
   @override
   Widget build(BuildContext context) {
+    _listState.registerItem(this);
     //  print("index $index, visibility controller ${_visibilityController.value}");
     return Transform(
         transform: Matrix4.translationValues(
@@ -201,19 +213,15 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
 
     return DualTransitionBuilder(
       animation: _visibilityController,
-      forwardBuilder: (
-        BuildContext context,
-        Animation<double> animation,
-        Widget? child,
-      ) {
+      forwardBuilder: (BuildContext context,
+          Animation<double> animation,
+          Widget? child,) {
         return widget.insertAnimationBuilder(
             context, child ?? const SizedBox.shrink(), animation);
       },
-      reverseBuilder: (
-        BuildContext context,
-        Animation<double> animation,
-        Widget? child,
-      ) {
+      reverseBuilder: (BuildContext context,
+          Animation<double> animation,
+          Widget? child,) {
         return widget.removeAnimationBuilder(
             context, child ?? const SizedBox.shrink(), animation);
       },
@@ -230,5 +238,11 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
     _visibilityController.dispose();
     _positionController.dispose();
     super.dispose();
+  }
+
+  @override
+  void deactivate() {
+    _listState.unregisterItem(index, this);
+    super.deactivate();
   }
 }
