@@ -52,15 +52,15 @@ class ReorderableWidgetState extends State<ReorderableWidget>
 
   late AnimationController _offsetAnimationController;
   late Animation<Offset> _animationOffset;
-  late ReorderableItem reorderableItem;
+   ReorderableItem get reorderableItem => widget.reorderableItem!;
 
   int get index => widget.index;
 
   @override
   void initState() {
     _listState = MotionAnimationBuilder.of(context);
-    _listState.registerItem(this);
-    reorderableItem = widget.reorderableItem!;
+    // _listState.registerItem(this);
+    // reorderableItem = widget.reorderableItem!;
     _handleCreated();
     _offsetAnimationController =
         AnimationController(vsync: this, duration: const Duration(seconds: 2));
@@ -73,11 +73,11 @@ class ReorderableWidgetState extends State<ReorderableWidget>
       ..addStatusListener((status) {
         if (status == AnimationStatus.completed) {
           final updatedOffset = itemOffset();
-          reorderableItem = reorderableItem.copyWith(
+          final reorderableItem1 = reorderableItem.copyWith(
               oldOffset: updatedOffset,
               updatedOffset: updatedOffset,
               oldIndex: index);
-          widget.onDragCompleteCallback?.call(reorderableItem);
+          widget.onDragCompleteCallback?.call(reorderableItem1);
         }
       });
 
@@ -91,12 +91,12 @@ class ReorderableWidgetState extends State<ReorderableWidget>
   @override
   void didUpdateWidget(covariant ReorderableWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
-    reorderableItem = widget.reorderableItem!;
+    // reorderableItem = widget.reorderableItem!;
     _updateAnimationTranslation();
 
     if (oldWidget.index != index) {
-      _listState.unregisterItem(index, this);
-      _listState.registerItem(this);
+      //  _listState.unregisterItem(index, this);
+      //  _listState.registerItem(this);
       rebuild();
     }
   }
@@ -104,25 +104,25 @@ class ReorderableWidgetState extends State<ReorderableWidget>
   void _handleCreated() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       final updatedReorderableItem = widget.onCreateCallback!(reorderableItem);
-      if (updatedReorderableItem != null) {
-        setState(() {
-          reorderableItem = updatedReorderableItem;
-        });
-      }
+      //   if (updatedReorderableItem != null) {
+      //     setState(() {
+      //       reorderableItem = updatedReorderableItem;
+      //     });
+      //   }
     });
   }
 
   void _updateAnimationTranslation() {
-    final originalOffset = reorderableItem.oldOffset;
+    final originalOffset = widget.reorderableItem!.oldOffset;
     final updatedOffset = itemOffset();
     Offset offsetDiff = originalOffset - updatedOffset;
 
     if (offsetDiff.dx != 0 || offsetDiff.dy != 0) {
-      if (_offsetAnimationController.isAnimating) {
-        final currentAnimationOffset = _animationOffset.value;
-        final newOriginalOffset = currentAnimationOffset - offsetDiff;
-        offsetDiff = offsetDiff + newOriginalOffset;
-      }
+      // if (_offsetAnimationController.isAnimating) {
+      //   final currentAnimationOffset = _animationOffset.value;
+      //   final newOriginalOffset = currentAnimationOffset - offsetDiff;
+      //   offsetDiff = offsetDiff + newOriginalOffset;
+      // }
       _offsetAnimationController.reset();
 
       _animationOffset = Tween<Offset>(begin: offsetDiff, end: Offset.zero)
@@ -139,7 +139,7 @@ class ReorderableWidgetState extends State<ReorderableWidget>
 
   @override
   void dispose() {
-    _listState.unregisterItem(index, this);
+//    _listState.unregisterItem(index, this);
     _offsetAnimationController.dispose();
     super.dispose();
   }

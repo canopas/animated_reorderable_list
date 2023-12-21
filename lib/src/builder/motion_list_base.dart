@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:motion_list/motion_list.dart';
 
-import 'motion_animation_builder.dart';
+import 'motion_builder.dart';
 
 typedef ItemBuilder<W extends Widget, E> = Widget Function(
     BuildContext context, int index);
@@ -51,11 +51,11 @@ abstract class MotionListBaseState<
   late List<E> oldList;
 
   @protected
-  GlobalKey<MotionAnimationBuilderState> listKey = GlobalKey();
+  GlobalKey<MotionBuilderState> listKey = GlobalKey();
 
   @nonVirtual
   @protected
-  MotionAnimationBuilderState get list => listKey.currentState!;
+  MotionBuilderState get list => listKey.currentState!;
 
   @nonVirtual
   @protected
@@ -119,22 +119,21 @@ abstract class MotionListBaseState<
   }
 
   void _onChanged(int position, Object? payLoad) {
-    listKey.currentState!.removeItem(position);
+    // listKey.currentState!.removeItem(position);
     _onInserted(position, 1);
   }
 
   void _onInserted(final int position, final int count) {
     for (var i = 0; i < count; i++) {
-      listKey.currentState!
-          .insertItem(position, insertDuration: insertDuration);
+      listKey.currentState!.insertItem(position);
     }
   }
 
   void _onRemoved(final int position, final int count) {
-    for (var i = 0; i < count; i++) {
-      listKey.currentState!
-          .removeItem(position + i, removeDuration: removeDuration);
-    }
+    // for (var i = 0; i < count; i++) {
+    //   listKey.currentState!
+    //       .removeItem(position + i, removeDuration: removeDuration);
+    // }
   }
 
   void _onDiffUpdate(DiffUpdate update) {
@@ -149,20 +148,16 @@ abstract class MotionListBaseState<
   @nonVirtual
   @protected
   Widget insertItemBuilder(
-      BuildContext context,
-      int index,
-      Animation<double> animation) {
+      BuildContext context, Widget child, Animation<double> animation) {
     return AnimationProvider.buildAnimation(
-        insertAnimationType!, itemBuilder(context, index), animation);
+        insertAnimationType!, child, animation);
   }
 
   @nonVirtual
   @protected
   Widget removeItemBuilder(
-      BuildContext context,
-      int index,
-      Animation<double> animation) {
+      BuildContext context, Widget child, Animation<double> animation) {
     return AnimationProvider.buildAnimation(
-        removeAnimationType!, itemBuilder(context, index), animation);
+        removeAnimationType!, child, animation);
   }
 }

@@ -1,4 +1,6 @@
 import 'package:flutter/cupertino.dart';
+import 'package:motion_list/src/builder/motion_list_base.dart';
+import 'package:motion_list/src/component/motion_animated_content.dart';
 import 'package:motion_list/src/model/reorderable_entity.dart';
 
 import '../component/reorderable_widget.dart';
@@ -21,20 +23,22 @@ typedef AnimatedRemovedItemBuilder = Widget Function(
     BuildContext context, Animation<double> animation);
 
 typedef AnimatedWidgetBuilder = Widget Function(
-    BuildContext context, int index, Animation<double> animation);
+    BuildContext context, Widget child, Animation<double> animation);
 
 class MotionAnimationBuilder<E> extends StatefulWidget {
   final AnimatedWidgetBuilder insertAnimationBuilder;
   final AnimatedWidgetBuilder removeAnimationBuilder;
   final int initialCount;
   final SliverGridDelegate? delegateBuilder;
+  final ItemBuilder itemBuilder;
 
   const MotionAnimationBuilder(
       {Key? key,
       required this.insertAnimationBuilder,
       required this.removeAnimationBuilder,
       this.initialCount = 0,
-      this.delegateBuilder})
+      this.delegateBuilder,
+      required this.itemBuilder})
       : assert(initialCount >= 0),
         super(key: key);
 
@@ -70,9 +74,10 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
     with TickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   final List<ReorderableWidget> _incomingItems = <ReorderableWidget>[];
   final List<ReorderableWidget> _outgoingItems = <ReorderableWidget>[];
-  final Map<int, ReorderableWidgetState> _items =
-      <int, ReorderableWidgetState>{};
+  final Map<int, MotionAnimatedContentState> _items =
+      <int, MotionAnimatedContentState>{};
   Map<int, ReorderableItem> childrenMap = <int, ReorderableItem>{};
+  List<GlobalKey> globalKeys = [];
 
   int _itemsCount = 0;
   int changeIndex = 0;
@@ -89,7 +94,16 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
           updatedIndex: i,
           key: ValueKey(i));
     }
+    _updateGlobalKeys();
+
     setState(() {});
+  }
+
+  _updateGlobalKeys() {
+    globalKeys = List.generate(
+      _itemsCount,
+      (index) => GlobalKey(debugLabel: index.toString()),
+    );
   }
 
   @override
@@ -139,12 +153,12 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
     return index;
   }
 
-  void registerItem(ReorderableWidgetState item) {
+  void registerItem(MotionAnimatedContentState item) {
     _items[item.index] = item;
   }
 
-  void unregisterItem(int index, ReorderableWidgetState item) {
-    final ReorderableWidgetState? currentItem = _items[index];
+  void unregisterItem(int index, MotionAnimatedContentState item) {
+    final MotionAnimatedContentState? currentItem = _items[index];
     if (currentItem == item) {
       _items.remove(index);
     }
@@ -183,6 +197,7 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
     if (mounted) {
       setState(() {
         _itemsCount++;
+        _updateGlobalKeys();
       });
     }
 
@@ -205,19 +220,21 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
           updatedChildrenMap[entry.key] = ReorderableItem(
             key: ValueKey(entry.key),
             oldOffset: Offset.zero,
-            updatedOffset: Offset.zero,
+            updatedOffset: _itemOffsetAt(entry.key) ?? Offset.zero,
             oldIndex: entry.key,
             updatedIndex: entry.key,
           );
           updatedChildrenMap[entry.key + 1] = childrenMap[entry.key]!.copyWith(
             key: ValueKey(entry.key + 1),
             oldOffset: _itemOffsetAt(entry.key),
+            updatedOffset: _itemOffsetAt(entry.key + 1) ?? Offset.zero,
             updatedIndex: entry.key + 1,
           );
         } else {
           updatedChildrenMap[entry.key + 1] = childrenMap[entry.key]!.copyWith(
             key: ValueKey(entry.key + 1),
             updatedIndex: entry.key + 1,
+            updatedOffset: _itemOffsetAt(entry.key + 1) ?? Offset.zero,
           );
         }
       }
@@ -252,6 +269,7 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
         if (mounted) {
           setState(() {
             _itemsCount -= 1;
+            _updateGlobalKeys();
           });
         }
         deleteItem(outgoingItem.index);
@@ -335,20 +353,20 @@ class MotionAnimationBuilderState extends State<MotionAnimationBuilder>
 
   Widget _removeItemBuilder(ReorderableWidget outgoingItem, int itemIndex) {
     final Animation<double> animation =
-        outgoingItem.animationController?.view ?? kAlwaysCompleteAnimation;
+        outgoingItem.animationController ?? kAlwaysCompleteAnimation;
     return widget.removeAnimationBuilder(
       context,
-      itemIndex,
+      widget.itemBuilder(context, itemIndex),
       animation,
     );
   }
 
   Widget _insertItemBuilder(ReorderableWidget? incomingItem, int itemIndex) {
     final Animation<double> animation =
-        incomingItem?.animationController?.view ?? kAlwaysCompleteAnimation;
+        incomingItem?.animationController ?? kAlwaysCompleteAnimation;
     return widget.insertAnimationBuilder(
       context,
-      _itemIndexToIndex(itemIndex),
+      widget.itemBuilder(context, _itemIndexToIndex(itemIndex)),
       animation,
     );
   }

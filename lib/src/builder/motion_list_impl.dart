@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:motion_list/motion_list.dart';
 
-import 'motion_animation_builder.dart';
+import 'motion_builder.dart';
 
 class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
   const MotionListImpl({
@@ -61,11 +61,12 @@ class MotionListImplState<E extends Object>
 
   @override
   Widget build(BuildContext context) {
-    return MotionAnimationBuilder(
+    return MotionBuilder(
       key: listKey,
       initialCount: oldList.length,
       insertAnimationBuilder: insertItemBuilder,
       removeAnimationBuilder: removeItemBuilder,
+      itemBuilder: itemBuilder,
       delegateBuilder: sliverGridDelegate,
       //isGriView: sliverGridDelegate != null ? true : false,
     );
