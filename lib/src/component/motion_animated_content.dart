@@ -76,8 +76,14 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
         setState(() {});
       });
 
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      _updateAnimationTranslation();
+    // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    //   _updateAnimationTranslation();
+    // });
+
+    _visibilityController.value = 0.0;
+    print(" ------ object enter animation----- $index");
+    Future.delayed(_kDragDuration, () {
+      _visibilityController.forward();
     });
 
     super.initState();
@@ -92,18 +98,19 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
       _listState.unregisterItem(oldWidget.index, this);
       _listState.registerItem(this);
     }
-    final currentOffset = itemOffset();
+    //final currentOffset = itemOffset();
 
     //  print("current $currentOffset");
-    print("OLD - ${oldMotionData.enter}   \n   NEW - ${newMotionData.enter}");
-    if (newMotionData.enter) {
-      _visibilityController.reset();
-      _visibilityController.value = 0.0;
-      print(" ------ object enter animation----- $index");
-      Future.delayed(_kDragDuration, () {
-        _visibilityController.forward();
-      });
-    } else if (!oldMotionData.exit && newMotionData.exit) {
+    //  print("OLD - ${oldMotionData.enter}   \n   NEW - ${newMotionData.enter}");
+    // if (!oldMotionData.enter && newMotionData.enter) {
+    //   _visibilityController.reset();
+    //   _visibilityController.value = 0.0;
+    //   print(" ------ object enter animation----- $index");
+    //   Future.delayed(_kDragDuration, () {
+    //     _visibilityController.forward();
+    //   });
+    // } else
+    if (!oldMotionData.exit && newMotionData.exit) {
       Future.delayed(_kDragDuration, () {
         _visibilityController.reset();
         _visibilityController.value = 1.0;
@@ -119,7 +126,7 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
 
     // final currentOffset = newMotionData.offset;
 
-    _updateAnimationTranslation();
+    // _updateAnimationTranslation();
     super.didUpdateWidget(oldWidget);
   }
 

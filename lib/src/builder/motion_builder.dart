@@ -182,9 +182,15 @@ class MotionBuilderState extends State<MotionBuilder>
 
   Widget _itemBuilder(BuildContext context, int index) {
     final Widget child = widget.itemBuilder(context, index);
-
-    final Key itemGlobalKey =
-        _MotionBuilderItemGlobalKey(child.key ?? Key('$index'), this);
+    assert(() {
+      if (child.key == null) {
+        throw FlutterError(
+          'Every item of MotionList must have a unique key.',
+        );
+      }
+      return true;
+    }());
+    final Key itemGlobalKey = _MotionBuilderItemGlobalKey(child.key!, this);
     print("key $itemGlobalKey index $index");
     return MotionAnimatedContent(
       index: index,

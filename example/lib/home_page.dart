@@ -3,6 +3,12 @@ import 'package:example/utils/item_card.dart';
 import 'package:example/utils/item_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:motion_list/motion_list.dart';
+class User {
+  final String name;
+  final int index;
+
+  User({required this.name, required this.index});
+}
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -13,14 +19,15 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   AnimationType appliedStyle = AnimationType.fadeIn;
-  List<int> list = List.generate(3, (index) => index);
+  List<User> list =
+      List.generate(3, (index) => User(name: "User $index", index: index));
   int addedNumber = 3;
   bool isGrid = true;
 
   void insert() {
     addedNumber += 1;
     setState(() {
-      list.insert(1, addedNumber);
+      list.insert(1, User(name: "uniq $addedNumber", index: addedNumber));
     });
   }
 
@@ -142,7 +149,8 @@ class _HomePageState extends State<HomePage> {
                       items: list,
                       scrollDirection: Axis.vertical,
                       itemBuilder: (BuildContext context, int index) {
-                        return ItemCard(index: index);
+                        return ItemCard(
+                            key: Key('${list[index].name}'), index: index);
                       },
                       insertDuration: const Duration(milliseconds: 200),
                       insertAnimation: appliedStyle,
