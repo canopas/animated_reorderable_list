@@ -57,15 +57,14 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
     )..addStatusListener((status) {
         if (status == AnimationStatus.completed ||
             status == AnimationStatus.dismissed) {
-          widget.updateMotionData?.call(widget.motionData);
+          // widget.updateMotionData?.call(widget.motionData);
         }
       });
 
     _positionController =
         AnimationController(vsync: this, duration: _kDragDuration)
           ..addStatusListener((status) {
-            if (status == AnimationStatus.completed ||
-                status == AnimationStatus.dismissed) {
+            if (status == AnimationStatus.completed) {
               widget.updateMotionData?.call(widget.motionData);
             }
           });
@@ -81,7 +80,7 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
     // });
 
     _visibilityController.value = 0.0;
-    print(" ------ object enter animation----- $index");
+    // print(" ------ object enter animation----- $index");
     Future.delayed(_kDragDuration, () {
       _visibilityController.forward();
     });
@@ -100,7 +99,6 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
     }
     //final currentOffset = itemOffset();
 
-    //  print("current $currentOffset");
     //  print("OLD - ${oldMotionData.enter}   \n   NEW - ${newMotionData.enter}");
     // if (!oldMotionData.enter && newMotionData.enter) {
     //   _visibilityController.reset();
@@ -110,30 +108,49 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
     //     _visibilityController.forward();
     //   });
     // } else
-    if (!oldMotionData.exit && newMotionData.exit) {
-      Future.delayed(_kDragDuration, () {
-        _visibilityController.reset();
-        _visibilityController.value = 1.0;
-        _visibilityController.reverse();
-      });
-    }
+    // if (!oldMotionData.exit && newMotionData.exit) {
+    //   Future.delayed(_kDragDuration, () {
+    //     _visibilityController.reset();
+    //     _visibilityController.value = 1.0;
+    //     _visibilityController.reverse();
+    //   });
+    // }
 
     // if (oldMotionData.target != newMotionData.target &&
     //     newMotionData.target != currentOffset) {
-    // final offsetToMove = oldMotionData.offset < newMotionData.offset
+    // final offsetToMove = currentOffset.offset < newMotionData.offset
     //     ? newMotionData.nextItemOffset
     //     : newMotionData.frontItemOffset;
 
     // final currentOffset = newMotionData.offset;
 
-    // _updateAnimationTranslation();
+    //  _updateAnimationTranslation();
+
+    if (oldWidget.motionData.current != widget.motionData.current) {
+      print("didUpdateWidget for  $index");
+
+      final target = widget.motionData.current > oldWidget.motionData.current
+          ? widget.motionData.nextItemOffset
+          : widget.motionData.frontItemOffset;
+
+      Offset offsetDiff = target - widget.motionData.current;
+      print("offsetDiff $offsetDiff");
+      if (offsetDiff.dx != 0 || offsetDiff.dy != 0) {
+        _positionController.reset();
+
+        _offsetAnimation = Tween<Offset>(begin: offsetDiff, end: Offset.zero)
+            .animate(_positionController);
+        _positionController.forward();
+        //}
+      }
+    }
     super.didUpdateWidget(oldWidget);
   }
 
   void _updateAnimationTranslation() {
     final currentOffset = itemOffset();
 
-    Offset offsetDiff = widget.motionData.target - currentOffset;
+    Offset offsetDiff = currentOffset - widget.motionData.current;
     print("offsetDiff $offsetDiff");
     if (offsetDiff.dx != 0 || offsetDiff.dy != 0) {
       _positionController.reset();

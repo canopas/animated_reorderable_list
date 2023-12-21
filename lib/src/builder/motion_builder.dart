@@ -72,9 +72,9 @@ class MotionBuilderState extends State<MotionBuilder>
     final incomingItem = MotionData(
       index: itemIndex,
       enter: true,
-      // frontItemOffset: _itemOffsetAt(itemIndex - 1) ?? Offset.zero,
-      target: _itemOffsetAt(itemIndex) ?? Offset.zero,
-      //  nextItemOffset: _itemOffsetAt(itemIndex + 1) ?? Offset.zero,
+      frontItemOffset: _itemOffsetAt(itemIndex - 1) ?? Offset.zero,
+      current: _itemOffsetAt(itemIndex) ?? Offset.zero,
+      nextItemOffset: _itemOffsetAt(itemIndex + 1) ?? Offset.zero,
     );
     final updatedChildrenMap = <int, MotionData>{};
     // print("old map ${childrenMap}");
@@ -86,18 +86,17 @@ class MotionBuilderState extends State<MotionBuilder>
           updatedChildrenMap[itemIndex] = incomingItem;
           updatedChildrenMap[entry.key + 1] = entry.value.copyWith(
             index: entry.key + 1,
-            //  frontItemOffset: _itemOffsetAt(entry.key),
-            //  nextItemOffset: _itemOffsetAt(entry.key + 2),
-            offset: _itemOffsetAt(entry.key) ?? Offset.zero,
+            frontItemOffset: _itemOffsetAt(entry.key),
+            nextItemOffset: _itemOffsetAt(entry.key + 2),
+            offset: _itemOffsetAt(entry.key + 1) ?? Offset.zero,
           );
         } else if (entry.key > itemIndex) {
           //print("forward ${entry.key} to ${entry.key + 1}");
-
           updatedChildrenMap[entry.key + 1] = entry.value.copyWith(
             index: entry.key + 1,
-            offset: _itemOffsetAt(entry.key) ?? Offset.zero,
-            //  frontItemOffset: _itemOffsetAt(entry.key - 1),
-            //  nextItemOffset: _itemOffsetAt(entry.key + 1),
+            offset: _itemOffsetAt(entry.key + 1) ?? Offset.zero,
+            frontItemOffset: _itemOffsetAt(entry.key),
+            nextItemOffset: _itemOffsetAt(entry.key + 2),
           );
         } else {
           //print("else ${entry.key}");
@@ -109,59 +108,7 @@ class MotionBuilderState extends State<MotionBuilder>
     } else {
       childrenMap[itemIndex] = incomingItem;
     }
-    print("updated map ${childrenMap}");
-  }
-
-  Future<void> removeItem(int index) async {
-    // print(" ---- REMOVE --- ");
-    // assert(index >= 0);
-    // final int itemIndex = index;
-    //
-    // if (itemIndex < 0 || itemIndex > childrenMap.length) {
-    //   return;
-    // }
-    //
-    // final incomingItem = MotionData(
-    //   index: itemIndex,
-    //   enter: true,
-    //   // frontItemOffset: _itemOffsetAt(itemIndex - 1) ?? Offset.zero,
-    //   target: _itemOffsetAt(itemIndex) ?? Offset.zero,
-    //   //  nextItemOffset: _itemOffsetAt(itemIndex + 1) ?? Offset.zero,
-    // );
-    // final updatedChildrenMap = <int, MotionData>{};
-    // // print("old map ${childrenMap}");
-    // if (childrenMap.containsKey(itemIndex)) {
-    //   for (final entry in childrenMap.entries) {
-    //     if (entry.key == itemIndex) {
-    //       //  print("update and forward ${entry.key} to ${entry.key + 1}");
-    //
-    //       updatedChildrenMap[itemIndex] = incomingItem;
-    //       updatedChildrenMap[entry.key + 1] = entry.value.copyWith(
-    //         index: entry.key + 1,
-    //         //  frontItemOffset: _itemOffsetAt(entry.key),
-    //         //  nextItemOffset: _itemOffsetAt(entry.key + 2),
-    //         offset: _itemOffsetAt(entry.key) ?? Offset.zero,
-    //       );
-    //     } else if (entry.key > itemIndex) {
-    //       //print("forward ${entry.key} to ${entry.key + 1}");
-    //
-    //       updatedChildrenMap[entry.key + 1] = entry.value.copyWith(
-    //         index: entry.key + 1,
-    //         offset: _itemOffsetAt(entry.key) ?? Offset.zero,
-    //         //  frontItemOffset: _itemOffsetAt(entry.key - 1),
-    //         //  nextItemOffset: _itemOffsetAt(entry.key + 1),
-    //       );
-    //     } else {
-    //       //print("else ${entry.key}");
-    //       updatedChildrenMap[entry.key] = entry.value;
-    //     }
-    //   }
-    //   childrenMap.clear();
-    //   childrenMap.addAll(updatedChildrenMap);
-    // } else {
-    //   childrenMap[itemIndex] = incomingItem;
-    // }
-    //  print("updated map $childrenMap");
+    // print("updated map ${childrenMap}");
   }
 
   Offset? _itemOffsetAt(int index) {
@@ -191,7 +138,7 @@ class MotionBuilderState extends State<MotionBuilder>
       return true;
     }());
     final Key itemGlobalKey = _MotionBuilderItemGlobalKey(child.key!, this);
-    print("key $itemGlobalKey index $index");
+    //   print("key $itemGlobalKey index $index");
     return MotionAnimatedContent(
       index: index,
       key: itemGlobalKey,
@@ -202,11 +149,11 @@ class MotionBuilderState extends State<MotionBuilder>
       removeAnimationBuilder: widget.removeAnimationBuilder,
       child: widget.itemBuilder(context, index),
       updateMotionData: (MotionData) {
-        print("updateMotionData");
+        // print("updateMotionData");
         childrenMap[index] = MotionData.copyWith(
           offset: _itemOffsetAt(index),
-          //  frontItemOffset: _itemOffsetAt(index - 1),
-          //  nextItemOffset: _itemOffsetAt(index + 1),
+          frontItemOffset: _itemOffsetAt(index - 1),
+          nextItemOffset: _itemOffsetAt(index + 1),
           enter: false,
           exit: false,
         );

@@ -1,19 +1,19 @@
 import 'package:flutter/cupertino.dart';
 
 class MotionData {
-  final Offset target;
+  final Offset current;
 
-  // final Offset frontItemOffset;
-  // final Offset nextItemOffset;
+  final Offset frontItemOffset;
+  final Offset nextItemOffset;
   final int index;
   final bool enter;
   final bool exit;
 
   MotionData(
       {required this.index,
-      this.target = Offset.zero,
-      // this.frontItemOffset = Offset.zero,
-      // this.nextItemOffset = Offset.zero,
+      this.current = Offset.zero,
+      this.frontItemOffset = Offset.zero,
+      this.nextItemOffset = Offset.zero,
       this.enter = false,
       this.exit = false});
 
@@ -25,9 +25,9 @@ class MotionData {
       bool? enter,
       bool? exit}) {
     return MotionData(
-        target: offset ?? this.target,
-        // frontItemOffset: frontItemOffset ?? this.frontItemOffset,
-        // nextItemOffset: nextItemOffset ?? this.nextItemOffset,
+        current: offset ?? this.current,
+        frontItemOffset: frontItemOffset ?? this.frontItemOffset,
+        nextItemOffset: nextItemOffset ?? this.nextItemOffset,
         index: index ?? this.index,
         enter: enter ?? this.enter,
         exit: exit ?? this.exit);
@@ -39,7 +39,7 @@ class MotionData {
           other is MotionData &&
           runtimeType == other.runtimeType &&
           index == other.index &&
-          target == other.target &&
+          current == other.current &&
           // frontItemOffset == other.frontItemOffset &&
           // nextItemOffset == other.nextItemOffset &&
           exit == other.exit &&
@@ -47,6 +47,6 @@ class MotionData {
 
   @override
   String toString() {
-    return "offset: $target, index: $index enter $enter exit $exit";
+    return "offset: $current, index: $index /*enter $enter exit $exit*/";
   }
 }
