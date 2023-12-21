@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 
 class MotionData {
-  final Offset offset;
+  final Offset target;
   final Offset frontItemOffset;
   final Offset nextItemOffset;
   final int index;
@@ -10,23 +10,26 @@ class MotionData {
 
   MotionData(
       {required this.index,
-      this.offset = Offset.zero,
+      this.target = Offset.zero,
       this.frontItemOffset = Offset.zero,
       this.nextItemOffset = Offset.zero,
       this.enter = false,
       this.exit = false});
 
-  MotionData copyWith({
-    Offset? offset,
-    Offset? frontItemOffset,
-    Offset? nextItemOffset,
-    int? index,
-  }) {
+  MotionData copyWith(
+      {Offset? offset,
+      Offset? frontItemOffset,
+      Offset? nextItemOffset,
+      int? index,
+      bool? enter,
+      bool? exit}) {
     return MotionData(
-        offset: offset ?? this.offset,
+        target: offset ?? this.target,
         frontItemOffset: frontItemOffset ?? this.frontItemOffset,
         nextItemOffset: nextItemOffset ?? this.nextItemOffset,
-        index: index ?? this.index);
+        index: index ?? this.index,
+        enter: enter ?? this.enter,
+        exit: exit ?? this.exit);
   }
 
   @override
@@ -35,7 +38,7 @@ class MotionData {
       other is MotionData &&
           runtimeType == other.runtimeType &&
           index == other.index &&
-          offset == other.offset &&
+          target == other.target &&
           frontItemOffset == other.frontItemOffset &&
           nextItemOffset == other.nextItemOffset &&
           exit == other.exit &&
@@ -43,6 +46,6 @@ class MotionData {
 
   @override
   String toString() {
-    return "offset: $offset, frontItemOffset: $frontItemOffset, nextItemOffset: $nextItemOffset, index: $index ";
+    return "offset: $target, frontItemOffset: $frontItemOffset, nextItemOffset: $nextItemOffset, index: $index ";
   }
 }

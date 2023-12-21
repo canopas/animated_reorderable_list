@@ -29,8 +29,9 @@ class MotionBuilder<E> extends StatefulWidget {
 class MotionBuilderState extends State<MotionBuilder>
     with AutomaticKeepAliveClientMixin {
   // int _itemsCount = 0;
-  List<GlobalObjectKey> globalKeys = [];
   Map<int, MotionData> childrenMap = <int, MotionData>{};
+  final Map<int, MotionAnimatedContentState> _items =
+      <int, MotionAnimatedContentState>{};
 
   @override
   bool get wantKeepAlive => false;
@@ -41,17 +42,22 @@ class MotionBuilderState extends State<MotionBuilder>
     for (int i = 0; i < widget.initialCount; i++) {
       childrenMap[i] = MotionData(index: i);
     }
-    _updateGlobalKeys();
     super.initState();
   }
 
-  _updateGlobalKeys() {
-    print("Old keys $globalKeys");
-    globalKeys = List.generate(
-      childrenMap.length,
-      (index) => GlobalObjectKey(childrenMap[index]!),
-    );
-    print("New keys $globalKeys");
+  void registerItem(MotionAnimatedContentState item) {
+    _items[item.index] = item;
+    // if (item.index == _dragInfo?.index) {
+    //   item.dragging = true;
+    //   item.rebuild();
+    // }
+  }
+
+  void unregisterItem(int index, MotionAnimatedContentState item) {
+    final MotionAnimatedContentState? currentItem = _items[index];
+    if (currentItem == item) {
+      _items.remove(index);
+    }
   }
 
   Future<void> insertItem(int index) async {
@@ -65,8 +71,9 @@ class MotionBuilderState extends State<MotionBuilder>
     final incomingItem = MotionData(
       index: itemIndex,
       enter: true,
-      frontItemOffset: _itemOffsetAt(itemIndex - 1) ?? Offset.zero,
-      nextItemOffset: _itemOffsetAt(itemIndex + 1) ?? Offset.zero,
+      // frontItemOffset: _itemOffsetAt(itemIndex - 1) ?? Offset.zero,
+      target: _itemOffsetAt(itemIndex) ?? Offset.zero,
+      //  nextItemOffset: _itemOffsetAt(itemIndex + 1) ?? Offset.zero,
     );
     final updatedChildrenMap = <int, MotionData>{};
     if (childrenMap.containsKey(itemIndex)) {
@@ -75,14 +82,16 @@ class MotionBuilderState extends State<MotionBuilder>
           updatedChildrenMap[itemIndex] = incomingItem;
           updatedChildrenMap[entry.key + 1] = entry.value.copyWith(
             index: entry.key + 1,
-            frontItemOffset: _itemOffsetAt(entry.key - 1),
-            nextItemOffset: _itemOffsetAt(entry.key + 1),
+            //  frontItemOffset: _itemOffsetAt(entry.key),
+            //  nextItemOffset: _itemOffsetAt(entry.key + 2),
+            offset: _itemOffsetAt(entry.key + 2),
           );
         } else if (entry.key > itemIndex) {
           updatedChildrenMap[entry.key + 1] = entry.value.copyWith(
             index: entry.key + 1,
-            frontItemOffset: _itemOffsetAt(entry.key - 1),
-            nextItemOffset: _itemOffsetAt(entry.key + 1),
+            offset: _itemOffsetAt(entry.key + 2),
+            //  frontItemOffset: _itemOffsetAt(entry.key - 1),
+            //  nextItemOffset: _itemOffsetAt(entry.key + 1),
           );
         } else {
           updatedChildrenMap[entry.key] = entry.value;
@@ -93,20 +102,13 @@ class MotionBuilderState extends State<MotionBuilder>
     } else {
       childrenMap[itemIndex] = incomingItem;
     }
-
-    //  setState(() {
-    _updateGlobalKeys();
-    // });
   }
 
   Offset? _itemOffsetAt(int index) {
-    if (index < 0 || globalKeys.isEmpty || globalKeys.length <= index) {
-      return null;
-    }
-    final box = globalKeys[index].currentState?.context.findRenderObject()
-        as RenderBox?;
-    if (box == null) return null;
-    return box.localToGlobal(Offset.zero);
+    final itemRenderBox =
+        _items[index]?.context.findRenderObject() as RenderBox?;
+    if (itemRenderBox == null) return null;
+    return itemRenderBox.localToGlobal(Offset.zero);
   }
 
   @override
@@ -125,6 +127,7 @@ class MotionBuilderState extends State<MotionBuilder>
         _MotionBuilderItemGlobalKey(child.key ?? Key('$index'), this);
 
     return MotionAnimatedContent(
+      index: index,
       key: itemGlobalKey,
       motionData: childrenMap[index]!,
       enter: false,
@@ -138,7 +141,8 @@ class MotionBuilderState extends State<MotionBuilder>
           offset: _itemOffsetAt(index),
           frontItemOffset: _itemOffsetAt(index - 1),
           nextItemOffset: _itemOffsetAt(index + 1),
-          index: MotionData.index,
+          // enter: false,
+          //  exit: false,
         );
       },
     );
@@ -147,6 +151,30 @@ class MotionBuilderState extends State<MotionBuilder>
   SliverChildDelegate _createDelegate() {
     return SliverChildBuilderDelegate(_itemBuilder,
         childCount: childrenMap.length);
+  }
+
+  static MotionBuilderState of(BuildContext context) {
+    final MotionBuilderState? result =
+        context.findAncestorStateOfType<MotionBuilderState>();
+    assert(() {
+      if (result == null) {
+        throw FlutterError(
+          'MotionBuilderState.of() called with a context that does not contain a MotionBuilderState.\n'
+          'No MotionBuilderState ancestor could be found starting from the '
+          'context that was passed to MotionBuilderState.of(). This can '
+          'happen when the context provided is from the same StatefulWidget that '
+          'built the AnimatedList.'
+          'The context used was:\n'
+          '  $context',
+        );
+      }
+      return true;
+    }());
+    return result!;
+  }
+
+  static MotionBuilderState? maybeOf(BuildContext context) {
+    return context.findAncestorStateOfType<MotionBuilderState>();
   }
 }
 

@@ -2,12 +2,14 @@ import 'package:flutter/widgets.dart';
 import 'package:motion_list/src/model/motion_data.dart';
 
 import '../builder/motion_animation_builder.dart';
+import '../builder/motion_builder.dart';
 
 const Duration _kDragDuration = Duration(milliseconds: 300);
 const Duration _kEntryDuration = Duration(milliseconds: 300);
 const Duration _kExitDuration = Duration(milliseconds: 300);
 
 class MotionAnimatedContent extends StatefulWidget {
+  final int index;
   final MotionData motionData;
   final bool enter;
   final bool exit;
@@ -18,6 +20,7 @@ class MotionAnimatedContent extends StatefulWidget {
 
   const MotionAnimatedContent(
       {Key? key,
+      required this.index,
       required this.motionData,
       required this.enter,
       required this.exit,
@@ -37,14 +40,15 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
   late AnimationController _positionController;
   late Animation<Offset> _offsetAnimation;
 
-  // late MotionAnimationBuilderState _listState;
+  late MotionBuilderState _listState;
 
-  int get index => widget.motionData.index;
+  int get index => widget.index;
 
   @override
   void initState() {
-    // _listState = MotionAnimationBuilder.of(context);
-    //  _listState.registerItem(this);
+    print("initState ${widget.index}");
+    _listState = MotionBuilderState.of(context);
+    _listState.registerItem(this);
     _visibilityController = AnimationController(
       value: 1.0,
       duration: _kEntryDuration,
@@ -55,7 +59,7 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
     _positionController =
         AnimationController(vsync: this, duration: _kDragDuration)
           ..addStatusListener((status) {
-            print("status $status");
+            // print("status $status for ${widget.index}");
             if (status == AnimationStatus.completed ||
                 status == AnimationStatus.dismissed) {
               // widget.updateMotionData?.call(widget.motionData);
@@ -72,7 +76,7 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
       widget.updateMotionData?.call(widget.motionData);
       if (widget.motionData.enter) {
         _visibilityController.forward();
-        print("forward visbility controller $index");
+        print("forward visbility controller ${widget.index}");
       }
     });
 
@@ -83,8 +87,15 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
   void didUpdateWidget(covariant MotionAnimatedContent oldWidget) {
     final oldMotionData = oldWidget.motionData;
     final newMotionData = widget.motionData;
+
+    if (oldWidget.index != widget.index) {
+      _listState.unregisterItem(oldWidget.index, this);
+      _listState.registerItem(this);
+    }
+    final currentOffset = itemOffset();
+
     print(
-        "didUpdateWidget oldMotionData $oldMotionData newMotionData $newMotionData");
+        "OLD -- ${oldWidget.index} - ${oldMotionData.target} current $currentOffset  \n   NEW -- ${newMotionData.target}");
     // if (!oldMotionData.enter && newMotionData.enter) {
     //   _visibilityController.value = 0.0;
     //   _visibilityController.forward(); // TODO  should start after drag complete
@@ -92,14 +103,15 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
     //   _visibilityController.reverse();
     // }
 
-    if (oldMotionData.index != newMotionData.index) {
-      final offsetToMove = oldMotionData.index < newMotionData.index
-          ? newMotionData.nextItemOffset
-          : newMotionData.frontItemOffset;
+    if (oldMotionData.target != newMotionData.target &&
+        newMotionData.target != currentOffset) {
+      // final offsetToMove = oldMotionData.offset < newMotionData.offset
+      //     ? newMotionData.nextItemOffset
+      //     : newMotionData.frontItemOffset;
 
-      final currentOffset = newMotionData.offset;
-      Offset offsetDiff = currentOffset - offsetToMove;
-
+      // final currentOffset = newMotionData.offset;
+      Offset offsetDiff = newMotionData.target - currentOffset;
+      print("offsetDiff $offsetDiff");
       if (offsetDiff.dx != 0 || offsetDiff.dy != 0) {
         _positionController.reset();
 
@@ -110,6 +122,12 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
     }
 
     super.didUpdateWidget(oldWidget);
+  }
+
+  Offset itemOffset() {
+    final box = context.findRenderObject() as RenderBox?;
+    if (box == null) return Offset.zero;
+    return box.localToGlobal(Offset.zero);
   }
 
   @override
@@ -153,7 +171,7 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
 
   @override
   void dispose() {
-    // _listState.unregisterItem(index, this);
+    _listState.unregisterItem(widget.index, this);
     _visibilityController.dispose();
     _positionController.dispose();
     super.dispose();
