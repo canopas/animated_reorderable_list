@@ -105,6 +105,10 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
       _listState.registerItem(this);
     }
 
+    if (!oldMotionData.exit && newMotionData.exit) {
+      animateExit();
+    }
+
     print("didUpdateWidget");
     // print("OLD - ${oldMotionData}   \n   NEW - ${newMotionData}");
 

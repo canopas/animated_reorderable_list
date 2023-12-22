@@ -109,9 +109,9 @@ class MotionBuilderState extends State<MotionBuilder>
     }
     print("removeItem $index");
     if (childrenMap.containsKey(itemIndex)) {
-      _items[itemIndex]?.animateExit();
-      // childrenMap[itemIndex] = childrenMap[itemIndex]!.copyWith(exit: true);
-      //_onItemDeleted(itemIndex);
+      // _items[itemIndex]?.animateExit();
+      childrenMap[itemIndex] = childrenMap[itemIndex]!.copyWith(exit: true);
+      _onItemDeleted(itemIndex);
     }
     print("ChildrenMap ${childrenMap.length}");
   }
@@ -191,7 +191,7 @@ class MotionBuilderState extends State<MotionBuilder>
         );
         print("updateMotionData ${childrenMap[index]}");
       },
-      onItemRemoved: _onItemDeleted,
+      //   onItemRemoved: _onItemDeleted,
       child: widget.itemBuilder(context, index),
     );
   }
