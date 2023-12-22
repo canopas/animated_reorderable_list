@@ -109,7 +109,7 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
     //   animateExit();
     // }
 
-    print("didUpdateWidget");
+   // print("didUpdateWidget");
     // print("OLD - ${oldMotionData}   \n   NEW - ${newMotionData}");
 
     Offset endOffset = widget.motionData.endOffset;
@@ -149,6 +149,7 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
   @override
   Widget build(BuildContext context) {
     //  _listState.registerItem(this);
+    print("build $index ${widget.motionData.exit}");
     return Transform.translate(
         offset: _offsetAnimation.value,
         child: widget.motionData.exit
@@ -175,8 +176,8 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
   }
 
   void animateExit() {
-    _visibilityController.value = 1.0;
-    _visibilityController.reverse();
     print("animateExit");
+
+    _visibilityController.reverse(from: 1);
   }
 }

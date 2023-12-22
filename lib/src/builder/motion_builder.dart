@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:motion_list/src/component/motion_animated_content.dart';
 
@@ -12,13 +13,12 @@ class MotionBuilder<E> extends StatefulWidget {
   final int initialCount;
   final SliverGridDelegate? delegateBuilder;
 
-  const MotionBuilder(
-      {Key? key,
-      required this.insertAnimationBuilder,
-      required this.removeAnimationBuilder,
-      this.initialCount = 0,
-      this.delegateBuilder,
-      required this.itemBuilder})
+  const MotionBuilder({Key? key,
+    required this.insertAnimationBuilder,
+    required this.removeAnimationBuilder,
+    this.initialCount = 0,
+    this.delegateBuilder,
+    required this.itemBuilder})
       : assert(initialCount >= 0),
         super(key: key);
 
@@ -28,7 +28,9 @@ class MotionBuilder<E> extends StatefulWidget {
 
 class MotionBuilderState extends State<MotionBuilder>
     with AutomaticKeepAliveClientMixin {
-  // int _itemsCount = 0;
+  final List<_ActiveItem> _outgoingItems = <_ActiveItem>[];
+  int _itemsCount = 0;
+
   Map<int, MotionData> childrenMap = <int, MotionData>{};
   final Map<int, MotionAnimatedContentState> _items =
       <int, MotionAnimatedContentState>{};
@@ -38,7 +40,7 @@ class MotionBuilderState extends State<MotionBuilder>
 
   @override
   void initState() {
-    // _itemsCount = widget.initialCount;
+    _itemsCount = widget.initialCount;
     for (int i = 0; i < widget.initialCount; i++) {
       childrenMap[i] = MotionData(index: i);
     }
@@ -54,6 +56,46 @@ class MotionBuilderState extends State<MotionBuilder>
     if (currentItem == item) {
       _items.remove(index);
     }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  _ActiveItem? _removeActiveItemAt(List<_ActiveItem> items, int itemIndex) {
+    final int i = binarySearch(items, _ActiveItem.index(itemIndex));
+    return i == -1 ? null : items.removeAt(i);
+  }
+
+  _ActiveItem? _activeItemAt(List<_ActiveItem> items, int itemIndex) {
+    final int i = binarySearch(items, _ActiveItem.index(itemIndex));
+    return i == -1 ? null : items[i];
+  }
+
+  int _indexToItemIndex(int index) {
+    int itemIndex = index;
+    for (final _ActiveItem item in _outgoingItems) {
+      if (item.itemIndex <= itemIndex) {
+        itemIndex += 1;
+      } else {
+        break;
+      }
+    }
+    return itemIndex;
+  }
+
+  int _itemIndexToIndex(int itemIndex) {
+    int index = itemIndex;
+    for (final _ActiveItem item in _outgoingItems) {
+      assert(item.itemIndex != itemIndex);
+      if (item.itemIndex < itemIndex) {
+        index -= 1;
+      } else {
+        break;
+      }
+    }
+    return index;
   }
 
   Future<void> insertItem(int index) async {
@@ -79,14 +121,14 @@ class MotionBuilderState extends State<MotionBuilder>
           updatedChildrenMap[entry.key + 1] = entry.value.copyWith(
             index: entry.key + 1,
             startOffset:
-                _itemOffsetAt(entry.key, includeAnimation: true) ?? Offset.zero,
+            _itemOffsetAt(entry.key, includeAnimation: true) ?? Offset.zero,
             endOffset: _itemOffsetAt(entry.key + 1) ?? Offset.zero,
           );
         } else if (entry.key > itemIndex) {
           updatedChildrenMap[entry.key + 1] = entry.value.copyWith(
             index: entry.key + 1,
             startOffset:
-                _itemOffsetAt(entry.key, includeAnimation: true) ?? Offset.zero,
+            _itemOffsetAt(entry.key, includeAnimation: true) ?? Offset.zero,
             endOffset: _itemOffsetAt(entry.key + 1) ?? Offset.zero,
           );
         } else {
@@ -98,19 +140,32 @@ class MotionBuilderState extends State<MotionBuilder>
     } else {
       childrenMap[itemIndex] = incomingItem;
     }
+
+    setState(() {
+      _itemsCount += 1;
+    });
+
     // print("updated map ${childrenMap}");
   }
 
   void removeItem(int index) {
     assert(index >= 0);
-    final int itemIndex = index;
-    if (itemIndex < 0 || itemIndex >= childrenMap.length) {
+    final int itemIndex = _indexToItemIndex(index);
+    if (itemIndex < 0 || itemIndex >= _itemsCount) {
       return;
     }
+
+    assert(_activeItemAt(_outgoingItems, itemIndex) == null);
+
     print("removeItem $index");
     if (childrenMap.containsKey(itemIndex)) {
-      final Widget child = widget.itemBuilder(context, index);
-
+      final _ActiveItem outgoingItem =
+          _ActiveItem.outgoing(itemIndex, widget.itemBuilder);
+      setState(() {
+        _outgoingItems
+          ..add(outgoingItem)
+          ..sort();
+      });
       _items[itemIndex]?.animateExit();
       //childrenMap[itemIndex] = childrenMap[itemIndex]!.copyWith(exit: true);
       // _onItemDeleted(itemIndex);
@@ -139,6 +194,14 @@ class MotionBuilderState extends State<MotionBuilder>
     }
     childrenMap.clear();
     childrenMap.addAll(updatedChildrenMap);
+
+    _removeActiveItemAt(_outgoingItems, itemIndex);
+
+    for (final _ActiveItem item in _outgoingItems) {
+      if (item.itemIndex > itemIndex) item.itemIndex -= 1;
+    }
+    setState(() => _itemsCount -= 1);
+
     print("updated map $childrenMap");
   }
 
@@ -147,7 +210,7 @@ class MotionBuilderState extends State<MotionBuilder>
         ? (_items[index]?.currentAnimatedOffset ?? Offset.zero)
         : Offset.zero;
     final itemRenderBox =
-        _items[index]?.context.findRenderObject() as RenderBox?;
+    _items[index]?.context.findRenderObject() as RenderBox?;
     if (itemRenderBox == null) return null;
     return itemRenderBox.localToGlobal(Offset.zero) + currentOffset;
   }
@@ -157,12 +220,18 @@ class MotionBuilderState extends State<MotionBuilder>
     super.build(context);
     return widget.delegateBuilder != null
         ? SliverGrid(
-            gridDelegate: widget.delegateBuilder!, delegate: _createDelegate())
+        gridDelegate: widget.delegateBuilder!, delegate: _createDelegate())
         : SliverList(delegate: _createDelegate());
   }
 
   Widget _itemBuilder(BuildContext context, int index) {
-    final Widget child = widget.itemBuilder(context, index);
+    final _ActiveItem? outgoingItem = _activeItemAt(_outgoingItems, index);
+
+    print("has outgoing ${outgoingItem != null}");
+    final Widget child = outgoingItem != null
+        ? outgoingItem.removedItemBuilder!(context, index)
+        : widget.itemBuilder(context, _itemIndexToIndex(index));
+
     assert(() {
       if (child.key == null) {
         throw FlutterError(
@@ -171,8 +240,10 @@ class MotionBuilderState extends State<MotionBuilder>
       }
       return true;
     }());
-    final Key itemGlobalKey = _MotionBuilderItemGlobalKey(child.key!, this);
-    //  print("Key $itemGlobalKey index $index length ${childrenMap.length}");
+    final OutGoingKey =
+        outgoingItem != null ? Key('${outgoingItem.itemIndex}') : child.key!;
+    final Key itemGlobalKey = _MotionBuilderItemGlobalKey(OutGoingKey, this);
+    print("Key ${itemGlobalKey.toString()}");
     return MotionAnimatedContent(
       index: index,
       key: itemGlobalKey,
@@ -182,7 +253,7 @@ class MotionBuilderState extends State<MotionBuilder>
       insertAnimationBuilder: widget.insertAnimationBuilder,
       removeAnimationBuilder: widget.removeAnimationBuilder,
       updateMotionData: (MotionData) {
-        print("updateMotionData $index");
+        // print("updateMotionData $index");
         childrenMap[index] = MotionData.copyWith(
           startOffset: _itemOffsetAt(index),
           // frontItemOffset: _itemOffsetAt(index - 1),
@@ -194,28 +265,27 @@ class MotionBuilderState extends State<MotionBuilder>
         print("updateMotionData ${childrenMap[index]}");
       },
       onItemRemoved: _onItemDeleted,
-      child: widget.itemBuilder(context, index),
+      child: child,
     );
   }
 
   SliverChildDelegate _createDelegate() {
-    return SliverChildBuilderDelegate(_itemBuilder,
-        childCount: childrenMap.length);
+    return SliverChildBuilderDelegate(_itemBuilder, childCount: _itemsCount);
   }
 
   static MotionBuilderState of(BuildContext context) {
     final MotionBuilderState? result =
-        context.findAncestorStateOfType<MotionBuilderState>();
+    context.findAncestorStateOfType<MotionBuilderState>();
     assert(() {
       if (result == null) {
         throw FlutterError(
           'MotionBuilderState.of() called with a context that does not contain a MotionBuilderState.\n'
-          'No MotionBuilderState ancestor could be found starting from the '
-          'context that was passed to MotionBuilderState.of(). This can '
-          'happen when the context provided is from the same StatefulWidget that '
-          'built the AnimatedList.'
-          'The context used was:\n'
-          '  $context',
+              'No MotionBuilderState ancestor could be found starting from the '
+              'context that was passed to MotionBuilderState.of(). This can '
+              'happen when the context provided is from the same StatefulWidget that '
+              'built the AnimatedList.'
+              'The context used was:\n'
+              '  $context',
         );
       }
       return true;
@@ -247,4 +317,16 @@ class _MotionBuilderItemGlobalKey extends GlobalObjectKey {
 
   @override
   int get hashCode => Object.hash(subKey, state);
+}
+
+class _ActiveItem implements Comparable<_ActiveItem> {
+  _ActiveItem.index(this.itemIndex) : removedItemBuilder = null;
+
+  _ActiveItem.outgoing(this.itemIndex, this.removedItemBuilder);
+
+  final ItemBuilder? removedItemBuilder;
+  int itemIndex;
+
+  @override
+  int compareTo(_ActiveItem other) => itemIndex - other.itemIndex;
 }
