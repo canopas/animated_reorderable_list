@@ -62,7 +62,7 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
       reverseDuration: _kExitDuration,
       vsync: this,
     )..addStatusListener((status) {
-        print("status $status");
+        print("status $status index $index");
         if (status == AnimationStatus.dismissed) {
           widget.onItemRemoved?.call(widget.motionData.index);
         }
@@ -104,10 +104,10 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
       _listState.unregisterItem(oldWidget.index, this);
       _listState.registerItem(this);
     }
-
-    if (!oldMotionData.exit && newMotionData.exit) {
-      animateExit();
-    }
+    //
+    // if (!oldMotionData.exit && newMotionData.exit) {
+    //   animateExit();
+    // }
 
     print("didUpdateWidget");
     // print("OLD - ${oldMotionData}   \n   NEW - ${newMotionData}");
@@ -148,7 +148,7 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
 
   @override
   Widget build(BuildContext context) {
-    _listState.registerItem(this);
+    //  _listState.registerItem(this);
     return Transform.translate(
         offset: _offsetAnimation.value,
         child: widget.motionData.exit
@@ -175,7 +175,6 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
   }
 
   void animateExit() {
-    _visibilityController.reset();
     _visibilityController.value = 1.0;
     _visibilityController.reverse();
     print("animateExit");
