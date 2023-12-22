@@ -52,6 +52,8 @@ class MotionData {
 
   @override
   String toString() {
-    return "index: $index  offset: $startOffset, endOffset $endOffset, frontItemOffset: $frontItemOffset, nextItemOffset: $nextItemOffset";
+    return "index: $index  exit: $exit";
+
+    //return "index: $index  offset: $startOffset, endOffset $endOffset, frontItemOffset: $frontItemOffset, nextItemOffset: $nextItemOffset";
   }
 }

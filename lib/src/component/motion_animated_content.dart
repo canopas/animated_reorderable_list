@@ -4,7 +4,7 @@ import 'package:motion_list/src/model/motion_data.dart';
 import '../builder/motion_animation_builder.dart';
 import '../builder/motion_builder.dart';
 
-const int duration = 300;
+const int duration = 2000;
 const Duration _kDragDuration = Duration(milliseconds: duration);
 const Duration _kEntryDuration = Duration(milliseconds: duration);
 const Duration _kExitDuration = Duration(milliseconds: duration);
@@ -19,6 +19,7 @@ class MotionAnimatedContent extends StatefulWidget {
   final AnimatedWidgetBuilder removeAnimationBuilder;
   final Widget? child;
   final Function(MotionData)? updateMotionData;
+  final Function(MotionData)? onItemRemoved;
 
   const MotionAnimatedContent(
       {required this.key,
@@ -29,7 +30,8 @@ class MotionAnimatedContent extends StatefulWidget {
       required this.insertAnimationBuilder,
       required this.removeAnimationBuilder,
       required this.child,
-      this.updateMotionData})
+      this.updateMotionData,
+      this.onItemRemoved})
       : super(key: key);
 
   @override
@@ -59,7 +61,11 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
       duration: _kEntryDuration,
       reverseDuration: _kExitDuration,
       vsync: this,
-    );
+    )..addStatusListener((status) {
+        if (status == AnimationStatus.dismissed && widget.exit) {
+          widget.onItemRemoved?.call(widget.motionData);
+        }
+      });
 
     _positionController =
         AnimationController(vsync: this, duration: _kDragDuration)
@@ -97,55 +103,16 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
       _listState.unregisterItem(oldWidget.index, this);
       _listState.registerItem(this);
     }
-    //final currentOffset = itemOffset();
 
-    //  print("OLD - ${oldMotionData.enter}   \n   NEW - ${newMotionData.enter}");
-    // if (!oldMotionData.enter && newMotionData.enter) {
-    //   _visibilityController.reset();
-    //   _visibilityController.value = 0.0;
-    //   print(" ------ object enter animation----- $index");
-    //   Future.delayed(_kDragDuration, () {
-    //     _visibilityController.forward();
-    //   });
-    // } else
-    // if (!oldMotionData.exit && newMotionData.exit) {
-    //   Future.delayed(_kDragDuration, () {
-    //     _visibilityController.reset();
-    //     _visibilityController.value = 1.0;
-    //     _visibilityController.reverse();
-    //   });
-    // }
+    print("OLD - ${oldMotionData}   \n   NEW - ${newMotionData}");
 
-    // if (oldMotionData.target != newMotionData.target &&
-    //     newMotionData.target != currentOffset) {
-    // final offsetToMove = currentOffset.offset < newMotionData.offset
-    //     ? newMotionData.nextItemOffset
-    //     : newMotionData.frontItemOffset;
-
-    // final currentOffset = newMotionData.offset;
-
-    //  _updateAnimationTranslation();
-    // print("didUpdateWidget for  $index old $oldMotionData new $newMotionData");
-
-    //  if (oldWidget.index != widget.index) {
-    //
-    //    final target = widget.motionData.current > oldWidget.motionData.current
-    //        ? widget.motionData.nextItemOffset
-    //        : widget.motionData.frontItemOffset;
-    //   // Offset offsetDiff =target -itemOffset();
-    //
-    //    Offset offsetDiff = target - widget.motionData.current;
-    // //   print("offsetDiff $offsetDiff");
-    //    if (offsetDiff.dx != 0 || offsetDiff.dy != 0) {
-    //      _positionController.reset();
-    //
-    //      _offsetAnimation = Tween<Offset>(begin: offsetDiff, end: Offset.zero)
-    //          .animate(_positionController);
-    //      _positionController.forward();
-    //      //}
-    //    }
-    //  }
-
+    if (!oldMotionData.exit && newMotionData.exit) {
+      Future.delayed(_kDragDuration, () {
+        _visibilityController.reset();
+        _visibilityController.value = 1.0;
+        _visibilityController.reverse();
+      });
+    }
     Offset endOffset = widget.motionData.endOffset;
     if (endOffset != Offset.zero) {
       _updateAnimationTranslation();
@@ -160,10 +127,8 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
 
   void _updateAnimationTranslation() {
     Offset endOffset = widget.motionData.endOffset;
-    print("_updateAnimationTranslation $index endOffset $endOffset");
+    //   print("_updateAnimationTranslation $index endOffset $endOffset");
     endOffset = endOffset == Offset.zero ? itemOffset() : endOffset;
-
-    ///Offset offsetDiff = currentOffset - widget.motionData.current;
     Offset offsetDiff = widget.motionData.startOffset - endOffset;
 
     if (offsetDiff.dx != 0 || offsetDiff.dy != 0) {
@@ -172,25 +137,7 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
       _offsetAnimation = Tween<Offset>(begin: offsetDiff, end: Offset.zero)
           .animate(_positionController);
       _positionController.forward();
-      //}
     }
-
-    // final originalOffset = widget.reorderableItem!.oldOffset;
-    // final updatedOffset = itemOffset();
-    // Offset offsetDiff = originalOffset - updatedOffset;
-    //
-    // if (offsetDiff.dx != 0 || offsetDiff.dy != 0) {
-    //   // if (_offsetAnimationController.isAnimating) {
-    //   //   final currentAnimationOffset = _animationOffset.value;
-    //   //   final newOriginalOffset = currentAnimationOffset - offsetDiff;
-    //   //   offsetDiff = offsetDiff + newOriginalOffset;
-    //   // }
-    //   _offsetAnimationController.reset();
-    //
-    //   _animationOffset = Tween<Offset>(begin: offsetDiff, end: Offset.zero)
-    //       .animate(_offsetAnimationController);
-    //   _offsetAnimationController.forward();
-    // }
   }
 
   Offset itemOffset() {
@@ -203,7 +150,6 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
   @override
   Widget build(BuildContext context) {
     _listState.registerItem(this);
-    //  print("index $index, visibility controller ${_visibilityController.value}");
     return Transform.translate(
         offset: _offsetAnimation.value,
         child: widget.motionData.exit
@@ -213,30 +159,6 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
                 context,
                 widget.child ?? const SizedBox.shrink(),
                 _visibilityController));
-
-    return DualTransitionBuilder(
-      animation: _visibilityController,
-      forwardBuilder: (
-        BuildContext context,
-        Animation<double> animation,
-        Widget? child,
-      ) {
-        return widget.insertAnimationBuilder(
-            context, child ?? const SizedBox.shrink(), animation);
-      },
-      reverseBuilder: (
-        BuildContext context,
-        Animation<double> animation,
-        Widget? child,
-      ) {
-        return widget.removeAnimationBuilder(
-            context, child ?? const SizedBox.shrink(), animation);
-      },
-      child: Transform(
-          transform: Matrix4.translationValues(
-              _offsetAnimation.value.dx, _offsetAnimation.value.dy, 0.0),
-          child: widget.child),
-    );
   }
 
   @override

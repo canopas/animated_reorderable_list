@@ -101,6 +101,43 @@ class MotionBuilderState extends State<MotionBuilder>
     // print("updated map ${childrenMap}");
   }
 
+  void removeItem(int index) {
+    assert(index >= 0);
+    final int itemIndex = index;
+    if (itemIndex < 0 || itemIndex >= childrenMap.length) {
+      return;
+    }
+
+    if (childrenMap.containsKey(itemIndex)) {
+      childrenMap[itemIndex] = childrenMap[itemIndex]!.copyWith(exit: true);
+    }
+  }
+
+  void _onItemDeleted(MotionData data) {
+    print("_onItemDeleted ${data.index}");
+    final int itemIndex = data.index;
+    final updatedChildrenMap = <int, MotionData>{};
+    if (childrenMap.containsKey(itemIndex)) {
+      for (final entry in childrenMap.entries) {
+        if (entry.key < itemIndex) {
+          updatedChildrenMap[entry.key] = childrenMap[entry.key]!;
+        } else if (entry.key == itemIndex) {
+          continue;
+        } else {
+          updatedChildrenMap[entry.key - 1] = childrenMap[entry.key]!.copyWith(
+            index: entry.key - 1,
+            startOffset: _itemOffsetAt(entry.key - 1, includeAnimation: true) ??
+                Offset.zero,
+            endOffset: _itemOffsetAt(entry.key) ?? Offset.zero,
+          );
+        }
+      }
+    }
+    childrenMap.clear();
+    childrenMap.addAll(updatedChildrenMap);
+    print("updated map $childrenMap");
+  }
+
   Offset? _itemOffsetAt(int index, {bool includeAnimation = false}) {
     final currentOffset = includeAnimation
         ? (_items[index]?.currentAnimatedOffset ?? Offset.zero)
@@ -139,7 +176,6 @@ class MotionBuilderState extends State<MotionBuilder>
       exit: false,
       insertAnimationBuilder: widget.insertAnimationBuilder,
       removeAnimationBuilder: widget.removeAnimationBuilder,
-      child: widget.itemBuilder(context, index),
       updateMotionData: (MotionData) {
         childrenMap[index] = MotionData.copyWith(
           startOffset: _itemOffsetAt(index),
@@ -149,9 +185,10 @@ class MotionBuilderState extends State<MotionBuilder>
           enter: false,
           exit: false,
         );
-
         // print("updateMotionData ${childrenMap[index]}");
       },
+      onItemRemoved: _onItemDeleted,
+      child: widget.itemBuilder(context, index),
     );
   }
 
