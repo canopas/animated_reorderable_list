@@ -47,10 +47,6 @@ class MotionBuilderState extends State<MotionBuilder>
 
   void registerItem(MotionAnimatedContentState item) {
     _items[item.index] = item;
-    // if (item.index == _dragInfo?.index) {
-    //   item.dragging = true;
-    //   item.rebuild();
-    // }
   }
 
   void unregisterItem(int index, MotionAnimatedContentState item) {
@@ -72,34 +68,23 @@ class MotionBuilderState extends State<MotionBuilder>
     final incomingItem = MotionData(
       index: itemIndex,
       enter: true,
-      frontItemOffset: _itemOffsetAt(itemIndex - 1) ?? Offset.zero,
-      current: _itemOffsetAt(itemIndex) ?? Offset.zero,
-      nextItemOffset: _itemOffsetAt(itemIndex + 1) ?? Offset.zero,
+      target: _itemOffsetAt(itemIndex) ?? Offset.zero,
     );
     final updatedChildrenMap = <int, MotionData>{};
-    //    print("old map ${childrenMap}");
     if (childrenMap.containsKey(itemIndex)) {
       for (final entry in childrenMap.entries) {
         if (entry.key == itemIndex) {
-          //  print("update and forward ${entry.key} to ${entry.key + 1}");
-
           updatedChildrenMap[itemIndex] = incomingItem;
           updatedChildrenMap[entry.key + 1] = entry.value.copyWith(
             index: entry.key + 1,
-            frontItemOffset: _itemOffsetAt(entry.key) ?? Offset.zero,
-            nextItemOffset: _itemOffsetAt(entry.key + 2) ?? Offset.zero,
             offset: _itemOffsetAt(entry.key) ?? Offset.zero,
           );
         } else if (entry.key > itemIndex) {
-          //print("forward ${entry.key} to ${entry.key + 1}");
           updatedChildrenMap[entry.key + 1] = entry.value.copyWith(
             index: entry.key + 1,
             offset: _itemOffsetAt(entry.key) ?? Offset.zero,
-            frontItemOffset: _itemOffsetAt(entry.key) ?? Offset.zero,
-            nextItemOffset: _itemOffsetAt(entry.key + 2) ?? Offset.zero,
           );
         } else {
-          //print("else ${entry.key}");
           updatedChildrenMap[entry.key] = entry.value;
         }
       }
@@ -112,10 +97,11 @@ class MotionBuilderState extends State<MotionBuilder>
   }
 
   Offset? _itemOffsetAt(int index) {
+    final currentOffset = _items[index]?.currentAnimatedOffset ?? Offset.zero;
     final itemRenderBox =
         _items[index]?.context.findRenderObject() as RenderBox?;
     if (itemRenderBox == null) return null;
-    return itemRenderBox.localToGlobal(Offset.zero);
+    return itemRenderBox.localToGlobal(Offset.zero) + currentOffset;
   }
 
   @override
@@ -138,7 +124,6 @@ class MotionBuilderState extends State<MotionBuilder>
       return true;
     }());
     final Key itemGlobalKey = _MotionBuilderItemGlobalKey(child.key!, this);
-    //   print("key $itemGlobalKey index $index");
     return MotionAnimatedContent(
       index: index,
       key: itemGlobalKey,
@@ -157,7 +142,7 @@ class MotionBuilderState extends State<MotionBuilder>
           exit: false,
         );
 
-        print("updateMotionData ${childrenMap[index]}");
+        // print("updateMotionData ${childrenMap[index]}");
       },
     );
   }

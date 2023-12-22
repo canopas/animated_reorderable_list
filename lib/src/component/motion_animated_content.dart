@@ -45,9 +45,12 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
 
   int get index => widget.index;
 
+  Offset? get currentAnimatedOffset =>
+      _positionController.isAnimating ? _offsetAnimation.value : null;
+
   @override
   void initState() {
-    print("initState ${widget.index}");
+    //  print("initState ${widget.index}");
     _listState = MotionBuilderState.of(context);
     _listState.registerItem(this);
     _visibilityController = AnimationController(
@@ -66,7 +69,7 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
         AnimationController(vsync: this, duration: _kDragDuration)
           ..addStatusListener((status) {
             if (status == AnimationStatus.completed) {
-              widget.updateMotionData?.call(widget.motionData);
+              // widget.updateMotionData?.call(widget.motionData);
             }
           });
 
@@ -151,6 +154,7 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
       //widget.updateMotionData?.call(widget.motionData);
       // _updateAnimationTranslation();
       _updateAnimationTranslation();
+      // _listState.registerItem(this);
     });
 
     super.didUpdateWidget(oldWidget);
@@ -160,8 +164,8 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
     final currentOffset = itemOffset();
 
     ///Offset offsetDiff = currentOffset - widget.motionData.current;
-    Offset offsetDiff = widget.motionData.current - currentOffset;
-    print("offsetDiff $offsetDiff index ${widget.index}");
+    Offset offsetDiff = widget.motionData.target - currentOffset;
+
     if (offsetDiff.dx != 0 || offsetDiff.dy != 0) {
       _positionController.reset();
 
@@ -192,17 +196,18 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
   Offset itemOffset() {
     final box = context.findRenderObject() as RenderBox?;
     if (box == null) return Offset.zero;
-
-    return box.localToGlobal(Offset.zero);
+    var currentOffset = box.localToGlobal(Offset.zero);
+    var local = box.globalToLocal(Offset.zero);
+    print("currentOffset $currentOffset local $local index ${widget.index}");
+    return currentOffset;
   }
 
   @override
   Widget build(BuildContext context) {
     _listState.registerItem(this);
     //  print("index $index, visibility controller ${_visibilityController.value}");
-    return Transform(
-        transform: Matrix4.translationValues(
-            _offsetAnimation.value.dx, _offsetAnimation.value.dy, 0.0),
+    return Transform.translate(
+        offset: _offsetAnimation.value,
         child: widget.motionData.exit
             ? widget.removeAnimationBuilder(context,
                 widget.child ?? const SizedBox.shrink(), _visibilityController)
@@ -213,15 +218,19 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
 
     return DualTransitionBuilder(
       animation: _visibilityController,
-      forwardBuilder: (BuildContext context,
-          Animation<double> animation,
-          Widget? child,) {
+      forwardBuilder: (
+        BuildContext context,
+        Animation<double> animation,
+        Widget? child,
+      ) {
         return widget.insertAnimationBuilder(
             context, child ?? const SizedBox.shrink(), animation);
       },
-      reverseBuilder: (BuildContext context,
-          Animation<double> animation,
-          Widget? child,) {
+      reverseBuilder: (
+        BuildContext context,
+        Animation<double> animation,
+        Widget? child,
+      ) {
         return widget.removeAnimationBuilder(
             context, child ?? const SizedBox.shrink(), animation);
       },
