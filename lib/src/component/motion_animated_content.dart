@@ -4,9 +4,10 @@ import 'package:motion_list/src/model/motion_data.dart';
 import '../builder/motion_animation_builder.dart';
 import '../builder/motion_builder.dart';
 
-const Duration _kDragDuration = Duration(milliseconds: 1000);
-const Duration _kEntryDuration = Duration(milliseconds: 1000);
-const Duration _kExitDuration = Duration(milliseconds: 1000);
+const int duration = 300;
+const Duration _kDragDuration = Duration(milliseconds: duration);
+const Duration _kEntryDuration = Duration(milliseconds: duration);
+const Duration _kExitDuration = Duration(milliseconds: duration);
 
 class MotionAnimatedContent extends StatefulWidget {
   final Key key;
@@ -50,7 +51,7 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
 
   @override
   void initState() {
-    //  print("initState ${widget.index}");
+    print("initState ${widget.index}");
     _listState = MotionBuilderState.of(context);
     _listState.registerItem(this);
     _visibilityController = AnimationController(
@@ -58,18 +59,13 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
       duration: _kEntryDuration,
       reverseDuration: _kExitDuration,
       vsync: this,
-    )..addStatusListener((status) {
-        if (status == AnimationStatus.completed ||
-            status == AnimationStatus.dismissed) {
-          // widget.updateMotionData?.call(widget.motionData);
-        }
-      });
+    );
 
     _positionController =
         AnimationController(vsync: this, duration: _kDragDuration)
           ..addStatusListener((status) {
             if (status == AnimationStatus.completed) {
-              // widget.updateMotionData?.call(widget.motionData);
+              widget.updateMotionData?.call(widget.motionData);
             }
           });
 
@@ -81,15 +77,14 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       widget.updateMotionData?.call(widget.motionData);
-      // _updateAnimationTranslation();
     });
 
-    _visibilityController.value = 0.0;
-    // print(" ------ object enter animation----- $index");
-    Future.delayed(_kDragDuration, () {
-      _visibilityController.forward();
-    });
-
+    if (widget.motionData.enter) {
+      _visibilityController.value = 0.0;
+      Future.delayed(_kDragDuration, () {
+        _visibilityController.forward();
+      });
+    }
     super.initState();
   }
 
@@ -150,21 +145,26 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
     //      //}
     //    }
     //  }
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      //widget.updateMotionData?.call(widget.motionData);
-      // _updateAnimationTranslation();
-      _updateAnimationTranslation();
-      // _listState.registerItem(this);
-    });
 
+    Offset endOffset = widget.motionData.endOffset;
+    if (endOffset != Offset.zero) {
+      _updateAnimationTranslation();
+    } else {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        _updateAnimationTranslation();
+        widget.updateMotionData?.call(widget.motionData);
+      });
+    }
     super.didUpdateWidget(oldWidget);
   }
 
   void _updateAnimationTranslation() {
-    final currentOffset = itemOffset();
+    Offset endOffset = widget.motionData.endOffset;
+    print("_updateAnimationTranslation $index endOffset $endOffset");
+    endOffset = endOffset == Offset.zero ? itemOffset() : endOffset;
 
     ///Offset offsetDiff = currentOffset - widget.motionData.current;
-    Offset offsetDiff = widget.motionData.target - currentOffset;
+    Offset offsetDiff = widget.motionData.startOffset - endOffset;
 
     if (offsetDiff.dx != 0 || offsetDiff.dy != 0) {
       _positionController.reset();
@@ -196,10 +196,8 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
   Offset itemOffset() {
     final box = context.findRenderObject() as RenderBox?;
     if (box == null) return Offset.zero;
-    var currentOffset = box.localToGlobal(Offset.zero);
-    var local = box.globalToLocal(Offset.zero);
-    print("currentOffset $currentOffset local $local index ${widget.index}");
-    return currentOffset;
+
+    return box.localToGlobal(Offset.zero);
   }
 
   @override

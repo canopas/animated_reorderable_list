@@ -68,7 +68,8 @@ class MotionBuilderState extends State<MotionBuilder>
     final incomingItem = MotionData(
       index: itemIndex,
       enter: true,
-      target: _itemOffsetAt(itemIndex) ?? Offset.zero,
+      endOffset: _itemOffsetAt(itemIndex) ?? Offset.zero,
+      startOffset: _itemOffsetAt(itemIndex) ?? Offset.zero,
     );
     final updatedChildrenMap = <int, MotionData>{};
     if (childrenMap.containsKey(itemIndex)) {
@@ -77,12 +78,16 @@ class MotionBuilderState extends State<MotionBuilder>
           updatedChildrenMap[itemIndex] = incomingItem;
           updatedChildrenMap[entry.key + 1] = entry.value.copyWith(
             index: entry.key + 1,
-            offset: _itemOffsetAt(entry.key) ?? Offset.zero,
+            startOffset:
+                _itemOffsetAt(entry.key, includeAnimation: true) ?? Offset.zero,
+            endOffset: _itemOffsetAt(entry.key + 1) ?? Offset.zero,
           );
         } else if (entry.key > itemIndex) {
           updatedChildrenMap[entry.key + 1] = entry.value.copyWith(
             index: entry.key + 1,
-            offset: _itemOffsetAt(entry.key) ?? Offset.zero,
+            startOffset:
+                _itemOffsetAt(entry.key, includeAnimation: true) ?? Offset.zero,
+            endOffset: _itemOffsetAt(entry.key + 1) ?? Offset.zero,
           );
         } else {
           updatedChildrenMap[entry.key] = entry.value;
@@ -96,8 +101,10 @@ class MotionBuilderState extends State<MotionBuilder>
     // print("updated map ${childrenMap}");
   }
 
-  Offset? _itemOffsetAt(int index) {
-    final currentOffset = _items[index]?.currentAnimatedOffset ?? Offset.zero;
+  Offset? _itemOffsetAt(int index, {bool includeAnimation = false}) {
+    final currentOffset = includeAnimation
+        ? (_items[index]?.currentAnimatedOffset ?? Offset.zero)
+        : Offset.zero;
     final itemRenderBox =
         _items[index]?.context.findRenderObject() as RenderBox?;
     if (itemRenderBox == null) return null;
@@ -135,9 +142,10 @@ class MotionBuilderState extends State<MotionBuilder>
       child: widget.itemBuilder(context, index),
       updateMotionData: (MotionData) {
         childrenMap[index] = MotionData.copyWith(
-          offset: _itemOffsetAt(index),
+          startOffset: _itemOffsetAt(index),
           frontItemOffset: _itemOffsetAt(index - 1),
           nextItemOffset: _itemOffsetAt(index + 1),
+          endOffset: _itemOffsetAt(index),
           enter: false,
           exit: false,
         );
