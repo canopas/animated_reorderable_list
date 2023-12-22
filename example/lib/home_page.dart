@@ -27,7 +27,7 @@ class _HomePageState extends State<HomePage> {
   void insert() {
     addedNumber += 1;
     setState(() {
-      list.insert(1, User(name: "uniq $addedNumber", index: addedNumber));
+      list.insert(1, User(name: "User $addedNumber", index: addedNumber));
     });
   }
 
@@ -149,8 +149,10 @@ class _HomePageState extends State<HomePage> {
                       items: list,
                       scrollDirection: Axis.vertical,
                       itemBuilder: (BuildContext context, int index) {
+                        // print("Key ${list[index].name}");
                         return ItemCard(
-                            key: Key('${list[index].name}'), index: index);
+                            key: Key('${list[index].name}'),
+                            index: list[index].index);
                       },
                       insertDuration: const Duration(milliseconds: 200),
                       insertAnimation: appliedStyle,

@@ -19,7 +19,7 @@ class MotionAnimatedContent extends StatefulWidget {
   final AnimatedWidgetBuilder removeAnimationBuilder;
   final Widget? child;
   final Function(MotionData)? updateMotionData;
-  final Function(MotionData)? onItemRemoved;
+  final Function(int)? onItemRemoved;
 
   const MotionAnimatedContent(
       {required this.key,
@@ -62,8 +62,9 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
       reverseDuration: _kExitDuration,
       vsync: this,
     )..addStatusListener((status) {
-        if (status == AnimationStatus.dismissed && widget.exit) {
-          widget.onItemRemoved?.call(widget.motionData);
+        print("status $status");
+        if (status == AnimationStatus.dismissed) {
+          widget.onItemRemoved?.call(widget.motionData.index);
         }
       });
 
@@ -104,15 +105,9 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
       _listState.registerItem(this);
     }
 
-    print("OLD - ${oldMotionData}   \n   NEW - ${newMotionData}");
+    print("didUpdateWidget");
+    // print("OLD - ${oldMotionData}   \n   NEW - ${newMotionData}");
 
-    if (!oldMotionData.exit && newMotionData.exit) {
-      Future.delayed(_kDragDuration, () {
-        _visibilityController.reset();
-        _visibilityController.value = 1.0;
-        _visibilityController.reverse();
-      });
-    }
     Offset endOffset = widget.motionData.endOffset;
     if (endOffset != Offset.zero) {
       _updateAnimationTranslation();
@@ -173,5 +168,12 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
   void deactivate() {
     _listState.unregisterItem(index, this);
     super.deactivate();
+  }
+
+  void animateExit() {
+    _visibilityController.reset();
+    _visibilityController.value = 1.0;
+    _visibilityController.reverse();
+    print("animateExit");
   }
 }

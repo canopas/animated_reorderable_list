@@ -107,15 +107,17 @@ class MotionBuilderState extends State<MotionBuilder>
     if (itemIndex < 0 || itemIndex >= childrenMap.length) {
       return;
     }
-
+    print("removeItem $index");
     if (childrenMap.containsKey(itemIndex)) {
-      childrenMap[itemIndex] = childrenMap[itemIndex]!.copyWith(exit: true);
+      _items[itemIndex]?.animateExit();
+      // childrenMap[itemIndex] = childrenMap[itemIndex]!.copyWith(exit: true);
+      //_onItemDeleted(itemIndex);
     }
+    print("ChildrenMap ${childrenMap.length}");
   }
 
-  void _onItemDeleted(MotionData data) {
-    print("_onItemDeleted ${data.index}");
-    final int itemIndex = data.index;
+  void _onItemDeleted(int itemIndex) {
+    print("_onItemDeleted $itemIndex");
     final updatedChildrenMap = <int, MotionData>{};
     if (childrenMap.containsKey(itemIndex)) {
       for (final entry in childrenMap.entries) {
@@ -126,9 +128,9 @@ class MotionBuilderState extends State<MotionBuilder>
         } else {
           updatedChildrenMap[entry.key - 1] = childrenMap[entry.key]!.copyWith(
             index: entry.key - 1,
-            startOffset: _itemOffsetAt(entry.key - 1, includeAnimation: true) ??
-                Offset.zero,
-            endOffset: _itemOffsetAt(entry.key) ?? Offset.zero,
+            startOffset:
+                _itemOffsetAt(entry.key, includeAnimation: true) ?? Offset.zero,
+            endOffset: _itemOffsetAt(entry.key - 1) ?? Offset.zero,
           );
         }
       }
@@ -168,6 +170,7 @@ class MotionBuilderState extends State<MotionBuilder>
       return true;
     }());
     final Key itemGlobalKey = _MotionBuilderItemGlobalKey(child.key!, this);
+    print("Key $itemGlobalKey index $index length ${childrenMap.length}");
     return MotionAnimatedContent(
       index: index,
       key: itemGlobalKey,
@@ -177,15 +180,16 @@ class MotionBuilderState extends State<MotionBuilder>
       insertAnimationBuilder: widget.insertAnimationBuilder,
       removeAnimationBuilder: widget.removeAnimationBuilder,
       updateMotionData: (MotionData) {
+        print("updateMotionData $index");
         childrenMap[index] = MotionData.copyWith(
           startOffset: _itemOffsetAt(index),
-          frontItemOffset: _itemOffsetAt(index - 1),
-          nextItemOffset: _itemOffsetAt(index + 1),
+          // frontItemOffset: _itemOffsetAt(index - 1),
+          //nextItemOffset: _itemOffsetAt(index + 1),
           endOffset: _itemOffsetAt(index),
           enter: false,
           exit: false,
         );
-        // print("updateMotionData ${childrenMap[index]}");
+        print("updateMotionData ${childrenMap[index]}");
       },
       onItemRemoved: _onItemDeleted,
       child: widget.itemBuilder(context, index),
