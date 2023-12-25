@@ -21,7 +21,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   AnimationType appliedStyle = AnimationType.fadeIn;
   List<User> list =
-      List.generate(3, (index) => User(name: "User $index", index: index));
+      List.generate(50, (index) => User(name: "User $index", index: index));
   int addedNumber = 3;
   bool isGrid = true;
 
@@ -148,11 +148,9 @@ class _HomePageState extends State<HomePage> {
               child: isGrid
                   ? MotionGridViewBuilder(
                       items: list,
-                      scrollDirection: Axis.vertical,
                       itemBuilder: (BuildContext context, int index) {
-                        // print("Key ${list[index].name}");
                         return ItemCard(
-                            key: Key('${list[index].name}'),
+                            key: ValueKey(index),
                             index: list[index].index);
                       },
                       removedItemBuilder: (context, item) {
@@ -161,14 +159,14 @@ class _HomePageState extends State<HomePage> {
                       },
                       insertAnimation: appliedStyle,
                       removeAnimation: appliedStyle,
-                insertDuration: const Duration(milliseconds: 300),
-                removeDuration: const Duration(milliseconds: 2000),
+                      insertDuration: const Duration(milliseconds: 300),
+                      removeDuration: const Duration(milliseconds: 2000),
                       sliverGridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 4),
                     )
                   : MotionListViewBuilder(
-                items: list,
+                      items: list,
                       itemBuilder: (BuildContext context, int index) {
                         return ItemTile(
                             key: Key('${list[index].name}'),
@@ -178,8 +176,8 @@ class _HomePageState extends State<HomePage> {
                         return ItemTile(
                             key: Key('${item.name}'), index: item.index);
                       },
-                insertDuration: const Duration(milliseconds: 300),
-                removeDuration: const Duration(milliseconds: 2000),
+                      insertDuration: const Duration(milliseconds: 300),
+                      removeDuration: const Duration(milliseconds: 2000),
                       insertAnimation: appliedStyle,
                       removeAnimation: appliedStyle,
                     ),
