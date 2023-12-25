@@ -32,8 +32,6 @@ class MotionGridViewBuilder<E extends Object> extends StatelessWidget {
   /// The duration of the animation when an item was removed from the list.
   final Duration? removeDuration;
 
-  /// The duration of the list update its position.
-  final Duration? resizeDuration;
 
   /// Controls the layout of tiles in a grid.
   /// Given the current constraints on the grid,
@@ -62,7 +60,6 @@ class MotionGridViewBuilder<E extends Object> extends StatelessWidget {
       this.removeAnimation,
       this.insertDuration,
       this.removeDuration,
-      this.resizeDuration,
       required this.sliverGridDelegate,
       this.scrollDirection = Axis.vertical,
       this.areItemsTheSame})
@@ -79,7 +76,6 @@ class MotionGridViewBuilder<E extends Object> extends StatelessWidget {
         removeAnimationType: removeAnimation ?? insertAnimation,
         insertDuration: insertDuration,
         removeDuration: removeDuration,
-        resizeDuration: resizeDuration,
         areItemsTheSame: areItemsTheSame,
         scrollDirection: scrollDirection,
         sliverGridDelegate: sliverGridDelegate,

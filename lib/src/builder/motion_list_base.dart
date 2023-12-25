@@ -17,8 +17,6 @@ const Duration _kInsertItemDuration = Duration(milliseconds: 300);
 
 const Duration _kRemoveItemDuration = Duration(milliseconds: 300);
 
-const Duration _kResizeDuration = Duration(milliseconds: 300);
-
 abstract class MotionListBase<W extends Widget, E extends Object>
     extends StatefulWidget {
   final ItemBuilder<W, E> itemBuilder;
@@ -74,9 +72,6 @@ abstract class MotionListBaseState<
   @protected
   SliverGridDelegate? get sliverGridDelegate => widget.sliverGridDelegate;
 
-  @nonVirtual
-  @protected
-  Duration get resizeDuration => widget.resizeDuration ?? _kResizeDuration;
 
   @nonVirtual
   @protected
@@ -133,7 +128,7 @@ abstract class MotionListBaseState<
 
   void _onInserted(final int position, final int count) {
     for (var i = 0; i < count; i++) {
-      listKey.currentState!.insertItem(position);
+      listKey.currentState!.insertItem(position, insertDuration: insertDuration);
     }
   }
 
@@ -144,7 +139,7 @@ abstract class MotionListBaseState<
       listKey.currentState!.removeItem(index, (context, animation) {
         return removedItemBuilder?.call(context, item) ??
             itemBuilder(context, index);
-      });
+      },removeItemDuration: removeDuration);
     }
   }
 

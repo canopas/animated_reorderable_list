@@ -105,7 +105,7 @@ class MotionBuilderState extends State<MotionBuilder>
     return index;
   }
 
-  Future<void> insertItem(int index) async {
+  Future<void> insertItem(int index, {required Duration insertDuration}) async {
     assert(index >= 0);
     final int itemIndex = _indexToItemIndex(index);
 
@@ -121,7 +121,7 @@ class MotionBuilderState extends State<MotionBuilder>
     }
 
     final AnimationController controller = AnimationController(
-      duration: kDragDuration,
+      duration: insertDuration,
       vsync: this,
     );
 
@@ -135,9 +135,9 @@ class MotionBuilderState extends State<MotionBuilder>
       ..sort();
 
     final motionData = MotionData(
-      endOffset: _itemOffsetAt(itemIndex) ?? Offset.zero,
-      startOffset: _itemOffsetAt(itemIndex) ?? Offset.zero,
-    );
+        endOffset: Offset.zero,
+        startOffset: Offset.zero,
+        duration: insertDuration);
     final updatedChildrenMap = <int, MotionData>{};
     if (childrenMap.containsKey(itemIndex)) {
       for (final entry in childrenMap.entries) {
@@ -148,6 +148,7 @@ class MotionBuilderState extends State<MotionBuilder>
             startOffset:
                 _itemOffsetAt(entry.key, includeAnimation: true) ?? Offset.zero,
             endOffset: _itemOffsetAt(entry.key + 1) ?? Offset.zero,
+            duration: insertDuration
           );
         } else if (entry.key > itemIndex) {
           updatedChildrenMap[entry.key + 1] = entry.value.copyWith(
@@ -155,14 +156,15 @@ class MotionBuilderState extends State<MotionBuilder>
             startOffset:
                 _itemOffsetAt(entry.key, includeAnimation: true) ?? Offset.zero,
             endOffset: _itemOffsetAt(entry.key + 1) ?? Offset.zero,
+              duration: insertDuration
           );
         } else {
-          updatedChildrenMap[entry.key] = entry.value;
+          updatedChildrenMap[entry.key] = entry.value.copyWith(duration: insertDuration);
         }
       }
       childrenMap.clear();
       childrenMap.addAll(updatedChildrenMap);
-      Future.delayed(kDragDuration).then((value) {
+      Future.delayed(insertDuration).then((value) {
         controller.forward().then<void>((_) {
           _removeActiveItemAt(_incomingItems, incomingItem.itemIndex)!
               .controller!
@@ -170,7 +172,7 @@ class MotionBuilderState extends State<MotionBuilder>
         });
       });
     } else {
-      childrenMap[itemIndex] = motionData;
+      childrenMap[itemIndex] = motionData.copyWith(duration: insertDuration);
       controller.forward().then<void>((_) {
         _removeActiveItemAt(_incomingItems, incomingItem.itemIndex)!
             .controller!
@@ -183,7 +185,8 @@ class MotionBuilderState extends State<MotionBuilder>
     });
   }
 
-  void removeItem(int index, RemovedItemBuilder builder) {
+  void removeItem(int index, RemovedItemBuilder builder,
+      {required Duration removeItemDuration}) {
     assert(index >= 0);
     final int itemIndex = _indexToItemIndex(index);
     if (itemIndex < 0 || itemIndex >= _itemsCount) {
@@ -197,7 +200,8 @@ class MotionBuilderState extends State<MotionBuilder>
           _removeActiveItemAt(_incomingItems, itemIndex);
 
       final AnimationController controller = incomingItem?.controller ??
-          AnimationController(duration: kDragDuration, value: 1.0, vsync: this);
+          AnimationController(
+              duration: removeItemDuration, value: 1.0, vsync: this);
       final _ActiveItem outgoingItem =
           _ActiveItem.outgoing(controller, itemIndex, builder);
       setState(() {
@@ -220,17 +224,18 @@ class MotionBuilderState extends State<MotionBuilder>
           if (item.itemIndex > outgoingItem.itemIndex) item.itemIndex -= 1;
         }
 
-        _onItemRemoved(itemIndex);
+        _onItemRemoved(itemIndex,removeItemDuration);
       });
     }
   }
 
-  void _onItemRemoved(int itemIndex) {
+  void _onItemRemoved(int itemIndex, Duration removeDuration) {
     final updatedChildrenMap = <int, MotionData>{};
     if (childrenMap.containsKey(itemIndex)) {
       for (final entry in childrenMap.entries) {
         if (entry.key < itemIndex) {
-          updatedChildrenMap[entry.key] = childrenMap[entry.key]!;
+          updatedChildrenMap[entry.key] =
+              childrenMap[entry.key]!.copyWith(duration: removeDuration);
         } else if (entry.key == itemIndex) {
           continue;
         } else {
@@ -239,6 +244,7 @@ class MotionBuilderState extends State<MotionBuilder>
             startOffset:
                 _itemOffsetAt(entry.key, includeAnimation: true) ?? Offset.zero,
             endOffset: _itemOffsetAt(entry.key - 1) ?? Offset.zero,
+              duration: removeDuration
           );
         }
       }
