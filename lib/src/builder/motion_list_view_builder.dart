@@ -9,6 +9,9 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
   ///Called, as needed, to build list item widget
   final ItemBuilder itemBuilder;
 
+  ///An optional builder when an item was removed from the list.
+  final RemovedItemBuilder? removedItemBuilder;
+
   /// AnimationStyle when item is added in the list.
   final AnimationType insertAnimation;
 
@@ -76,6 +79,7 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
       {Key? key,
       required this.items,
       required this.itemBuilder,
+      this.removedItemBuilder,
       this.insertAnimation = AnimationType.fadeIn,
       this.removeAnimation,
       this.insertDuration = const Duration(milliseconds: 300),
@@ -111,6 +115,7 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
           MotionListImpl(
             items: items,
             itemBuilder: itemBuilder,
+            removedItemBuilder: removedItemBuilder,
             insertAnimationType: insertAnimation,
             removeAnimationType: removeAnimation ?? insertAnimation,
             insertDuration: insertDuration,

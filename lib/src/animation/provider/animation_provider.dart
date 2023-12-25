@@ -1,10 +1,6 @@
 import 'package:flutter/cupertino.dart';
-import 'package:motion_list/animation/animation.dart';
-import '../animation/flipin_x.dart';
-import '../animation/flipin_y.dart';
-import '../animation/slide_in_down.dart';
-import '../animation/slide_in_right.dart';
-import '../animation/slide_in_up.dart';
+import 'package:motion_list/src/animation/animation.dart';
+
 import 'animation_type.dart';
 
 class AnimationProvider {
@@ -14,28 +10,34 @@ class AnimationProvider {
       case (AnimationType.fadeIn):
         return FadeInAnimation(animation: animation, child: child);
       case (AnimationType.fadeInLeft):
-        return FadeInLeft(animation: animation,child: child,);
+        return FadeInLeft(
+          animation: animation,
+          child: child,
+        );
       case (AnimationType.fadeInRight):
-        return FadeInRight(animation: animation,child: child,);
-      case(AnimationType.fadeInDown):
+        return FadeInRight(
+          animation: animation,
+          child: child,
+        );
+      case (AnimationType.fadeInDown):
         return FadeInDown(animation: animation, child: child);
-      case(AnimationType.fadeInUp):
+      case (AnimationType.fadeInUp):
         return FadeInUp(animation: animation, child: child);
-      case(AnimationType.flipInY):
-        return FlipInY(animation:animation,child:child);
-      case(AnimationType.flipInX):
-        return FlipInX(animation:animation,child:child);
-      case(AnimationType.landing):
+      case (AnimationType.flipInY):
+        return FlipInY(animation: animation, child: child);
+      case (AnimationType.flipInX):
+        return FlipInX(animation: animation, child: child);
+      case (AnimationType.landing):
         return Landing(animation: animation, child: child);
-      case(AnimationType.scaleIn):
+      case (AnimationType.scaleIn):
         return ScaleIn(animation: animation, child: child);
-      case(AnimationType.scaleInTop):
+      case (AnimationType.scaleInTop):
         return ScaleInTop(animation: animation, child: child);
-      case(AnimationType.scaleInBottom):
+      case (AnimationType.scaleInBottom):
         return ScaleInBottom(animation: animation, child: child);
-      case(AnimationType.scaleInLeft):
+      case (AnimationType.scaleInLeft):
         return ScaleInLeft(animation: animation, child: child);
-      case(AnimationType.scaleInRight):
+      case (AnimationType.scaleInRight):
         return ScaleInRight(animation: animation, child: child);
       case (AnimationType.slideInLeft):
         return SlideInLeft(animation: animation, child: child);
@@ -47,7 +49,6 @@ class AnimationProvider {
         return SlideInDown(animation: animation, child: child);
       case (AnimationType.sizeIn):
         return SizeIn(animation: animation, child: child);
-
     }
   }
 }

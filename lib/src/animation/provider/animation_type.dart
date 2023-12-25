@@ -1,4 +1,4 @@
-enum AnimationType{
+enum AnimationType {
   fadeIn,
   fadeInLeft,
   fadeInRight,

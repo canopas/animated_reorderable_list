@@ -1,23 +1,32 @@
-import 'dart:math';
-
 import 'package:diffutil_dart/diffutil.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:motion_list/motion_list.dart';
 
+import 'motion_animated_builder.dart';
+
 typedef ItemBuilder<W extends Widget, E> = Widget Function(
     BuildContext context, int index);
 
+typedef RemovedItemBuilder<W extends Widget, E> = Widget Function(
+    BuildContext context, E item);
+
 typedef EqualityChecker<E> = bool Function(E, E);
 
+const Duration _kInsertItemDuration = Duration(milliseconds: 300);
+
+const Duration _kRemoveItemDuration = Duration(milliseconds: 300);
+
+const Duration _kResizeDuration = Duration(milliseconds: 300);
 
 abstract class MotionListBase<W extends Widget, E extends Object>
     extends StatefulWidget {
   final ItemBuilder<W, E> itemBuilder;
+  final RemovedItemBuilder<W, E>? removedItemBuilder;
   final List<E> items;
-  final Duration resizeDuration;
-  final Duration insertDuration;
-  final Duration removeDuration;
+  final Duration? resizeDuration;
+  final Duration? insertDuration;
+  final Duration? removeDuration;
   final Axis? scrollDirection;
   final AnimationType? insertAnimationType;
   final AnimationType? removeAnimationType;
@@ -28,9 +37,10 @@ abstract class MotionListBase<W extends Widget, E extends Object>
       {Key? key,
       required this.items,
       required this.itemBuilder,
-      required this.resizeDuration,
-      required this.insertDuration,
-      required this.removeDuration,
+      this.removedItemBuilder,
+      this.resizeDuration,
+      this.insertDuration,
+      this.removeDuration,
       this.insertAnimationType,
       this.scrollDirection,
       this.sliverGridDelegate,
@@ -46,11 +56,11 @@ abstract class MotionListBaseState<
   late List<E> oldList;
 
   @protected
-  GlobalKey<MotionAnimationBuilderState> listKey = GlobalKey();
+  GlobalKey<MotionBuilderState> listKey = GlobalKey();
 
   @nonVirtual
   @protected
-  MotionAnimationBuilderState get list => listKey.currentState!;
+  MotionBuilderState get list => listKey.currentState!;
 
   @nonVirtual
   @protected
@@ -58,19 +68,23 @@ abstract class MotionListBaseState<
 
   @nonVirtual
   @protected
+  RemovedItemBuilder<W, E>? get removedItemBuilder => widget.removedItemBuilder;
+
+  @nonVirtual
+  @protected
   SliverGridDelegate? get sliverGridDelegate => widget.sliverGridDelegate;
 
   @nonVirtual
   @protected
-  Duration get resizeDuration => widget.resizeDuration;
+  Duration get resizeDuration => widget.resizeDuration ?? _kResizeDuration;
 
   @nonVirtual
   @protected
-  Duration get insertDuration => widget.insertDuration;
+  Duration get insertDuration => widget.insertDuration ?? _kInsertItemDuration;
 
   @nonVirtual
   @protected
-  Duration get removeDuration => widget.removeDuration;
+  Duration get removeDuration => widget.removeDuration ?? _kRemoveItemDuration;
 
   @protected
   @nonVirtual
@@ -92,6 +106,14 @@ abstract class MotionListBaseState<
     oldList = List.from(widget.items);
   }
 
+  // @override
+  // void didUpdateWidget(covariant B oldWidget) {
+  //   super.didUpdateWidget(oldWidget);
+  //   final newList = widget.items;
+  //   _calcDiff(oldList, newList);
+  //
+  //  // oldList = List.from(newList);
+  // }
   @override
   void didUpdateWidget(covariant B oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -99,40 +121,38 @@ abstract class MotionListBaseState<
     final diff = calculateListDiff(oldList, newList,
             detectMoves: false, equalityChecker: widget.areItemsTheSame)
         .getUpdates();
-    final tempList = List<E?>.from(oldList);
     for (final update in diff) {
-      _onDiffUpdate(update, tempList);
+      _onDiffUpdate(update);
     }
     oldList = List.from(newList);
   }
 
-  void _onChanged(int position, Object? payLoad, final List<E?> tmpList) {
-    listKey.currentState!.removeItem(position, removeDuration: removeDuration);
-    _onInserted(position, 1, tmpList);
+  void _onChanged(int position, Object? payLoad) {
+    _onInserted(position, 1);
   }
 
-  void _onInserted(
-      final int position, final int count, final List<E?> tmpList) {
-    for (var loopCount = 0; loopCount < count; loopCount++) {
-      listKey.currentState!.insertItem(position,
-          insertDuration: insertDuration, resizeDuration: resizeDuration);
+  void _onInserted(final int position, final int count) {
+    for (var i = 0; i < count; i++) {
+      listKey.currentState!.insertItem(position);
     }
-    tmpList.insertAll(position, List<E?>.filled(count, null));
   }
 
-  void _onRemoved(final int position, final int count, final List<E?> tmpList) {
-    for (var loopcount = 0; loopcount < count; loopcount++) {
-      listKey.currentState!.removeItem(position + loopcount,
-          removeDuration: removeDuration, resizeDuration: resizeDuration);
+  void _onRemoved(final int position, final int count) {
+    for (var i = 0; i < count; i++) {
+      final index = position + i;
+      final item = oldList[index];
+      listKey.currentState!.removeItem(index, (context, animation) {
+        return removedItemBuilder?.call(context, item) ??
+            itemBuilder(context, index);
+      });
     }
-    tmpList.removeRange(position, position + count);
   }
 
-  void _onDiffUpdate(DiffUpdate update, List<E?> tmpList) {
+  void _onDiffUpdate(DiffUpdate update) {
     update.when(
-        insert: (pos, count) => _onInserted(pos, count, tmpList),
-        remove: (pos, count) => _onRemoved(pos, count, tmpList),
-        change: (pos, payload) => _onChanged(pos, payload, tmpList),
+        insert: (pos, count) => _onInserted(pos, count),
+        remove: (pos, count) => _onRemoved(pos, count),
+        change: (pos, payload) => _onChanged(pos, payload),
         move: (_, __) =>
             throw UnimplementedError('Moves are currently not supported'));
   }
@@ -140,30 +160,16 @@ abstract class MotionListBaseState<
   @nonVirtual
   @protected
   Widget insertItemBuilder(
-      BuildContext context,
-      Animation<double>? resizeAnimation,
-      int index,
-      Animation<double> animation) {
-    return SizeTransition(
-      axis: scrollDirection,
-      sizeFactor: resizeAnimation ?? kAlwaysCompleteAnimation,
-      child: AnimationProvider.buildAnimation(
-          insertAnimationType!, itemBuilder(context, index), animation),
-    );
+      BuildContext context, Widget child, Animation<double> animation) {
+    return AnimationProvider.buildAnimation(
+        insertAnimationType!, child, animation);
   }
 
   @nonVirtual
   @protected
   Widget removeItemBuilder(
-      BuildContext context,
-      Animation<double>? resizeAnimation,
-      int index,
-      Animation<double> animation) {
-    return SizeTransition(
-      axis: scrollDirection,
-      sizeFactor: resizeAnimation ?? kAlwaysCompleteAnimation,
-      child: AnimationProvider.buildAnimation(
-          removeAnimationType!, itemBuilder(context, index), animation),
-    );
+      BuildContext context, Widget child, Animation<double> animation) {
+    return AnimationProvider.buildAnimation(
+        removeAnimationType!, child, animation);
   }
 }

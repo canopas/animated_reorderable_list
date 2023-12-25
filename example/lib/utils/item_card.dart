@@ -13,7 +13,7 @@ class ItemCard extends StatelessWidget {
         color: Colors.primaries[index % Colors.primaries.length],
         child: Center(
           child: Text(
-            (index + 1).toString(),
+            (index ).toString(),
             style: Theme.of(context).textTheme.headlineMedium,
           ),
         ),
