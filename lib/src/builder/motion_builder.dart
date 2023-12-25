@@ -13,12 +13,13 @@ class MotionBuilder<E> extends StatefulWidget {
   final int initialCount;
   final SliverGridDelegate? delegateBuilder;
 
-  const MotionBuilder({Key? key,
-    required this.insertAnimationBuilder,
-    required this.removeAnimationBuilder,
-    this.initialCount = 0,
-    this.delegateBuilder,
-    required this.itemBuilder})
+  const MotionBuilder(
+      {Key? key,
+      required this.insertAnimationBuilder,
+      required this.removeAnimationBuilder,
+      this.initialCount = 0,
+      this.delegateBuilder,
+      required this.itemBuilder})
       : assert(initialCount >= 0),
         super(key: key);
 
@@ -27,7 +28,8 @@ class MotionBuilder<E> extends StatefulWidget {
 }
 
 class MotionBuilderState extends State<MotionBuilder>
-    with AutomaticKeepAliveClientMixin {
+    with TickerProviderStateMixin, AutomaticKeepAliveClientMixin {
+  final List<_ActiveItem> _incomingItems = <_ActiveItem>[];
   final List<_ActiveItem> _outgoingItems = <_ActiveItem>[];
   int _itemsCount = 0;
 
@@ -60,6 +62,9 @@ class MotionBuilderState extends State<MotionBuilder>
 
   @override
   void dispose() {
+    for (final _ActiveItem item in _incomingItems.followedBy(_outgoingItems)) {
+      item.controller?.dispose();
+    }
     super.dispose();
   }
 
@@ -101,13 +106,25 @@ class MotionBuilderState extends State<MotionBuilder>
   Future<void> insertItem(int index) async {
     print(" ---- INSERT --- ");
     assert(index >= 0);
-    final int itemIndex = index;
+    final int itemIndex = _indexToItemIndex(index);
 
-    if (itemIndex < 0 || itemIndex > childrenMap.length) {
+    if (itemIndex < 0 || itemIndex > _itemsCount) {
       return;
     }
 
-    final incomingItem = MotionData(
+    for (final _ActiveItem item in _incomingItems) {
+      if (item.itemIndex >= itemIndex) item.itemIndex += 1;
+    }
+    for (final _ActiveItem item in _outgoingItems) {
+      if (item.itemIndex >= itemIndex) item.itemIndex += 1;
+    }
+
+    final AnimationController controller = AnimationController(
+      duration: kDragDuration,
+      vsync: this,
+    );
+
+    final motionData = MotionData(
       index: itemIndex,
       enter: true,
       endOffset: _itemOffsetAt(itemIndex) ?? Offset.zero,
@@ -117,18 +134,18 @@ class MotionBuilderState extends State<MotionBuilder>
     if (childrenMap.containsKey(itemIndex)) {
       for (final entry in childrenMap.entries) {
         if (entry.key == itemIndex) {
-          updatedChildrenMap[itemIndex] = incomingItem;
+          updatedChildrenMap[itemIndex] = motionData;
           updatedChildrenMap[entry.key + 1] = entry.value.copyWith(
             index: entry.key + 1,
             startOffset:
-            _itemOffsetAt(entry.key, includeAnimation: true) ?? Offset.zero,
+                _itemOffsetAt(entry.key, includeAnimation: true) ?? Offset.zero,
             endOffset: _itemOffsetAt(entry.key + 1) ?? Offset.zero,
           );
         } else if (entry.key > itemIndex) {
           updatedChildrenMap[entry.key + 1] = entry.value.copyWith(
             index: entry.key + 1,
             startOffset:
-            _itemOffsetAt(entry.key, includeAnimation: true) ?? Offset.zero,
+                _itemOffsetAt(entry.key, includeAnimation: true) ?? Offset.zero,
             endOffset: _itemOffsetAt(entry.key + 1) ?? Offset.zero,
           );
         } else {
@@ -138,11 +155,26 @@ class MotionBuilderState extends State<MotionBuilder>
       childrenMap.clear();
       childrenMap.addAll(updatedChildrenMap);
     } else {
-      childrenMap[itemIndex] = incomingItem;
+      childrenMap[itemIndex] = motionData;
     }
 
+    final _ActiveItem incomingItem = _ActiveItem.incoming(
+      controller,
+      itemIndex,
+    );
     setState(() {
+      _incomingItems
+        ..add(incomingItem)
+        ..sort();
       _itemsCount += 1;
+    });
+
+    Future.delayed(kDragDuration).then((value) {
+      controller.forward().then<void>((_) {
+        _removeActiveItemAt(_incomingItems, incomingItem.itemIndex)!
+            .controller!
+            .dispose();
+      });
     });
 
     // print("updated map ${childrenMap}");
@@ -159,16 +191,36 @@ class MotionBuilderState extends State<MotionBuilder>
 
     print("removeItem $index");
     if (childrenMap.containsKey(itemIndex)) {
+      final _ActiveItem? incomingItem =
+          _removeActiveItemAt(_incomingItems, itemIndex);
+
+      final AnimationController controller = incomingItem?.controller ??
+          AnimationController(duration: kDragDuration, value: 1.0, vsync: this);
       final _ActiveItem outgoingItem =
-          _ActiveItem.outgoing(itemIndex, widget.itemBuilder);
+          _ActiveItem.outgoing(controller, itemIndex, widget.itemBuilder);
       setState(() {
         _outgoingItems
           ..add(outgoingItem)
           ..sort();
       });
-      _items[itemIndex]?.animateExit();
-      //childrenMap[itemIndex] = childrenMap[itemIndex]!.copyWith(exit: true);
-      // _onItemDeleted(itemIndex);
+
+      controller.reverse().then<void>((void value) {
+        _removeActiveItemAt(_outgoingItems, outgoingItem.itemIndex)!
+            .controller!
+            .dispose();
+
+        // Decrement the incoming and outgoing item indices to account
+        // for the removal.
+        for (final _ActiveItem item in _incomingItems) {
+          if (item.itemIndex > outgoingItem.itemIndex) item.itemIndex -= 1;
+        }
+        for (final _ActiveItem item in _outgoingItems) {
+          if (item.itemIndex > outgoingItem.itemIndex) item.itemIndex -= 1;
+        }
+
+        _onItemDeleted(itemIndex);
+        setState(() => _itemsCount -= 1);
+      });
     }
     print("ChildrenMap ${childrenMap.length}");
   }
@@ -210,7 +262,7 @@ class MotionBuilderState extends State<MotionBuilder>
         ? (_items[index]?.currentAnimatedOffset ?? Offset.zero)
         : Offset.zero;
     final itemRenderBox =
-    _items[index]?.context.findRenderObject() as RenderBox?;
+        _items[index]?.context.findRenderObject() as RenderBox?;
     if (itemRenderBox == null) return null;
     return itemRenderBox.localToGlobal(Offset.zero) + currentOffset;
   }
@@ -220,17 +272,22 @@ class MotionBuilderState extends State<MotionBuilder>
     super.build(context);
     return widget.delegateBuilder != null
         ? SliverGrid(
-        gridDelegate: widget.delegateBuilder!, delegate: _createDelegate())
+            gridDelegate: widget.delegateBuilder!, delegate: _createDelegate())
         : SliverList(delegate: _createDelegate());
   }
 
   Widget _itemBuilder(BuildContext context, int index) {
     final _ActiveItem? outgoingItem = _activeItemAt(_outgoingItems, index);
+    final _ActiveItem? incomingItem = _activeItemAt(_incomingItems, index);
 
     print("has outgoing ${outgoingItem != null}");
     final Widget child = outgoingItem != null
-        ? outgoingItem.removedItemBuilder!(context, index)
+        ? widget.itemBuilder(context, index)
         : widget.itemBuilder(context, _itemIndexToIndex(index));
+
+    final Widget builder = outgoingItem != null
+        ? _removeItemBuilder(outgoingItem, child)
+        : _insertItemBuilder(incomingItem, child);
 
     assert(() {
       if (child.key == null) {
@@ -248,24 +305,16 @@ class MotionBuilderState extends State<MotionBuilder>
       index: index,
       key: itemGlobalKey,
       motionData: childrenMap[index]!,
-      enter: false,
-      exit: false,
-      insertAnimationBuilder: widget.insertAnimationBuilder,
-      removeAnimationBuilder: widget.removeAnimationBuilder,
       updateMotionData: (MotionData) {
-        // print("updateMotionData $index");
         childrenMap[index] = MotionData.copyWith(
           startOffset: _itemOffsetAt(index),
-          // frontItemOffset: _itemOffsetAt(index - 1),
-          //nextItemOffset: _itemOffsetAt(index + 1),
           endOffset: _itemOffsetAt(index),
           enter: false,
           exit: false,
         );
         print("updateMotionData ${childrenMap[index]}");
       },
-      onItemRemoved: _onItemDeleted,
-      child: child,
+      child: builder,
     );
   }
 
@@ -273,19 +322,39 @@ class MotionBuilderState extends State<MotionBuilder>
     return SliverChildBuilderDelegate(_itemBuilder, childCount: _itemsCount);
   }
 
+  Widget _removeItemBuilder(_ActiveItem outgoingItem, Widget child) {
+    final Animation<double> animation =
+        outgoingItem.controller ?? kAlwaysCompleteAnimation;
+    return widget.removeAnimationBuilder(
+      context,
+      child,
+      animation,
+    );
+  }
+
+  Widget _insertItemBuilder(_ActiveItem? incomingItem, Widget child) {
+    final Animation<double> animation =
+        incomingItem?.controller ?? kAlwaysCompleteAnimation;
+    return widget.insertAnimationBuilder(
+      context,
+      child,
+      animation,
+    );
+  }
+
   static MotionBuilderState of(BuildContext context) {
     final MotionBuilderState? result =
-    context.findAncestorStateOfType<MotionBuilderState>();
+        context.findAncestorStateOfType<MotionBuilderState>();
     assert(() {
       if (result == null) {
         throw FlutterError(
           'MotionBuilderState.of() called with a context that does not contain a MotionBuilderState.\n'
-              'No MotionBuilderState ancestor could be found starting from the '
-              'context that was passed to MotionBuilderState.of(). This can '
-              'happen when the context provided is from the same StatefulWidget that '
-              'built the AnimatedList.'
-              'The context used was:\n'
-              '  $context',
+          'No MotionBuilderState ancestor could be found starting from the '
+          'context that was passed to MotionBuilderState.of(). This can '
+          'happen when the context provided is from the same StatefulWidget that '
+          'built the AnimatedList.'
+          'The context used was:\n'
+          '  $context',
         );
       }
       return true;
@@ -320,10 +389,17 @@ class _MotionBuilderItemGlobalKey extends GlobalObjectKey {
 }
 
 class _ActiveItem implements Comparable<_ActiveItem> {
-  _ActiveItem.index(this.itemIndex) : removedItemBuilder = null;
+  _ActiveItem.incoming(this.controller, this.itemIndex)
+      : removedItemBuilder = null;
 
-  _ActiveItem.outgoing(this.itemIndex, this.removedItemBuilder);
+  _ActiveItem.outgoing(
+      this.controller, this.itemIndex, this.removedItemBuilder);
 
+  _ActiveItem.index(this.itemIndex)
+      : controller = null,
+        removedItemBuilder = null;
+
+  final AnimationController? controller;
   final ItemBuilder? removedItemBuilder;
   int itemIndex;
 

@@ -1,11 +1,10 @@
 import 'package:flutter/widgets.dart';
 import 'package:motion_list/src/model/motion_data.dart';
 
-import '../builder/motion_animation_builder.dart';
 import '../builder/motion_builder.dart';
 
 const int duration = 2000;
-const Duration _kDragDuration = Duration(milliseconds: duration);
+const Duration kDragDuration = Duration(milliseconds: duration);
 const Duration _kEntryDuration = Duration(milliseconds: duration);
 const Duration _kExitDuration = Duration(milliseconds: duration);
 
@@ -13,10 +12,11 @@ class MotionAnimatedContent extends StatefulWidget {
   final Key key;
   final int index;
   final MotionData motionData;
-  final bool enter;
-  final bool exit;
-  final AnimatedWidgetBuilder insertAnimationBuilder;
-  final AnimatedWidgetBuilder removeAnimationBuilder;
+
+  // final bool enter;
+//  final bool exit;
+//  final AnimatedWidgetBuilder insertAnimationBuilder;
+  // final AnimatedWidgetBuilder removeAnimationBuilder;
   final Widget? child;
   final Function(MotionData)? updateMotionData;
   final Function(int)? onItemRemoved;
@@ -25,10 +25,10 @@ class MotionAnimatedContent extends StatefulWidget {
       {required this.key,
       required this.index,
       required this.motionData,
-      required this.enter,
-      required this.exit,
-      required this.insertAnimationBuilder,
-      required this.removeAnimationBuilder,
+      //  required this.enter,
+      //   required this.exit,
+      //   required this.insertAnimationBuilder,
+      //   required this.removeAnimationBuilder,
       required this.child,
       this.updateMotionData,
       this.onItemRemoved})
@@ -39,8 +39,8 @@ class MotionAnimatedContent extends StatefulWidget {
 }
 
 class MotionAnimatedContentState extends State<MotionAnimatedContent>
-    with TickerProviderStateMixin {
-  late AnimationController _visibilityController;
+    with SingleTickerProviderStateMixin {
+// late AnimationController _visibilityController;
   late AnimationController _positionController;
   late Animation<Offset> _offsetAnimation;
 
@@ -56,20 +56,20 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
     print("initState ${widget.index}");
     _listState = MotionBuilderState.of(context);
     _listState.registerItem(this);
-    _visibilityController = AnimationController(
-      value: 1.0,
-      duration: _kEntryDuration,
-      reverseDuration: _kExitDuration,
-      vsync: this,
-    )..addStatusListener((status) {
-        print("status $status index $index");
-        if (status == AnimationStatus.dismissed) {
-          widget.onItemRemoved?.call(widget.motionData.index);
-        }
-      });
+    // _visibilityController = AnimationController(
+    //   value: 1.0,
+    //   duration: _kEntryDuration,
+    //   reverseDuration: _kExitDuration,
+    //   vsync: this,
+    // )..addStatusListener((status) {
+    //     print("status $status index $index");
+    //     if (status == AnimationStatus.dismissed) {
+    //       widget.onItemRemoved?.call(widget.motionData.index);
+    //     }
+    //   });
 
     _positionController =
-        AnimationController(vsync: this, duration: _kDragDuration)
+        AnimationController(vsync: this, duration: kDragDuration)
           ..addStatusListener((status) {
             if (status == AnimationStatus.completed) {
               widget.updateMotionData?.call(widget.motionData);
@@ -86,12 +86,12 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
       widget.updateMotionData?.call(widget.motionData);
     });
 
-    if (widget.motionData.enter) {
-      _visibilityController.value = 0.0;
-      Future.delayed(_kDragDuration, () {
-        _visibilityController.forward();
-      });
-    }
+    // if (widget.motionData.enter) {
+    //   _visibilityController.value = 0.0;
+    //   Future.delayed(_kDragDuration, () {
+    //     _visibilityController.forward();
+    //   });
+    // }
     super.initState();
   }
 
@@ -148,23 +148,16 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
 
   @override
   Widget build(BuildContext context) {
-    //  _listState.registerItem(this);
+    _listState.registerItem(this);
     print("build $index ${widget.motionData.exit}");
     return Transform.translate(
         offset: _offsetAnimation.value,
-        child: widget.motionData.exit
-            ? widget.removeAnimationBuilder(context,
-                widget.child ?? const SizedBox.shrink(), _visibilityController)
-            : widget.insertAnimationBuilder(
-                context,
-                widget.child ?? const SizedBox.shrink(),
-                _visibilityController));
+        child: widget.child ?? const SizedBox.shrink());
   }
 
   @override
   void dispose() {
     _listState.unregisterItem(widget.index, this);
-    _visibilityController.dispose();
     _positionController.dispose();
     super.dispose();
   }
@@ -175,9 +168,4 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
     super.deactivate();
   }
 
-  void animateExit() {
-    print("animateExit");
-
-    _visibilityController.reverse(from: 1);
-  }
 }
