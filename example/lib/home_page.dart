@@ -147,7 +147,7 @@ class _HomePageState extends State<HomePage> {
             Expanded(
               child: isGrid
                   ? MotionGridViewBuilder(
-                items: list,
+                      items: list,
                       scrollDirection: Axis.vertical,
                       itemBuilder: (BuildContext context, int index) {
                         // print("Key ${list[index].name}");
@@ -167,9 +167,15 @@ class _HomePageState extends State<HomePage> {
                               crossAxisCount: 4),
                     )
                   : MotionListViewBuilder(
-                      items: list,
+                items: list,
                       itemBuilder: (BuildContext context, int index) {
-                        return ItemTile(index: index);
+                        return ItemTile(
+                            key: Key('${list[index].name}'),
+                            index: list[index].index);
+                      },
+                      removedItemBuilder: (context, item) {
+                        return ItemTile(
+                            key: Key('${item.name}'), index: item.index);
                       },
                       insertDuration: const Duration(milliseconds: 200),
                       insertAnimation: appliedStyle,
