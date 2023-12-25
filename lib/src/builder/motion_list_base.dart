@@ -142,7 +142,6 @@ abstract class MotionListBaseState<
     for (var i = 0; i < count; i++) {
       final index = position + i;
       final item = oldList[index];
-      print("has remove builder ${removedItemBuilder != null}}");
       listKey.currentState!.removeItem(index, (context, animation) {
         return removedItemBuilder?.call(context, item) ??
             itemBuilder(context, index);

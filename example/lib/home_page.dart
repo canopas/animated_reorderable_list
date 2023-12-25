@@ -34,7 +34,7 @@ class _HomePageState extends State<HomePage> {
 
   void remove() {
     setState(() {
-      list.removeAt(1);
+      if (list.isNotEmpty && list.length > 1) list.removeAt(1);
     });
   }
 

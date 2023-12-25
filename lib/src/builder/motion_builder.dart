@@ -176,8 +176,6 @@ class MotionBuilderState extends State<MotionBuilder>
             .dispose();
       });
     });
-
-    // print("updated map ${childrenMap}");
   }
 
   void removeItem(int index, RemovedItemBuilder builder) {
@@ -243,11 +241,6 @@ class MotionBuilderState extends State<MotionBuilder>
     childrenMap.clear();
     childrenMap.addAll(updatedChildrenMap);
 
-    _removeActiveItemAt(_outgoingItems, itemIndex);
-
-    for (final _ActiveItem item in _outgoingItems) {
-      if (item.itemIndex > itemIndex) item.itemIndex -= 1;
-    }
     setState(() => _itemsCount -= 1);
   }
 
@@ -293,19 +286,20 @@ class MotionBuilderState extends State<MotionBuilder>
     final outGoingKey =
         outgoingItem != null ? Key('${outgoingItem.itemIndex}') : child.key!;
     final Key itemGlobalKey = _MotionBuilderItemGlobalKey(outGoingKey, this);
-    //  print("Key ${itemGlobalKey.toString()}");
+
+    final motionData = childrenMap[index];
+    if (motionData == null) return builder;
     return MotionAnimatedContent(
       index: index,
       key: itemGlobalKey,
-      motionData: childrenMap[index]!,
-      updateMotionData: (MotionData) {
-        childrenMap[index] = MotionData.copyWith(
+      motionData: motionData,
+      updateMotionData: (MotionData motionData) {
+        childrenMap[index] = motionData.copyWith(
           startOffset: _itemOffsetAt(index),
           endOffset: _itemOffsetAt(index),
           enter: false,
           exit: false,
         );
-        //  print("updateMotionData ${childrenMap[index]}");
       },
       child: builder,
     );
