@@ -159,7 +159,6 @@ class _HomePageState extends State<HomePage> {
                         return ItemCard(
                             key: Key('${item.name}'), index: item.index);
                       },
-                      insertDuration: const Duration(milliseconds: 200),
                       insertAnimation: appliedStyle,
                       removeAnimation: appliedStyle,
                       sliverGridDelegate:
@@ -177,7 +176,6 @@ class _HomePageState extends State<HomePage> {
                         return ItemTile(
                             key: Key('${item.name}'), index: item.index);
                       },
-                      insertDuration: const Duration(milliseconds: 200),
                       insertAnimation: appliedStyle,
                       removeAnimation: appliedStyle,
                     ),
