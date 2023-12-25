@@ -149,7 +149,7 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
   @override
   Widget build(BuildContext context) {
     _listState.registerItem(this);
-    print("build $index ${widget.motionData.exit}");
+  //  print("build $index ${widget.motionData.exit}");
     return Transform.translate(
         offset: _offsetAnimation.value,
         child: widget.child ?? const SizedBox.shrink());

@@ -3,6 +3,7 @@ import 'package:example/utils/item_card.dart';
 import 'package:example/utils/item_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:motion_list/motion_list.dart';
+
 class User {
   final String name;
   final int index;
@@ -146,13 +147,17 @@ class _HomePageState extends State<HomePage> {
             Expanded(
               child: isGrid
                   ? MotionGridViewBuilder(
-                      items: list,
+                items: list,
                       scrollDirection: Axis.vertical,
                       itemBuilder: (BuildContext context, int index) {
                         // print("Key ${list[index].name}");
                         return ItemCard(
                             key: Key('${list[index].name}'),
                             index: list[index].index);
+                      },
+                      removedItemBuilder: (context, item) {
+                        return ItemCard(
+                            key: Key('${item.name}'), index: item.index);
                       },
                       insertDuration: const Duration(milliseconds: 200),
                       insertAnimation: appliedStyle,

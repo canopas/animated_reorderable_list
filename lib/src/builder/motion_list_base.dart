@@ -8,6 +8,9 @@ import 'motion_builder.dart';
 typedef ItemBuilder<W extends Widget, E> = Widget Function(
     BuildContext context, int index);
 
+typedef RemovedItemBuilder<W extends Widget, E> = Widget Function(
+    BuildContext context, E item);
+
 typedef EqualityChecker<E> = bool Function(E, E);
 
 const Duration _kInsertItemDuration = Duration(milliseconds: 300);
@@ -19,6 +22,7 @@ const Duration _kResizeDuration = Duration(milliseconds: 300);
 abstract class MotionListBase<W extends Widget, E extends Object>
     extends StatefulWidget {
   final ItemBuilder<W, E> itemBuilder;
+  final RemovedItemBuilder<W, E>? removedItemBuilder;
   final List<E> items;
   final Duration? resizeDuration;
   final Duration? insertDuration;
@@ -33,6 +37,7 @@ abstract class MotionListBase<W extends Widget, E extends Object>
       {Key? key,
       required this.items,
       required this.itemBuilder,
+      this.removedItemBuilder,
       this.resizeDuration,
       this.insertDuration,
       this.removeDuration,
@@ -60,6 +65,10 @@ abstract class MotionListBaseState<
   @nonVirtual
   @protected
   ItemBuilder<W, E> get itemBuilder => widget.itemBuilder;
+
+  @nonVirtual
+  @protected
+  RemovedItemBuilder<W, E>? get removedItemBuilder => widget.removedItemBuilder;
 
   @nonVirtual
   @protected
@@ -131,7 +140,13 @@ abstract class MotionListBaseState<
 
   void _onRemoved(final int position, final int count) {
     for (var i = 0; i < count; i++) {
-      listKey.currentState!.removeItem(position + i);
+      final index = position + i;
+      final item = oldList[index];
+      print("has remove builder ${removedItemBuilder != null}}");
+      listKey.currentState!.removeItem(index, (context, animation) {
+        return removedItemBuilder?.call(context, item) ??
+            itemBuilder(context, index);
+      });
     }
   }
 

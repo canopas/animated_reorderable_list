@@ -180,7 +180,7 @@ class MotionBuilderState extends State<MotionBuilder>
     // print("updated map ${childrenMap}");
   }
 
-  void removeItem(int index) {
+  void removeItem(int index, RemovedItemBuilder builder) {
     assert(index >= 0);
     final int itemIndex = _indexToItemIndex(index);
     if (itemIndex < 0 || itemIndex >= _itemsCount) {
@@ -189,7 +189,6 @@ class MotionBuilderState extends State<MotionBuilder>
 
     assert(_activeItemAt(_outgoingItems, itemIndex) == null);
 
-    print("removeItem $index");
     if (childrenMap.containsKey(itemIndex)) {
       final _ActiveItem? incomingItem =
           _removeActiveItemAt(_incomingItems, itemIndex);
@@ -197,7 +196,7 @@ class MotionBuilderState extends State<MotionBuilder>
       final AnimationController controller = incomingItem?.controller ??
           AnimationController(duration: kDragDuration, value: 1.0, vsync: this);
       final _ActiveItem outgoingItem =
-          _ActiveItem.outgoing(controller, itemIndex, widget.itemBuilder);
+          _ActiveItem.outgoing(controller, itemIndex, builder);
       setState(() {
         _outgoingItems
           ..add(outgoingItem)
@@ -218,15 +217,12 @@ class MotionBuilderState extends State<MotionBuilder>
           if (item.itemIndex > outgoingItem.itemIndex) item.itemIndex -= 1;
         }
 
-        _onItemDeleted(itemIndex);
-        setState(() => _itemsCount -= 1);
+        _onItemRemoved(itemIndex);
       });
     }
-    print("ChildrenMap ${childrenMap.length}");
   }
 
-  void _onItemDeleted(int itemIndex) {
-    print("_onItemDeleted $itemIndex");
+  void _onItemRemoved(int itemIndex) {
     final updatedChildrenMap = <int, MotionData>{};
     if (childrenMap.containsKey(itemIndex)) {
       for (final entry in childrenMap.entries) {
@@ -253,8 +249,6 @@ class MotionBuilderState extends State<MotionBuilder>
       if (item.itemIndex > itemIndex) item.itemIndex -= 1;
     }
     setState(() => _itemsCount -= 1);
-
-    print("updated map $childrenMap");
   }
 
   Offset? _itemOffsetAt(int index, {bool includeAnimation = false}) {
@@ -280,9 +274,8 @@ class MotionBuilderState extends State<MotionBuilder>
     final _ActiveItem? outgoingItem = _activeItemAt(_outgoingItems, index);
     final _ActiveItem? incomingItem = _activeItemAt(_incomingItems, index);
 
-    print("has outgoing ${outgoingItem != null}");
     final Widget child = outgoingItem != null
-        ? widget.itemBuilder(context, index)
+        ? outgoingItem.removedItemBuilder!(context, index)
         : widget.itemBuilder(context, _itemIndexToIndex(index));
 
     final Widget builder = outgoingItem != null
@@ -297,10 +290,10 @@ class MotionBuilderState extends State<MotionBuilder>
       }
       return true;
     }());
-    final OutGoingKey =
+    final outGoingKey =
         outgoingItem != null ? Key('${outgoingItem.itemIndex}') : child.key!;
-    final Key itemGlobalKey = _MotionBuilderItemGlobalKey(OutGoingKey, this);
-    print("Key ${itemGlobalKey.toString()}");
+    final Key itemGlobalKey = _MotionBuilderItemGlobalKey(outGoingKey, this);
+    //  print("Key ${itemGlobalKey.toString()}");
     return MotionAnimatedContent(
       index: index,
       key: itemGlobalKey,
@@ -312,7 +305,7 @@ class MotionBuilderState extends State<MotionBuilder>
           enter: false,
           exit: false,
         );
-        print("updateMotionData ${childrenMap[index]}");
+        //  print("updateMotionData ${childrenMap[index]}");
       },
       child: builder,
     );
