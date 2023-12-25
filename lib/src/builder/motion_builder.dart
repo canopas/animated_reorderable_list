@@ -44,7 +44,7 @@ class MotionBuilderState extends State<MotionBuilder>
   void initState() {
     _itemsCount = widget.initialCount;
     for (int i = 0; i < widget.initialCount; i++) {
-      childrenMap[i] = MotionData(index: i);
+      childrenMap[i] = MotionData();
     }
     super.initState();
   }
@@ -125,8 +125,6 @@ class MotionBuilderState extends State<MotionBuilder>
     );
 
     final motionData = MotionData(
-      index: itemIndex,
-      enter: true,
       endOffset: _itemOffsetAt(itemIndex) ?? Offset.zero,
       startOffset: _itemOffsetAt(itemIndex) ?? Offset.zero,
     );
