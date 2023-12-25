@@ -31,8 +31,6 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
   /// The duration of the animation when an item was removed from the list.
   final Duration removeDuration;
 
-  /// The duration of the list update its position.
-  final Duration resizeDuration;
 
   ///
   ///Called by the DiffUtil to decide whether two object represent the same Item.
@@ -84,7 +82,6 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
       this.removeAnimation,
       this.insertDuration = const Duration(milliseconds: 300),
       this.removeDuration = const Duration(milliseconds: 300),
-      this.resizeDuration = const Duration(milliseconds: 300),
       this.scrollDirection = Axis.vertical,
       this.areItemsTheSame,
       this.reverse = false,
@@ -120,7 +117,6 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
             removeAnimationType: removeAnimation ?? insertAnimation,
             insertDuration: insertDuration,
             removeDuration: removeDuration,
-            resizeDuration: resizeDuration,
             areItemsTheSame: areItemsTheSame,
             scrollDirection: scrollDirection,
           ),

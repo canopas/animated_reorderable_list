@@ -3,9 +3,6 @@ import 'package:motion_list/src/model/motion_data.dart';
 
 import '../builder/motion_animated_builder.dart';
 
-const int duration = 300;
-const Duration kDragDuration = Duration(milliseconds: duration);
-
 class MotionAnimatedContent extends StatefulWidget {
   final Key key;
   final int index;
@@ -45,7 +42,7 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
     _listState.registerItem(this);
 
     _positionController =
-        AnimationController(vsync: this, duration: kDragDuration)
+        AnimationController(vsync: this, duration: widget.motionData.duration)
           ..addStatusListener((status) {
             if (status == AnimationStatus.completed) {
               widget.updateMotionData?.call(widget.motionData);
@@ -90,6 +87,8 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
     Offset offsetDiff = widget.motionData.startOffset - endOffset;
 
     if (offsetDiff.dx != 0 || offsetDiff.dy != 0) {
+      _positionController.duration = widget.motionData.duration;
+
       _positionController.reset();
 
       _offsetAnimation = Tween<Offset>(begin: offsetDiff, end: Offset.zero)
