@@ -1,17 +1,19 @@
 import 'package:flutter/cupertino.dart';
-import 'package:motion_list/animation/animation.dart';
+import 'package:motion_list/src/animation/animation.dart';
 
 class FadeInLeft extends StatelessWidget {
   final Animation<double> animation;
   final Widget child;
-  const FadeInLeft({Key? key,required this.animation,required this.child}):super(key: key);
+
+  const FadeInLeft({Key? key, required this.animation, required this.child})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return   SlideIn(
+    return SlideIn(
       animation: animation,
       child: FadeTransition(
-        opacity:animation,
+        opacity: animation,
         child: child,
       ),
     );
