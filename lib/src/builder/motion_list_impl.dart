@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:motion_list/motion_list.dart';
 
-import 'motion_builder.dart';
+import 'motion_animated_builder.dart';
 
 class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
   const MotionListImpl({

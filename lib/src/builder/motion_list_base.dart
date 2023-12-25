@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:motion_list/motion_list.dart';
 
-import 'motion_builder.dart';
+import 'motion_animated_builder.dart';
 
 typedef ItemBuilder<W extends Widget, E> = Widget Function(
     BuildContext context, int index);
@@ -128,7 +128,6 @@ abstract class MotionListBaseState<
   }
 
   void _onChanged(int position, Object? payLoad) {
-    // listKey.currentState!.removeItem(position);
     _onInserted(position, 1);
   }
 

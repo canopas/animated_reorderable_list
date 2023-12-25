@@ -4,7 +4,9 @@ import 'package:motion_list/src/component/motion_animated_content.dart';
 
 import '../../motion_list.dart';
 import '../model/motion_data.dart';
-import 'motion_animation_builder.dart';
+
+typedef AnimatedWidgetBuilder = Widget Function(
+    BuildContext context, Widget child, Animation<double> animation);
 
 class MotionBuilder<E> extends StatefulWidget {
   final AnimatedWidgetBuilder insertAnimationBuilder;
@@ -104,7 +106,6 @@ class MotionBuilderState extends State<MotionBuilder>
   }
 
   Future<void> insertItem(int index) async {
-    print(" ---- INSERT --- ");
     assert(index >= 0);
     final int itemIndex = _indexToItemIndex(index);
 
@@ -123,6 +124,15 @@ class MotionBuilderState extends State<MotionBuilder>
       duration: kDragDuration,
       vsync: this,
     );
+
+    final _ActiveItem incomingItem = _ActiveItem.incoming(
+      controller,
+      itemIndex,
+    );
+
+    _incomingItems
+      ..add(incomingItem)
+      ..sort();
 
     final motionData = MotionData(
       endOffset: _itemOffsetAt(itemIndex) ?? Offset.zero,
@@ -152,27 +162,24 @@ class MotionBuilderState extends State<MotionBuilder>
       }
       childrenMap.clear();
       childrenMap.addAll(updatedChildrenMap);
+      Future.delayed(kDragDuration).then((value) {
+        controller.forward().then<void>((_) {
+          _removeActiveItemAt(_incomingItems, incomingItem.itemIndex)!
+              .controller!
+              .dispose();
+        });
+      });
     } else {
       childrenMap[itemIndex] = motionData;
-    }
-
-    final _ActiveItem incomingItem = _ActiveItem.incoming(
-      controller,
-      itemIndex,
-    );
-    setState(() {
-      _incomingItems
-        ..add(incomingItem)
-        ..sort();
-      _itemsCount += 1;
-    });
-
-    Future.delayed(kDragDuration).then((value) {
       controller.forward().then<void>((_) {
         _removeActiveItemAt(_incomingItems, incomingItem.itemIndex)!
             .controller!
             .dispose();
       });
+    }
+
+    setState(() {
+      _itemsCount += 1;
     });
   }
 

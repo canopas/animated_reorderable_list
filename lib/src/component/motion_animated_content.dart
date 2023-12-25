@@ -1,12 +1,10 @@
 import 'package:flutter/widgets.dart';
 import 'package:motion_list/src/model/motion_data.dart';
 
-import '../builder/motion_builder.dart';
+import '../builder/motion_animated_builder.dart';
 
 const int duration = 300;
 const Duration kDragDuration = Duration(milliseconds: duration);
-const Duration _kEntryDuration = Duration(milliseconds: duration);
-const Duration _kExitDuration = Duration(milliseconds: duration);
 
 class MotionAnimatedContent extends StatefulWidget {
   final Key key;
