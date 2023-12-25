@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 
-import '../motion_list.dart';
+import '../../motion_list.dart';
 
 /// A Flutter AnimatedGridView that animates insertion and removal of the item.
 class MotionGridViewBuilder<E extends Object> extends StatelessWidget {
@@ -9,6 +9,9 @@ class MotionGridViewBuilder<E extends Object> extends StatelessWidget {
 
   ///Called, as needed, to build list item widget
   final ItemBuilder<Widget, E> itemBuilder;
+
+  ///An optional builder when an item was removed from the list.
+  final RemovedItemBuilder? removedItemBuilder;
 
   /// AnimationStyle when item is added in the list.
   final AnimationType insertAnimation;
@@ -54,6 +57,7 @@ class MotionGridViewBuilder<E extends Object> extends StatelessWidget {
       {Key? key,
       required this.items,
       required this.itemBuilder,
+      this.removedItemBuilder,
       this.insertAnimation = AnimationType.fadeIn,
       this.removeAnimation,
       this.insertDuration,
@@ -66,21 +70,20 @@ class MotionGridViewBuilder<E extends Object> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomScrollView(
+    return CustomScrollView(scrollDirection: scrollDirection, slivers: [
+      MotionListImpl.grid(
+        items: items,
+        itemBuilder: itemBuilder,
+        removedItemBuilder: removedItemBuilder,
+        insertAnimationType: insertAnimation,
+        removeAnimationType: removeAnimation ?? insertAnimation,
+        insertDuration: insertDuration,
+        removeDuration: removeDuration,
+        resizeDuration: resizeDuration,
+        areItemsTheSame: areItemsTheSame,
         scrollDirection: scrollDirection,
-        slivers: [
-          MotionListImpl.grid(
-            items: items,
-            itemBuilder: itemBuilder,
-            insertAnimationType: insertAnimation,
-            removeAnimationType: removeAnimation ?? insertAnimation,
-            insertDuration: insertDuration,
-            removeDuration: removeDuration,
-            resizeDuration: resizeDuration,
-            areItemsTheSame: areItemsTheSame,
-            scrollDirection: scrollDirection,
-            sliverGridDelegate: sliverGridDelegate,
-          ),
-        ]);
+        sliverGridDelegate: sliverGridDelegate,
+      ),
+    ]);
   }
 }

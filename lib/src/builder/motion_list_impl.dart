@@ -1,11 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:motion_list/motion_list.dart';
 
+import 'motion_animated_builder.dart';
+
 class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
   const MotionListImpl({
     Key? key,
     required List<E> items,
     required ItemBuilder itemBuilder,
+    RemovedItemBuilder? removedItemBuilder,
     Duration? insertDuration,
     Duration? removeDuration,
     Duration? resizeDuration,
@@ -14,9 +17,10 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
     AnimationType? removeAnimationType,
     EqualityChecker<E>? areItemsTheSame,
   }) : super(
-            key: key,
+      key: key,
             items: items,
             itemBuilder: itemBuilder,
+            removedItemBuilder: removedItemBuilder,
             insertDuration: insertDuration,
             removeDuration: removeDuration,
             resizeDuration: resizeDuration,
@@ -30,6 +34,7 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
     required List<E> items,
     required ItemBuilder itemBuilder,
     required SliverGridDelegate sliverGridDelegate,
+    RemovedItemBuilder? removedItemBuilder,
     Duration? insertDuration,
     Duration? removeDuration,
     Duration? resizeDuration,
@@ -38,9 +43,10 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
     AnimationType? removeAnimationType,
     EqualityChecker<E>? areItemsTheSame,
   }) : super(
-            key: key,
+      key: key,
             items: items,
             itemBuilder: itemBuilder,
+            removedItemBuilder: removedItemBuilder,
             insertDuration: insertDuration,
             removeDuration: removeDuration,
             resizeDuration: resizeDuration,
@@ -56,17 +62,16 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
 
 class MotionListImplState<E extends Object>
     extends MotionListBaseState<Widget, MotionListImpl<E>, E> {
-
-
   @override
   Widget build(BuildContext context) {
-    return MotionAnimationBuilder(
+    return MotionBuilder(
       key: listKey,
       initialCount: oldList.length,
       insertAnimationBuilder: insertItemBuilder,
       removeAnimationBuilder: removeItemBuilder,
+      itemBuilder: itemBuilder,
       delegateBuilder: sliverGridDelegate,
-      isGriView: sliverGridDelegate != null ? true : false,
+      //isGriView: sliverGridDelegate != null ? true : false,
     );
   }
 }

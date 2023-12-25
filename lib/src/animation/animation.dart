@@ -1,13 +1,13 @@
 export 'fade_in.dart';
-export 'fadein_left.dart';
-export 'fadein_right.dart';
 export 'fade_in_down.dart';
 export 'fade_in_up.dart';
+export 'fadein_left.dart';
+export 'fadein_right.dart';
 export 'landing.dart';
 export 'scale_in.dart';
-export 'scale_in_top.dart';
 export 'scale_in_bottom.dart';
 export 'scale_in_left.dart';
 export 'scale_in_right.dart';
+export 'scale_in_top.dart';
 export 'size_in.dart';
 export 'slide_in.dart';

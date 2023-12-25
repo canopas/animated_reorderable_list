@@ -4,6 +4,13 @@ import 'package:example/utils/item_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:motion_list/motion_list.dart';
 
+class User {
+  final String name;
+  final int index;
+
+  User({required this.name, required this.index});
+}
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -13,20 +20,21 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   AnimationType appliedStyle = AnimationType.fadeIn;
-  List<int> list = List.generate(12, (index) => index);
-  int addedNumber = 10;
-  bool isGrid = false;
+  List<User> list =
+      List.generate(3, (index) => User(name: "User $index", index: index));
+  int addedNumber = 3;
+  bool isGrid = true;
 
   void insert() {
     addedNumber += 1;
     setState(() {
-      list.insert(1, addedNumber);
+      list.insert(1, User(name: "User $addedNumber", index: addedNumber));
     });
   }
 
   void remove() {
     setState(() {
-      list.removeAt(1);
+      if (list.isNotEmpty && list.length > 1) list.removeAt(1);
     });
   }
 
@@ -142,7 +150,14 @@ class _HomePageState extends State<HomePage> {
                       items: list,
                       scrollDirection: Axis.vertical,
                       itemBuilder: (BuildContext context, int index) {
-                        return ItemCard(index: index);
+                        // print("Key ${list[index].name}");
+                        return ItemCard(
+                            key: Key('${list[index].name}'),
+                            index: list[index].index);
+                      },
+                      removedItemBuilder: (context, item) {
+                        return ItemCard(
+                            key: Key('${item.name}'), index: item.index);
                       },
                       insertDuration: const Duration(milliseconds: 200),
                       insertAnimation: appliedStyle,
@@ -152,9 +167,15 @@ class _HomePageState extends State<HomePage> {
                               crossAxisCount: 4),
                     )
                   : MotionListViewBuilder(
-                      items: list,
+                items: list,
                       itemBuilder: (BuildContext context, int index) {
-                        return ItemTile(index: index);
+                        return ItemTile(
+                            key: Key('${list[index].name}'),
+                            index: list[index].index);
+                      },
+                      removedItemBuilder: (context, item) {
+                        return ItemTile(
+                            key: Key('${item.name}'), index: item.index);
                       },
                       insertDuration: const Duration(milliseconds: 200),
                       insertAnimation: appliedStyle,
