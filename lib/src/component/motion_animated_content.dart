@@ -43,7 +43,12 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
     _listState.registerItem(this);
 
     _positionController =
-        AnimationController(vsync: this, duration: widget.motionData.duration);
+        AnimationController(vsync: this, duration: widget.motionData.duration)
+          ..addStatusListener((status) {
+            if (status == AnimationStatus.completed) {
+              // widget.updateMotionData?.call(widget.motionData);
+            }
+          });
 
     _offsetAnimation = Tween<Offset>(begin: Offset.zero, end: Offset.zero)
         .animate(_positionController)
