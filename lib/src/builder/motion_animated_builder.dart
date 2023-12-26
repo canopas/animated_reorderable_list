@@ -269,6 +269,7 @@ class MotionBuilderState extends State<MotionBuilder>
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       print("addPostFrameCallback map $childrenMap");
       _items.forEach((key, value) {
+        if (key < itemIndex) return;
         print("update transition $key");
         value.moveForward(_itemOffsetAt(key) ?? Offset.zero);
       });
