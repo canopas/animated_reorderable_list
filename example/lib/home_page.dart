@@ -172,8 +172,8 @@ class _HomePageState extends State<HomePage> {
                       },
                       insertAnimation: appliedStyle,
                       removeAnimation: appliedStyle,
-                      insertDuration: const Duration(milliseconds: 3000),
-                      removeDuration: const Duration(milliseconds: 3000),
+                      insertDuration: const Duration(milliseconds: 300),
+                      removeDuration: const Duration(milliseconds: 300),
                       sliverGridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 4),
@@ -189,8 +189,8 @@ class _HomePageState extends State<HomePage> {
                         return ItemTile(
                             key: Key('${item.name}'), index: item.index);
                       },
-                      insertDuration: const Duration(milliseconds: 3000),
-                      removeDuration: const Duration(milliseconds: 3000),
+                      insertDuration: const Duration(milliseconds: 300),
+                      removeDuration: const Duration(milliseconds: 300),
                       insertAnimation: appliedStyle,
                       removeAnimation: appliedStyle,
                     ),

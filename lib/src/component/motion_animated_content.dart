@@ -46,7 +46,7 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
         AnimationController(vsync: this, duration: widget.motionData.duration)
           ..addStatusListener((status) {
             if (status == AnimationStatus.completed) {
-              // widget.updateMotionData?.call(widget.motionData);
+            //  widget.updateMotionData?.call(widget.motionData);
             }
           });
 
@@ -94,25 +94,6 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
 
     if (offsetDiff.dx != 0 || offsetDiff.dy != 0) {
       _positionController.duration = widget.motionData.duration;
-
-      //_positionController.reset();
-
-      _offsetAnimation = Tween<Offset>(begin: offsetDiff, end: Offset.zero)
-          .animate(_positionController);
-      _positionController.forward(from: 0);
-    }
-  }
-
-  void moveBackward(Offset startOffset) {
-    Offset endOffset = widget.motionData.endOffset;
-    // endOffset = endOffset == Offset.zero ? itemOffset() : endOffset;
-    //  print("currentAnimatedOffset $currentAnimatedOffset index $index");
-    Offset offsetDiff = startOffset - endOffset;
-
-    if (offsetDiff.dx != 0 || offsetDiff.dy != 0) {
-      _positionController.duration = widget.motionData.duration;
-
-      //_positionController.reset();
 
       _offsetAnimation = Tween<Offset>(begin: offsetDiff, end: Offset.zero)
           .animate(_positionController);
