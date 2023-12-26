@@ -23,7 +23,7 @@ class _HomePageState extends State<HomePage> {
   List<User> list =
       List.generate(3, (index) => User(name: "User $index", index: index));
   int addedNumber = 3;
-  bool isGrid = true;
+  bool isGrid = false;
 
   void insert() {
     setState(() {
@@ -35,6 +35,17 @@ class _HomePageState extends State<HomePage> {
 
     });
   }
+
+  // void insert() {
+  //   List<User> newList = List.generate(
+  //       2,
+  //       (index) => User(
+  //           name: "User ${addedNumber + index}", index: index + addedNumber));
+  //   setState(() {
+  //     list.insertAll(1, newList);
+  //     addedNumber += 2;
+  //   });
+  // }
 
   void remove() {
     setState(() {
@@ -165,8 +176,8 @@ class _HomePageState extends State<HomePage> {
                       },
                       insertAnimation: appliedStyle,
                       removeAnimation: appliedStyle,
-                insertDuration: const Duration(milliseconds: 300),
-                removeDuration: const Duration(milliseconds: 2000),
+                      insertDuration: const Duration(milliseconds: 3000),
+                      removeDuration: const Duration(milliseconds: 3000),
                       sliverGridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 4),
@@ -182,8 +193,8 @@ class _HomePageState extends State<HomePage> {
                         return ItemTile(
                             key: Key('${item.name}'), index: item.index);
                       },
-                insertDuration: const Duration(milliseconds: 300),
-                removeDuration: const Duration(milliseconds: 2000),
+                      insertDuration: const Duration(milliseconds: 3000),
+                      removeDuration: const Duration(milliseconds: 3000),
                       insertAnimation: appliedStyle,
                       removeAnimation: appliedStyle,
                     ),

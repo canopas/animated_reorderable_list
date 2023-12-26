@@ -36,6 +36,6 @@ class MotionData {
 
   @override
   String toString() {
-    return "startOffset: $startOffset, endOffset $endOffset Duration: $duration";
+    return "startOffset: $startOffset, endOffset $endOffset";
   }
 }
