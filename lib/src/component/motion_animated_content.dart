@@ -38,7 +38,6 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
 
   @override
   void initState() {
-    print("Initstate $index");
     _listState = MotionBuilderState.of(context);
     _listState.registerItem(this);
 
@@ -60,7 +59,7 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
 
   @override
   void didUpdateWidget(covariant MotionAnimatedContent oldWidget) {
-    print("didUpdateWidget old ${oldWidget.index} new ${widget.index}");
+   // print("didUpdateWidget old ${oldWidget.index} new ${widget.index}");
 
     if (oldWidget.index != widget.index) {
       _listState.unregisterItem(oldWidget.index, this);
@@ -68,7 +67,6 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
     }
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      print("${widget.index}  addPostFrameCallback");
       widget.updateMotionData?.call(widget.motionData);
       if (oldWidget.index != widget.index) _updateAnimationTranslation();
     });
