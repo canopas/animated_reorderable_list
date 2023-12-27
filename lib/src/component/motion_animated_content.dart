@@ -68,9 +68,7 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
       _listState.registerItem(this);
     }
     if(oldWidget.index != widget.index){
-      setState(() {
         visible= false;
-      });
     }
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -98,10 +96,7 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
       _offsetAnimation = Tween<Offset>(begin: offsetDiff, end: Offset.zero)
           .animate(_positionController);
       _positionController.forward(from: 0);
-      setState(() {
         visible=true;
-      });
-
     }
   }
 
