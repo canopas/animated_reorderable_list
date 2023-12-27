@@ -150,16 +150,10 @@ class MotionBuilderState extends State<MotionBuilder>
           updatedChildrenMap[itemIndex] = motionData;
           updatedChildrenMap[entry.key + 1] = entry.value.copyWith(
               index: entry.key + 1,
-              // startOffset: _itemOffsetAt(entry.key, includeAnimation: true) ??
-              //      Offset.zero,
-              // endOffset: _itemOffsetAt(entry.key + 1) ?? Offset.zero,
               duration: insertDuration);
         } else if (entry.key > itemIndex) {
           updatedChildrenMap[entry.key + 1] = entry.value.copyWith(
               index: entry.key + 1,
-              // startOffset: _itemOffsetAt(entry.key, includeAnimation: true) ??
-              //     Offset.zero,
-              // endOffset: _itemOffsetAt(entry.key + 1) ?? Offset.zero,
               duration: insertDuration);
         } else {
           updatedChildrenMap[entry.key] =
@@ -189,13 +183,6 @@ class MotionBuilderState extends State<MotionBuilder>
       _itemsCount = childrenMap.length;
     });
 
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      print("addPostFrameCallback map $childrenMap");
-      _items.forEach((key, value) {
-        print("update transition $key");
-        value.moveForward(_itemOffsetAt(key) ?? Offset.zero);
-      });
-    });
   }
 
   void removeItem(int index, RemovedItemBuilder builder,
@@ -254,9 +241,6 @@ class MotionBuilderState extends State<MotionBuilder>
         } else {
           updatedChildrenMap[entry.key - 1] = childrenMap[entry.key]!.copyWith(
               index: entry.key - 1,
-              // startOffset: _itemOffsetAt(entry.key, includeAnimation: true) ??
-              //     Offset.zero,
-              // endOffset: _itemOffsetAt(entry.key - 1) ?? Offset.zero,
               duration: removeDuration);
         }
       }
@@ -265,15 +249,6 @@ class MotionBuilderState extends State<MotionBuilder>
     childrenMap.addAll(updatedChildrenMap);
 
     setState(() => _itemsCount -= 1);
-
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-     // print("addPostFrameCallback map $childrenMap");
-      _items.forEach((key, value) {
-        if (key < itemIndex) return;
-        //  print("update transition $key");
-        value.moveForward(_itemOffsetAt(key) ?? Offset.zero);
-      });
-    });
   }
 
   Offset? _itemOffsetAt(int index, {bool includeAnimation = false}) {
