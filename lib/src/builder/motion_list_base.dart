@@ -72,7 +72,6 @@ abstract class MotionListBaseState<
   @protected
   SliverGridDelegate? get sliverGridDelegate => widget.sliverGridDelegate;
 
-
   @nonVirtual
   @protected
   Duration get insertDuration => widget.insertDuration ?? _kInsertItemDuration;
@@ -113,13 +112,30 @@ abstract class MotionListBaseState<
   void didUpdateWidget(covariant B oldWidget) {
     super.didUpdateWidget(oldWidget);
     final newList = widget.items;
-    final diff = calculateListDiff(oldList, newList,
-            detectMoves: false, equalityChecker: widget.areItemsTheSame)
-        .getUpdates();
-    for (final update in diff) {
-      _onDiffUpdate(update);
-    }
+    calculateDiff(oldList, newList);
     oldList = List.from(newList);
+  }
+
+  void calculateDiff<E>(List oldList, List newList) {
+    // Detect removed and updated items
+    for (int i = 0; i < oldList.length; i++) {
+      if (!newList.contains(oldList[i])) {
+        listKey.currentState!.removeItem(i, (context, animation) {
+          final item = oldList[i];
+          return removedItemBuilder?.call(context, item) ??
+              itemBuilder(context, i);
+        }, removeItemDuration: removeDuration);
+      }
+      // else if (i < newList.length && oldList[i] != newList[i]) {
+      //     updatedIndices.add(UpdateIndex(oldIndex: i, newIndex: newList.indexOf(oldList[i])));
+      //   }
+    }
+    // Detect added items
+    for (int i = 0; i < newList.length; i++) {
+      if (!oldList.contains(newList[i])) {
+        listKey.currentState!.insertItem(i, insertDuration: insertDuration);
+      }
+    }
   }
 
   void _onChanged(int position, Object? payLoad) {
@@ -128,7 +144,8 @@ abstract class MotionListBaseState<
 
   void _onInserted(final int position, final int count) {
     for (var i = 0; i < count; i++) {
-      listKey.currentState!.insertItem(position, insertDuration: insertDuration);
+      listKey.currentState!
+          .insertItem(position, insertDuration: insertDuration);
     }
   }
 
@@ -139,7 +156,7 @@ abstract class MotionListBaseState<
       listKey.currentState!.removeItem(index, (context, animation) {
         return removedItemBuilder?.call(context, item) ??
             itemBuilder(context, index);
-      },removeItemDuration: removeDuration);
+      }, removeItemDuration: removeDuration);
     }
   }
 

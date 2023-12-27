@@ -26,9 +26,13 @@ class _HomePageState extends State<HomePage> {
   bool isGrid = true;
 
   void insert() {
-    addedNumber += 1;
     setState(() {
+      addedNumber += 1;
       list.insert(1, User(name: "User $addedNumber", index: addedNumber));
+      addedNumber += 1;
+      list.insert(3, User(name: "User $addedNumber", index: addedNumber));
+
+
     });
   }
 
