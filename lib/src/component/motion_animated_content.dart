@@ -35,6 +35,7 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
 
   Offset get currentAnimatedOffset =>
       _positionController.isAnimating ? _offsetAnimation.value : Offset.zero;
+  bool visible = true;
 
   @override
   void initState() {
@@ -66,11 +67,19 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
       _listState.unregisterItem(oldWidget.index, this);
       _listState.registerItem(this);
     }
+    if(oldWidget.index != widget.index){
+      setState(() {
+        visible= false;
+      });
+    }
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       print("${widget.index}  addPostFrameCallback");
       widget.updateMotionData?.call(widget.motionData);
-      if (oldWidget.index != widget.index) _updateAnimationTranslation();
+      if (oldWidget.index != widget.index){
+
+        _updateAnimationTranslation();
+      }
     });
 
     super.didUpdateWidget(oldWidget);
@@ -83,11 +92,16 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
         (widget.motionData.startOffset + currentAnimatedOffset) - endOffset;
 
     if (offsetDiff.dx != 0 || offsetDiff.dy != 0) {
-      _positionController.duration = widget.motionData.duration;
+     // _positionController.duration = widget.motionData.duration;
+      _positionController.duration= Duration(seconds: 5);
 
       _offsetAnimation = Tween<Offset>(begin: offsetDiff, end: Offset.zero)
           .animate(_positionController);
       _positionController.forward(from: 0);
+      setState(() {
+        visible=true;
+      });
+
     }
   }
 
@@ -101,9 +115,12 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
   @override
   Widget build(BuildContext context) {
     _listState.registerItem(this);
-    return Transform.translate(
-        offset: _offsetAnimation.value,
-        child: widget.child ?? const SizedBox.shrink());
+    return Visibility(
+      visible: visible,
+      child: Transform.translate(
+          offset: _offsetAnimation.value,
+          child: widget.child ?? const SizedBox.shrink()),
+    );
   }
 
   @override
