@@ -264,7 +264,6 @@ class MotionBuilderState extends State<MotionBuilder>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    print("parent build");
     return widget.delegateBuilder != null
         ? SliverGrid(
             gridDelegate: widget.delegateBuilder!, delegate: _createDelegate())
@@ -302,7 +301,6 @@ class MotionBuilderState extends State<MotionBuilder>
       key: itemGlobalKey,
       motionData: motionData,
       updateMotionData: (MotionData motionData) {
-        print("updateMotionData index $index");
         childrenMap[index] = motionData.copyWith(
           startOffset: _itemOffsetAt(index),
           endOffset: _itemOffsetAt(index),
