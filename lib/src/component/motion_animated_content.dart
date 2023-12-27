@@ -33,8 +33,8 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
 
   int get index => widget.index;
 
-  Offset? get currentAnimatedOffset =>
-      _positionController.isAnimating ? _offsetAnimation.value : null;
+  Offset get currentAnimatedOffset =>
+      _positionController.isAnimating ? _offsetAnimation.value : Offset.zero;
 
   @override
   void initState() {
@@ -42,12 +42,7 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
     _listState.registerItem(this);
 
     _positionController =
-        AnimationController(vsync: this, duration: widget.motionData.duration)
-          ..addStatusListener((status) {
-            if (status == AnimationStatus.completed) {
-              widget.updateMotionData?.call(widget.motionData);
-            }
-          });
+        AnimationController(vsync: this, duration: widget.motionData.duration);
 
     _offsetAnimation = Tween<Offset>(begin: Offset.zero, end: Offset.zero)
         .animate(_positionController)
@@ -64,36 +59,33 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
 
   @override
   void didUpdateWidget(covariant MotionAnimatedContent oldWidget) {
+   // print("didUpdateWidget old ${oldWidget.index} new ${widget.index}");
+
     if (oldWidget.index != widget.index) {
       _listState.unregisterItem(oldWidget.index, this);
       _listState.registerItem(this);
     }
 
-    Offset endOffset = widget.motionData.endOffset;
-    if (endOffset != Offset.zero) {
-      _updateAnimationTranslation();
-    } else {
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        _updateAnimationTranslation();
-        widget.updateMotionData?.call(widget.motionData);
-      });
-    }
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      widget.updateMotionData?.call(widget.motionData);
+      if (oldWidget.index != widget.index) _updateAnimationTranslation();
+    });
+
     super.didUpdateWidget(oldWidget);
   }
 
   void _updateAnimationTranslation() {
-    Offset endOffset = widget.motionData.endOffset;
-    endOffset = endOffset == Offset.zero ? itemOffset() : endOffset;
-    Offset offsetDiff = widget.motionData.startOffset - endOffset;
+    Offset endOffset = itemOffset();
+
+    Offset offsetDiff =
+        (widget.motionData.startOffset + currentAnimatedOffset) - endOffset;
 
     if (offsetDiff.dx != 0 || offsetDiff.dy != 0) {
       _positionController.duration = widget.motionData.duration;
 
-      _positionController.reset();
-
       _offsetAnimation = Tween<Offset>(begin: offsetDiff, end: Offset.zero)
           .animate(_positionController);
-      _positionController.forward();
+      _positionController.forward(from: 0);
     }
   }
 
