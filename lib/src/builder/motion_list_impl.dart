@@ -66,6 +66,7 @@ class MotionListImplState<E extends Object>
       insertAnimationBuilder: insertItemBuilder,
       removeAnimationBuilder: removeItemBuilder,
       itemBuilder: itemBuilder,
+      scrollDirection: scrollDirection,
       delegateBuilder: sliverGridDelegate,
     );
   }

@@ -33,8 +33,9 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
 
   int get index => widget.index;
 
-  Offset? get currentAnimatedOffset =>
-      _positionController.isAnimating ? _offsetAnimation.value : null;
+  Offset get currentAnimatedOffset =>
+      _positionController.isAnimating ? _offsetAnimation.value : Offset.zero;
+  bool visible = true;
 
   @override
   void initState() {
@@ -42,12 +43,7 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
     _listState.registerItem(this);
 
     _positionController =
-        AnimationController(vsync: this, duration: widget.motionData.duration)
-          ..addStatusListener((status) {
-            if (status == AnimationStatus.completed) {
-              widget.updateMotionData?.call(widget.motionData);
-            }
-          });
+        AnimationController(vsync: this, duration: widget.motionData.duration);
 
     _offsetAnimation = Tween<Offset>(begin: Offset.zero, end: Offset.zero)
         .animate(_positionController)
@@ -68,32 +64,32 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
       _listState.unregisterItem(oldWidget.index, this);
       _listState.registerItem(this);
     }
-
-    Offset endOffset = widget.motionData.endOffset;
-    if (endOffset != Offset.zero) {
-      _updateAnimationTranslation();
-    } else {
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        _updateAnimationTranslation();
-        widget.updateMotionData?.call(widget.motionData);
-      });
+    if (oldWidget.index != widget.index) {
+      visible = false;
     }
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      visible = true;
+      if (oldWidget.index != widget.index) {
+        _updateAnimationTranslation();
+      }
+      widget.updateMotionData?.call(widget.motionData);
+    });
+
     super.didUpdateWidget(oldWidget);
   }
 
   void _updateAnimationTranslation() {
-    Offset endOffset = widget.motionData.endOffset;
-    endOffset = endOffset == Offset.zero ? itemOffset() : endOffset;
-    Offset offsetDiff = widget.motionData.startOffset - endOffset;
+    Offset endOffset = itemOffset();
+
+    Offset offsetDiff =
+        (widget.motionData.startOffset + currentAnimatedOffset) - endOffset;
 
     if (offsetDiff.dx != 0 || offsetDiff.dy != 0) {
       _positionController.duration = widget.motionData.duration;
-
-      _positionController.reset();
-
       _offsetAnimation = Tween<Offset>(begin: offsetDiff, end: Offset.zero)
           .animate(_positionController);
-      _positionController.forward();
+      _positionController.forward(from: 0);
     }
   }
 
@@ -107,9 +103,12 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
   @override
   Widget build(BuildContext context) {
     _listState.registerItem(this);
-    return Transform.translate(
-        offset: _offsetAnimation.value,
-        child: widget.child ?? const SizedBox.shrink());
+    return Visibility(
+      visible: visible,
+      child: Transform.translate(
+          offset: _offsetAnimation.value,
+          child: widget.child ?? const SizedBox.shrink()),
+    );
   }
 
   @override

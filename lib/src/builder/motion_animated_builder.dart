@@ -13,6 +13,7 @@ class MotionBuilder<E> extends StatefulWidget {
   final AnimatedWidgetBuilder removeAnimationBuilder;
   final ItemBuilder itemBuilder;
   final int initialCount;
+  final Axis scrollDirection;
   final SliverGridDelegate? delegateBuilder;
 
   const MotionBuilder(
@@ -21,6 +22,7 @@ class MotionBuilder<E> extends StatefulWidget {
       required this.removeAnimationBuilder,
       this.initialCount = 0,
       this.delegateBuilder,
+      this.scrollDirection = Axis.vertical,
       required this.itemBuilder})
       : assert(initialCount >= 0),
         super(key: key);
@@ -105,7 +107,7 @@ class MotionBuilderState extends State<MotionBuilder>
     return index;
   }
 
-  Future<void> insertItem(int index, {required Duration insertDuration}) async {
+  void insertItem(int index, {required Duration insertDuration}) {
     assert(index >= 0);
     final int itemIndex = _indexToItemIndex(index);
 
@@ -138,28 +140,22 @@ class MotionBuilderState extends State<MotionBuilder>
         endOffset: Offset.zero,
         startOffset: Offset.zero,
         duration: insertDuration);
+
     final updatedChildrenMap = <int, MotionData>{};
     if (childrenMap.containsKey(itemIndex)) {
       for (final entry in childrenMap.entries) {
         if (entry.key == itemIndex) {
           updatedChildrenMap[itemIndex] = motionData;
           updatedChildrenMap[entry.key + 1] = entry.value.copyWith(
-            index: entry.key + 1,
-            startOffset:
-                _itemOffsetAt(entry.key, includeAnimation: true) ?? Offset.zero,
-            endOffset: _itemOffsetAt(entry.key + 1) ?? Offset.zero,
-            duration: insertDuration
-          );
+              index: entry.key + 1,
+              duration: insertDuration);
         } else if (entry.key > itemIndex) {
           updatedChildrenMap[entry.key + 1] = entry.value.copyWith(
-            index: entry.key + 1,
-            startOffset:
-                _itemOffsetAt(entry.key, includeAnimation: true) ?? Offset.zero,
-            endOffset: _itemOffsetAt(entry.key + 1) ?? Offset.zero,
-              duration: insertDuration
-          );
+              index: entry.key + 1,
+              duration: insertDuration);
         } else {
-          updatedChildrenMap[entry.key] = entry.value.copyWith(duration: insertDuration);
+          updatedChildrenMap[entry.key] =
+              entry.value.copyWith(duration: insertDuration);
         }
       }
       childrenMap.clear();
@@ -181,8 +177,9 @@ class MotionBuilderState extends State<MotionBuilder>
     }
 
     setState(() {
-      _itemsCount += 1;
+      _itemsCount = childrenMap.length;
     });
+
   }
 
   void removeItem(int index, RemovedItemBuilder builder,
@@ -224,7 +221,7 @@ class MotionBuilderState extends State<MotionBuilder>
           if (item.itemIndex > outgoingItem.itemIndex) item.itemIndex -= 1;
         }
 
-        _onItemRemoved(itemIndex,removeItemDuration);
+        _onItemRemoved(itemIndex, removeItemDuration);
       });
     }
   }
@@ -240,12 +237,8 @@ class MotionBuilderState extends State<MotionBuilder>
           continue;
         } else {
           updatedChildrenMap[entry.key - 1] = childrenMap[entry.key]!.copyWith(
-            index: entry.key - 1,
-            startOffset:
-                _itemOffsetAt(entry.key, includeAnimation: true) ?? Offset.zero,
-            endOffset: _itemOffsetAt(entry.key - 1) ?? Offset.zero,
-              duration: removeDuration
-          );
+              index: entry.key - 1,
+              duration: removeDuration);
         }
       }
     }
