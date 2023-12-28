@@ -65,11 +65,11 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
       _listState.registerItem(this);
     }
     if (oldWidget.index != widget.index) {
-      visible = false;
+     // visible = false;
     }
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      visible = true;
+      //  visible = true;
       if (oldWidget.index != widget.index) _updateAnimationTranslation();
       widget.updateMotionData?.call(widget.motionData);
     });

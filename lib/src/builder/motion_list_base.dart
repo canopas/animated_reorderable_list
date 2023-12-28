@@ -1,3 +1,4 @@
+import 'package:diffutil_dart/diffutil.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:motion_list/motion_list.dart';
@@ -16,8 +17,7 @@ const Duration _kInsertItemDuration = Duration(milliseconds: 300);
 
 const Duration _kRemoveItemDuration = Duration(milliseconds: 300);
 
-abstract class MotionListBase<W extends Widget, E extends Object>
-    extends StatefulWidget {
+abstract class MotionListBase<W extends Widget, E extends Object> extends StatefulWidget {
   final ItemBuilder<W, E> itemBuilder;
   final RemovedItemBuilder<W, E>? removedItemBuilder;
   final List<E> items;
@@ -30,26 +30,25 @@ abstract class MotionListBase<W extends Widget, E extends Object>
   final EqualityChecker<E>? areItemsTheSame;
   final SliverGridDelegate? sliverGridDelegate;
 
-  const MotionListBase(
-      {Key? key,
-      required this.items,
-      required this.itemBuilder,
-      this.removedItemBuilder,
-      this.resizeDuration,
-      this.insertDuration,
-      this.removeDuration,
-      this.insertAnimationType,
-      this.scrollDirection,
-      this.sliverGridDelegate,
-      this.removeAnimationType,
-      this.areItemsTheSame})
+  const MotionListBase({Key? key,
+    required this.items,
+    required this.itemBuilder,
+    this.removedItemBuilder,
+    this.resizeDuration,
+    this.insertDuration,
+    this.removeDuration,
+    this.insertAnimationType,
+    this.scrollDirection,
+    this.sliverGridDelegate,
+    this.removeAnimationType,
+    this.areItemsTheSame})
       : super(key: key);
 }
 
 abstract class MotionListBaseState<
-    W extends Widget,
-    B extends MotionListBase<W, E>,
-    E extends Object> extends State<B> with TickerProviderStateMixin {
+W extends Widget,
+B extends MotionListBase<W, E>,
+E extends Object> extends State<B> with TickerProviderStateMixin {
   late List<E> oldList;
 
   @protected
@@ -103,26 +102,41 @@ abstract class MotionListBaseState<
   void didUpdateWidget(covariant B oldWidget) {
     super.didUpdateWidget(oldWidget);
     final newList = widget.items;
-    calculateDiff(oldList, newList);
+    final diff = calculateListDiff(
+      oldList,
+      newList,
+      detectMoves: true,
+    ).getUpdates(batch: false);
+    for (final update in diff) {
+      _onDiffUpdate(update);
+    }
     oldList = List.from(newList);
   }
 
-  void calculateDiff<E>(List oldList, List newList) {
-    // Detect removed and updated items
-    for (int i = oldList.length - 1; i >= 0; i--) {
-      if (!newList.contains(oldList[i])) {
-        listKey.currentState!.removeItem(i, (context, animation) {
-          final item = oldList[i];
-          return removedItemBuilder?.call(context, item) ??
-              itemBuilder(context, i);
-        }, removeItemDuration: removeDuration);
-      }
+  void _onDiffUpdate(DiffUpdate update) {
+    update.when(
+        insert: (pos, count) => _onInserted(pos, count),
+        remove: (pos, count) => _onRemoved(pos, count),
+        move: (from, to) => listKey.currentState!
+            .itemPositionChanged(oldIndex: from, newIndex: to),
+        change: (int position, Object? payload) {});
+  }
+
+  void _onInserted(final int position, final int count) {
+    for (var i = 0; i < count; i++) {
+      listKey.currentState!
+          .insertItem(position, insertDuration: insertDuration);
     }
-    // Detect added items
-    for (int i = 0; i < newList.length; i++) {
-      if (!oldList.contains(newList[i])) {
-        listKey.currentState!.insertItem(i, insertDuration: insertDuration);
-      }
+  }
+
+  void _onRemoved(final int position, final int count) {
+    for (var i = 0; i < count; i++) {
+      final index = position + i;
+      final item = oldList[index];
+      listKey.currentState!.removeItem(index, (context, animation) {
+        return removedItemBuilder?.call(context, item) ??
+            itemBuilder(context, index);
+      }, removeItemDuration: removeDuration);
     }
   }
 
@@ -136,8 +150,7 @@ abstract class MotionListBaseState<
 
   @nonVirtual
   @protected
-  Widget removeItemBuilder(
-      BuildContext context, Widget child, Animation<double> animation) {
+  Widget removeItemBuilder(BuildContext context, Widget child, Animation<double> animation) {
     return AnimationProvider.buildAnimation(
         removeAnimationType!, child, animation);
   }

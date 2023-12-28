@@ -110,6 +110,7 @@ class MotionBuilderState extends State<MotionBuilder>
   void insertItem(int index, {required Duration insertDuration}) {
     assert(index >= 0);
     final int itemIndex = _indexToItemIndex(index);
+    print("insertItem $index itemIndex $itemIndex ");
 
     if (itemIndex < 0 || itemIndex > _itemsCount) {
       return;
@@ -183,6 +184,7 @@ class MotionBuilderState extends State<MotionBuilder>
   void removeItem(int index, RemovedItemBuilder builder,
       {required Duration removeItemDuration}) {
     assert(index >= 0);
+    print("removeItem $index");
     final int itemIndex = _indexToItemIndex(index);
     if (itemIndex < 0 || itemIndex >= _itemsCount) {
       return;
@@ -243,6 +245,21 @@ class MotionBuilderState extends State<MotionBuilder>
     childrenMap.addAll(updatedChildrenMap);
 
     setState(() => _itemsCount -= 1);
+  }
+
+  void itemPositionChanged({required int oldIndex, required int newIndex}) {
+    print("itemPositionChanged $oldIndex $newIndex map ${childrenMap}");
+    if (childrenMap.containsKey(oldIndex)) {
+      final motionData = childrenMap[oldIndex]!;
+      childrenMap.remove(oldIndex);
+      childrenMap[newIndex] = motionData.copyWith(
+          startOffset: _itemOffsetAt(newIndex),
+          endOffset: _itemOffsetAt(newIndex),
+          enter: false,
+          exit: false);
+    }
+
+    print("updated map ${childrenMap}");
   }
 
   Offset? _itemOffsetAt(int index, {bool includeAnimation = false}) {
