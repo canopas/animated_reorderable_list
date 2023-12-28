@@ -70,9 +70,7 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       visible = true;
-      if (oldWidget.index != widget.index) {
-        _updateAnimationTranslation();
-      }
+      if (oldWidget.index != widget.index) _updateAnimationTranslation();
       widget.updateMotionData?.call(widget.motionData);
     });
 
@@ -87,6 +85,7 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
 
     if (offsetDiff.dx != 0 || offsetDiff.dy != 0) {
       _positionController.duration = widget.motionData.duration;
+
       _offsetAnimation = Tween<Offset>(begin: offsetDiff, end: Offset.zero)
           .animate(_positionController);
       _positionController.forward(from: 0);
