@@ -47,8 +47,7 @@ class AnimationProvider {
         return SlideInUp(animation: animation, child: child);
       case (AnimationType.slideInDown):
         return SlideInDown(animation: animation, child: child);
-      case (AnimationType.sizeIn):
-        return SizeIn(animation: animation, child: child);
+
     }
   }
 }
