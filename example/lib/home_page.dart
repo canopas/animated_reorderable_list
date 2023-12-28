@@ -150,36 +150,27 @@ class _HomePageState extends State<HomePage> {
                       items: list,
                       scrollDirection: Axis.vertical,
                       itemBuilder: (BuildContext context, int index) {
-                        // print("Key ${list[index].name}");
                         return ItemCard(
                             key: Key('${list[index].name}'),
                             index: list[index].index);
                       },
-                      removedItemBuilder: (context, item) {
-                        return ItemCard(
-                            key: Key('${item.name}'), index: item.index);
-                      },
                       insertAnimation: appliedStyle,
                       removeAnimation: appliedStyle,
-                insertDuration: const Duration(milliseconds: 300),
-                removeDuration: const Duration(milliseconds: 300),
+                      insertDuration: const Duration(milliseconds: 300),
+                      removeDuration: const Duration(milliseconds: 300),
                       sliverGridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 4),
                     )
                   : MotionListViewBuilder(
-                items: list,
+                      items: list,
                       itemBuilder: (BuildContext context, int index) {
                         return ItemTile(
                             key: Key('${list[index].name}'),
                             index: list[index].index);
                       },
-                      // removedItemBuilder: (context, item) {
-                      //   return ItemTile(
-                      //       key: Key('${item.name}'), index: item.index);
-                      // },
-                insertDuration: const Duration(milliseconds: 300),
-                removeDuration: const Duration(milliseconds: 300),
+                      insertDuration: const Duration(milliseconds: 300),
+                      removeDuration: const Duration(milliseconds: 300),
                       insertAnimation: appliedStyle,
                       removeAnimation: appliedStyle,
                     ),

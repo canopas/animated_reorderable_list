@@ -127,7 +127,7 @@ class MotionBuilderState extends State<MotionBuilder>
       vsync: this,
     );
 
-    final _ActiveItem incomingItem = _ActiveItem.incoming(
+    final _ActiveItem incomingItem = _ActiveItem.animation(
       controller,
       itemIndex,
     );
@@ -180,7 +180,7 @@ class MotionBuilderState extends State<MotionBuilder>
 
   }
 
-  void removeItem(int index, RemovedItemBuilder builder,
+  void removeItem(int index,
       {required Duration removeItemDuration}) {
     assert(index >= 0);
     final int itemIndex = _indexToItemIndex(index);
@@ -198,7 +198,7 @@ class MotionBuilderState extends State<MotionBuilder>
           AnimationController(
               duration: removeItemDuration, value: 1.0, vsync: this);
       final _ActiveItem outgoingItem =
-          _ActiveItem.outgoing(controller, itemIndex, builder);
+          _ActiveItem.animation(controller, itemIndex);
       setState(() {
         _outgoingItems
           ..add(outgoingItem)
@@ -376,18 +376,12 @@ class _MotionBuilderItemGlobalKey extends GlobalObjectKey {
 }
 
 class _ActiveItem implements Comparable<_ActiveItem> {
-  _ActiveItem.incoming(this.controller, this.itemIndex)
-      : removedItemBuilder = null;
-
-  _ActiveItem.outgoing(
-      this.controller, this.itemIndex, this.removedItemBuilder);
+  _ActiveItem.animation(this.controller, this.itemIndex);
 
   _ActiveItem.index(this.itemIndex)
-      : controller = null,
-        removedItemBuilder = null;
+      : controller = null;
 
   final AnimationController? controller;
-  final ItemBuilder? removedItemBuilder;
   int itemIndex;
 
   @override

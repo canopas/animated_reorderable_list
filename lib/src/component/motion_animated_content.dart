@@ -69,7 +69,9 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
     }
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      visible = true;
+      setState(() {
+        visible = true;
+      });
       if (oldWidget.index != widget.index) _updateAnimationTranslation();
       widget.updateMotionData?.call(widget.motionData);
     });
