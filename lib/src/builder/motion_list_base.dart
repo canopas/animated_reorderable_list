@@ -119,10 +119,14 @@ E extends Object> extends State<B> with TickerProviderStateMixin {
         remove: (pos, count) => _onRemoved(pos, count),
         move: (from, to) => listKey.currentState!
             .itemPositionChanged(oldIndex: from, newIndex: to),
-        change: (int position, Object? payload) {});
+        change: (int position, Object? payload) {
+          print("change position $position");
+        });
   }
 
   void _onInserted(final int position, final int count) {
+    print("_onRemoved $position count $count");
+
     for (var i = 0; i < count; i++) {
       listKey.currentState!
           .insertItem(position, insertDuration: insertDuration);
@@ -130,6 +134,7 @@ E extends Object> extends State<B> with TickerProviderStateMixin {
   }
 
   void _onRemoved(final int position, final int count) {
+    print("_onRemoved $position count $count");
     for (var i = 0; i < count; i++) {
       final index = position + i;
       final item = oldList[index];

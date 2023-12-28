@@ -248,10 +248,11 @@ class MotionBuilderState extends State<MotionBuilder>
   }
 
   void itemPositionChanged({required int oldIndex, required int newIndex}) {
-    print("itemPositionChanged $oldIndex $newIndex map ${childrenMap}");
+    print(
+        "itemPositionChanged $oldIndex newIndex $newIndex map ${childrenMap.length}");
     if (childrenMap.containsKey(oldIndex)) {
       final motionData = childrenMap[oldIndex]!;
-      childrenMap.remove(oldIndex);
+      // childrenMap.remove(oldIndex);
       childrenMap[newIndex] = motionData.copyWith(
           startOffset: _itemOffsetAt(newIndex),
           endOffset: _itemOffsetAt(newIndex),
@@ -259,7 +260,7 @@ class MotionBuilderState extends State<MotionBuilder>
           exit: false);
     }
 
-    print("updated map ${childrenMap}");
+    print("updated map ${childrenMap.length}");
   }
 
   Offset? _itemOffsetAt(int index, {bool includeAnimation = false}) {
