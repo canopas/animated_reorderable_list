@@ -39,7 +39,6 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
 
   @override
   void initState() {
-    print("Initstate $index");
     _listState = MotionBuilderState.of(context);
     _listState.registerItem(this);
 
@@ -61,23 +60,20 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
 
   @override
   void didUpdateWidget(covariant MotionAnimatedContent oldWidget) {
-    print("didUpdateWidget old ${oldWidget.index} new ${widget.index}");
-
     if (oldWidget.index != widget.index) {
       _listState.unregisterItem(oldWidget.index, this);
       _listState.registerItem(this);
     }
-    if(oldWidget.index != widget.index){
-        visible= false;
+    if (oldWidget.index != widget.index) {
+      visible = false;
     }
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      print("${widget.index}  addPostFrameCallback");
-      widget.updateMotionData?.call(widget.motionData);
-      if (oldWidget.index != widget.index){
-
+      visible = true;
+      if (oldWidget.index != widget.index) {
         _updateAnimationTranslation();
       }
+      widget.updateMotionData?.call(widget.motionData);
     });
 
     super.didUpdateWidget(oldWidget);
@@ -90,13 +86,10 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
         (widget.motionData.startOffset + currentAnimatedOffset) - endOffset;
 
     if (offsetDiff.dx != 0 || offsetDiff.dy != 0) {
-     // _positionController.duration = widget.motionData.duration;
-      _positionController.duration= Duration(seconds: 5);
-
+      _positionController.duration = widget.motionData.duration;
       _offsetAnimation = Tween<Offset>(begin: offsetDiff, end: Offset.zero)
           .animate(_positionController);
       _positionController.forward(from: 0);
-        visible=true;
     }
   }
 

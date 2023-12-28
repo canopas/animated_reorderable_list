@@ -108,8 +108,6 @@ class MotionBuilderState extends State<MotionBuilder>
   }
 
   void insertItem(int index, {required Duration insertDuration}) {
-    print("---INSERT--- childrenMap ${childrenMap}");
-
     assert(index >= 0);
     final int itemIndex = _indexToItemIndex(index);
 
@@ -178,7 +176,6 @@ class MotionBuilderState extends State<MotionBuilder>
       });
     }
 
-    print("ITEM INSERTED childrenMap ${childrenMap}");
     setState(() {
       _itemsCount = childrenMap.length;
     });
@@ -264,7 +261,6 @@ class MotionBuilderState extends State<MotionBuilder>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    print("parent build");
     return widget.delegateBuilder != null
         ? SliverGrid(
             gridDelegate: widget.delegateBuilder!, delegate: _createDelegate())
@@ -302,7 +298,6 @@ class MotionBuilderState extends State<MotionBuilder>
       key: itemGlobalKey,
       motionData: motionData,
       updateMotionData: (MotionData motionData) {
-        print("updateMotionData index $index");
         childrenMap[index] = motionData.copyWith(
           startOffset: _itemOffsetAt(index),
           endOffset: _itemOffsetAt(index),
