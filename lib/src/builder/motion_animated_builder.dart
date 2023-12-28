@@ -108,8 +108,6 @@ class MotionBuilderState extends State<MotionBuilder>
   }
 
   void insertItem(int index, {required Duration insertDuration}) {
-    print("---INSERT--- childrenMap ${childrenMap}");
-
     assert(index >= 0);
     final int itemIndex = _indexToItemIndex(index);
 
@@ -148,13 +146,11 @@ class MotionBuilderState extends State<MotionBuilder>
       for (final entry in childrenMap.entries) {
         if (entry.key == itemIndex) {
           updatedChildrenMap[itemIndex] = motionData;
-          updatedChildrenMap[entry.key + 1] = entry.value.copyWith(
-              index: entry.key + 1,
-              duration: insertDuration);
+          updatedChildrenMap[entry.key + 1] = entry.value
+              .copyWith(index: entry.key + 1, duration: insertDuration);
         } else if (entry.key > itemIndex) {
-          updatedChildrenMap[entry.key + 1] = entry.value.copyWith(
-              index: entry.key + 1,
-              duration: insertDuration);
+          updatedChildrenMap[entry.key + 1] = entry.value
+              .copyWith(index: entry.key + 1, duration: insertDuration);
         } else {
           updatedChildrenMap[entry.key] =
               entry.value.copyWith(duration: insertDuration);
@@ -178,11 +174,9 @@ class MotionBuilderState extends State<MotionBuilder>
       });
     }
 
-    print("ITEM INSERTED childrenMap ${childrenMap}");
     setState(() {
       _itemsCount = childrenMap.length;
     });
-
   }
 
   void removeItem(int index, RemovedItemBuilder builder,
@@ -239,9 +233,8 @@ class MotionBuilderState extends State<MotionBuilder>
         } else if (entry.key == itemIndex) {
           continue;
         } else {
-          updatedChildrenMap[entry.key - 1] = childrenMap[entry.key]!.copyWith(
-              index: entry.key - 1,
-              duration: removeDuration);
+          updatedChildrenMap[entry.key - 1] = childrenMap[entry.key]!
+              .copyWith(index: entry.key - 1, duration: removeDuration);
         }
       }
     }
@@ -274,13 +267,14 @@ class MotionBuilderState extends State<MotionBuilder>
     final _ActiveItem? outgoingItem = _activeItemAt(_outgoingItems, index);
     final _ActiveItem? incomingItem = _activeItemAt(_incomingItems, index);
 
-    final Widget child = outgoingItem != null
-        ? outgoingItem.removedItemBuilder!(context, index)
-        : widget.itemBuilder(context, _itemIndexToIndex(index));
+    if (outgoingItem != null) {
+      final child = _items[index]!.widget;
+      return _removeItemBuilder(outgoingItem, child);
+    }
 
-    final Widget builder = outgoingItem != null
-        ? _removeItemBuilder(outgoingItem, child)
-        : _insertItemBuilder(incomingItem, child);
+    final Widget child = widget.itemBuilder(context, _itemIndexToIndex(index));
+
+    final Widget builder = _insertItemBuilder(incomingItem, child);
 
     assert(() {
       if (child.key == null) {
@@ -290,9 +284,8 @@ class MotionBuilderState extends State<MotionBuilder>
       }
       return true;
     }());
-    final outGoingKey =
-        outgoingItem != null ? Key('${outgoingItem.itemIndex}') : child.key!;
-    final Key itemGlobalKey = _MotionBuilderItemGlobalKey(outGoingKey, this);
+
+    final Key itemGlobalKey = _MotionBuilderItemGlobalKey(child.key!, this);
 
     final motionData = childrenMap[index];
     if (motionData == null) return builder;

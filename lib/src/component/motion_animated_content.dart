@@ -59,8 +59,6 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
 
   @override
   void didUpdateWidget(covariant MotionAnimatedContent oldWidget) {
-   // print("didUpdateWidget old ${oldWidget.index} new ${widget.index}");
-
     if (oldWidget.index != widget.index) {
       _listState.unregisterItem(oldWidget.index, this);
       _listState.registerItem(this);

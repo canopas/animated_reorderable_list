@@ -1,4 +1,3 @@
-import 'package:diffutil_dart/diffutil.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:motion_list/motion_list.dart';
@@ -100,14 +99,6 @@ abstract class MotionListBaseState<
     oldList = List.from(widget.items);
   }
 
-  // @override
-  // void didUpdateWidget(covariant B oldWidget) {
-  //   super.didUpdateWidget(oldWidget);
-  //   final newList = widget.items;
-  //   _calcDiff(oldList, newList);
-  //
-  //  // oldList = List.from(newList);
-  // }
   @override
   void didUpdateWidget(covariant B oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -118,7 +109,7 @@ abstract class MotionListBaseState<
 
   void calculateDiff<E>(List oldList, List newList) {
     // Detect removed and updated items
-    for (int i = 0; i < oldList.length; i++) {
+    for (int i = oldList.length - 1; i >= 0; i--) {
       if (!newList.contains(oldList[i])) {
         listKey.currentState!.removeItem(i, (context, animation) {
           final item = oldList[i];
@@ -126,9 +117,6 @@ abstract class MotionListBaseState<
               itemBuilder(context, i);
         }, removeItemDuration: removeDuration);
       }
-      // else if (i < newList.length && oldList[i] != newList[i]) {
-      //     updatedIndices.add(UpdateIndex(oldIndex: i, newIndex: newList.indexOf(oldList[i])));
-      //   }
     }
     // Detect added items
     for (int i = 0; i < newList.length; i++) {
@@ -136,37 +124,6 @@ abstract class MotionListBaseState<
         listKey.currentState!.insertItem(i, insertDuration: insertDuration);
       }
     }
-  }
-
-  void _onChanged(int position, Object? payLoad) {
-    _onInserted(position, 1);
-  }
-
-  void _onInserted(final int position, final int count) {
-    for (var i = 0; i < count; i++) {
-      listKey.currentState!
-          .insertItem(position, insertDuration: insertDuration);
-    }
-  }
-
-  void _onRemoved(final int position, final int count) {
-    for (var i = 0; i < count; i++) {
-      final index = position + i;
-      final item = oldList[index];
-      listKey.currentState!.removeItem(index, (context, animation) {
-        return removedItemBuilder?.call(context, item) ??
-            itemBuilder(context, index);
-      }, removeItemDuration: removeDuration);
-    }
-  }
-
-  void _onDiffUpdate(DiffUpdate update) {
-    update.when(
-        insert: (pos, count) => _onInserted(pos, count),
-        remove: (pos, count) => _onRemoved(pos, count),
-        change: (pos, payload) => _onChanged(pos, payload),
-        move: (_, __) =>
-            throw UnimplementedError('Moves are currently not supported'));
   }
 
   @nonVirtual

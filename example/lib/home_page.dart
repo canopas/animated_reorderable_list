@@ -50,6 +50,7 @@ class _HomePageState extends State<HomePage> {
   void remove() {
     setState(() {
       if (list.isNotEmpty && list.length > 1) list.removeAt(1);
+      if (list.isNotEmpty && list.length > 2) list.removeAt(2);
     });
   }
 
@@ -162,7 +163,7 @@ class _HomePageState extends State<HomePage> {
             Expanded(
               child: isGrid
                   ? MotionGridViewBuilder(
-                      items: list,
+                items: list,
                       scrollDirection: Axis.vertical,
                       itemBuilder: (BuildContext context, int index) {
                         // print("Key ${list[index].name}");
@@ -170,10 +171,10 @@ class _HomePageState extends State<HomePage> {
                             key: Key('${list[index].name}'),
                             index: list[index].index);
                       },
-                      removedItemBuilder: (context, item) {
-                        return ItemCard(
-                            key: Key('${item.name}'), index: item.index);
-                      },
+                      // removedItemBuilder: (context, item) {
+                      //   return ItemCard(
+                      //       key: Key('${item.name}'), index: item.index);
+                      // },
                       insertAnimation: appliedStyle,
                       removeAnimation: appliedStyle,
                       insertDuration: const Duration(milliseconds: 300),
@@ -189,10 +190,10 @@ class _HomePageState extends State<HomePage> {
                             key: Key('${list[index].name}'),
                             index: list[index].index);
                       },
-                      removedItemBuilder: (context, item) {
-                        return ItemTile(
-                            key: Key('${item.name}'), index: item.index);
-                      },
+                      // removedItemBuilder: (context, item) {
+                      //   return ItemTile(
+                      //       key: Key('${item.name}'), index: item.index);
+                      // },
                       insertDuration: const Duration(milliseconds: 300),
                       removeDuration: const Duration(milliseconds: 300),
                       insertAnimation: appliedStyle,
