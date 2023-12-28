@@ -11,8 +11,6 @@ class MotionGridViewBuilder<E extends Object> extends StatelessWidget {
   ///Called, as needed, to build list item widget
   final ItemBuilder<Widget, E> itemBuilder;
 
-  ///An optional builder when an item was removed from the list.
-  final RemovedItemBuilder? removedItemBuilder;
 
   /// AnimationStyle when item is added in the list.
   final AnimationType insertAnimation;
@@ -124,7 +122,6 @@ class MotionGridViewBuilder<E extends Object> extends StatelessWidget {
       {Key? key,
       required this.items,
       required this.itemBuilder,
-      this.removedItemBuilder,
       this.insertAnimation = AnimationType.fadeIn,
       this.removeAnimation,
       this.insertDuration,
@@ -160,7 +157,6 @@ class MotionGridViewBuilder<E extends Object> extends StatelessWidget {
           MotionListImpl.grid(
             items: items,
             itemBuilder: itemBuilder,
-            removedItemBuilder: removedItemBuilder,
             insertAnimationType: insertAnimation,
             removeAnimationType: removeAnimation ?? insertAnimation,
             insertDuration: insertDuration,
