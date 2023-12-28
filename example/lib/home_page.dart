@@ -21,7 +21,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   AnimationType appliedStyle = AnimationType.fadeIn;
   List<User> list =
-      List.generate(50, (index) => User(name: "User $index", index: index));
+      List.generate(3, (index) => User(name: "User $index", index: index));
   int addedNumber = 3;
   bool isGrid = true;
 
@@ -148,9 +148,11 @@ class _HomePageState extends State<HomePage> {
               child: isGrid
                   ? MotionGridViewBuilder(
                       items: list,
+                      scrollDirection: Axis.vertical,
                       itemBuilder: (BuildContext context, int index) {
+                        // print("Key ${list[index].name}");
                         return ItemCard(
-                            key: ValueKey(index),
+                            key: Key('${list[index].name}'),
                             index: list[index].index);
                       },
                       removedItemBuilder: (context, item) {
@@ -166,7 +168,7 @@ class _HomePageState extends State<HomePage> {
                               crossAxisCount: 4),
                     )
                   : MotionListViewBuilder(
-                      items: list,
+                items: list,
                       itemBuilder: (BuildContext context, int index) {
                         return ItemTile(
                             key: Key('${list[index].name}'),
