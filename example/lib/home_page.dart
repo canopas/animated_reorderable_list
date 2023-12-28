@@ -23,35 +23,18 @@ class _HomePageState extends State<HomePage> {
   List<User> list =
       List.generate(50, (index) => User(name: "User $index", index: index));
   int addedNumber = 3;
-  bool isGrid = false;
+  bool isGrid = true;
 
   void insert() {
     addedNumber += 1;
     setState(() {
-      addedNumber += 1;
       list.insert(1, User(name: "User $addedNumber", index: addedNumber));
-      addedNumber += 1;
-      list.insert(3, User(name: "User $addedNumber", index: addedNumber));
-
-
     });
   }
-
-  // void insert() {
-  //   List<User> newList = List.generate(
-  //       2,
-  //       (index) => User(
-  //           name: "User ${addedNumber + index}", index: index + addedNumber));
-  //   setState(() {
-  //     list.insertAll(1, newList);
-  //     addedNumber += 2;
-  //   });
-  // }
 
   void remove() {
     setState(() {
       if (list.isNotEmpty && list.length > 1) list.removeAt(1);
-      if (list.isNotEmpty && list.length > 2) list.removeAt(2);
     });
   }
 
@@ -164,20 +147,20 @@ class _HomePageState extends State<HomePage> {
             Expanded(
               child: isGrid
                   ? MotionGridViewBuilder(
-                items: list,
+                      items: list,
                       itemBuilder: (BuildContext context, int index) {
                         return ItemCard(
                             key: ValueKey(index),
                             index: list[index].index);
                       },
-                      // removedItemBuilder: (context, item) {
-                      //   return ItemCard(
-                      //       key: Key('${item.name}'), index: item.index);
-                      // },
+                      removedItemBuilder: (context, item) {
+                        return ItemCard(
+                            key: Key('${item.name}'), index: item.index);
+                      },
                       insertAnimation: appliedStyle,
                       removeAnimation: appliedStyle,
-                      insertDuration: const Duration(milliseconds: 300),
-                      removeDuration: const Duration(milliseconds: 300),
+                insertDuration: const Duration(milliseconds: 300),
+                removeDuration: const Duration(milliseconds: 300),
                       sliverGridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 4),
@@ -193,8 +176,8 @@ class _HomePageState extends State<HomePage> {
                       //   return ItemTile(
                       //       key: Key('${item.name}'), index: item.index);
                       // },
-                      insertDuration: const Duration(milliseconds: 300),
-                      removeDuration: const Duration(milliseconds: 300),
+                insertDuration: const Duration(milliseconds: 300),
+                removeDuration: const Duration(milliseconds: 300),
                       insertAnimation: appliedStyle,
                       removeAnimation: appliedStyle,
                     ),
