@@ -177,6 +177,7 @@ class MotionBuilderState extends State<MotionBuilder>
     setState(() {
       _itemsCount = childrenMap.length;
     });
+
   }
 
   void removeItem(int index, RemovedItemBuilder builder,

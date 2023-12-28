@@ -35,6 +35,7 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
 
   Offset get currentAnimatedOffset =>
       _positionController.isAnimating ? _offsetAnimation.value : Offset.zero;
+  bool visible = true;
 
   @override
   void initState() {
@@ -63,10 +64,14 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
       _listState.unregisterItem(oldWidget.index, this);
       _listState.registerItem(this);
     }
+    if (oldWidget.index != widget.index) {
+      visible = false;
+    }
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      widget.updateMotionData?.call(widget.motionData);
+      visible = true;
       if (oldWidget.index != widget.index) _updateAnimationTranslation();
+      widget.updateMotionData?.call(widget.motionData);
     });
 
     super.didUpdateWidget(oldWidget);
@@ -97,9 +102,12 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
   @override
   Widget build(BuildContext context) {
     _listState.registerItem(this);
-    return Transform.translate(
-        offset: _offsetAnimation.value,
-        child: widget.child ?? const SizedBox.shrink());
+    return Visibility(
+      visible: visible,
+      child: Transform.translate(
+          offset: _offsetAnimation.value,
+          child: widget.child ?? const SizedBox.shrink()),
+    );
   }
 
   @override
