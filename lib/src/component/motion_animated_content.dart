@@ -44,6 +44,10 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
 
     _positionController =
         AnimationController(vsync: this, duration: widget.motionData.duration);
+    // ..addStatusListener((status) { if(status== AnimationStatus.completed){
+    //     widget.updateMotionData?.call(widget.motionData);
+    // }
+    // });
 
     _offsetAnimation = Tween<Offset>(begin: Offset.zero, end: Offset.zero)
         .animate(_positionController)
@@ -79,6 +83,8 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
 
   void _updateAnimationTranslation() {
     Offset endOffset = itemOffset();
+    print("$index Offset:${endOffset}");
+
 
     Offset offsetDiff =
         (widget.motionData.startOffset + currentAnimatedOffset) - endOffset;
