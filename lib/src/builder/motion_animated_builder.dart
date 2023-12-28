@@ -6,7 +6,7 @@ import '../../motion_list.dart';
 import '../model/motion_data.dart';
 
 typedef AnimatedWidgetBuilder = Widget Function(
-    Widget child, Animation<double> animation);
+    BuildContext context, Widget child, Animation<double> animation);
 
 class MotionBuilder<E> extends StatefulWidget {
   final AnimatedWidgetBuilder insertAnimationBuilder;
@@ -131,6 +131,7 @@ class MotionBuilderState extends State<MotionBuilder>
       controller,
       itemIndex,
     );
+
     _incomingItems
       ..add(incomingItem)
       ..sort();
@@ -172,9 +173,11 @@ class MotionBuilderState extends State<MotionBuilder>
             .dispose();
       });
     }
-        setState(() {
-          _itemsCount = childrenMap.length;
-        });
+
+    setState(() {
+      _itemsCount = childrenMap.length;
+    });
+
   }
 
   void removeItem(int index, RemovedItemBuilder builder,
@@ -291,11 +294,9 @@ class MotionBuilderState extends State<MotionBuilder>
       key: itemGlobalKey,
       motionData: motionData,
       updateMotionData: (MotionData motionData) {
-        final Offset? offset = _itemOffsetAt(index);
-        print("$index offset in UpdateMotiondata: $offset");
         childrenMap[index] = motionData.copyWith(
-          startOffset: offset,
-          endOffset: offset,
+          startOffset: _itemOffsetAt(index),
+          endOffset: _itemOffsetAt(index),
           enter: false,
           exit: false,
         );
@@ -311,8 +312,8 @@ class MotionBuilderState extends State<MotionBuilder>
   Widget _removeItemBuilder(_ActiveItem outgoingItem, Widget child) {
     final Animation<double> animation =
         outgoingItem.controller ?? kAlwaysCompleteAnimation;
-
     return widget.removeAnimationBuilder(
+      context,
       child,
       animation,
     );
@@ -322,6 +323,7 @@ class MotionBuilderState extends State<MotionBuilder>
     final Animation<double> animation =
         incomingItem?.controller ?? kAlwaysCompleteAnimation;
     return widget.insertAnimationBuilder(
+      context,
       child,
       animation,
     );
