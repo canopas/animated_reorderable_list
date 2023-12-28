@@ -108,8 +108,6 @@ class MotionBuilderState extends State<MotionBuilder>
   }
 
   void insertItem(int index, {required Duration insertDuration}) {
-    print("---INSERT--- childrenMap ${childrenMap}");
-
     assert(index >= 0);
     final int itemIndex = _indexToItemIndex(index);
 
@@ -178,7 +176,6 @@ class MotionBuilderState extends State<MotionBuilder>
       });
     }
 
-    print("ITEM INSERTED childrenMap ${childrenMap}");
     setState(() {
       _itemsCount = childrenMap.length;
     });
