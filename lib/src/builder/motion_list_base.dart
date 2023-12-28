@@ -103,12 +103,14 @@ abstract class MotionListBaseState<
     for (int i = oldList.length - 1; i >= 0; i--) {
       if (!newList.contains(oldList[i])) {
         listKey.currentState!.removeItem(i, removeItemDuration: removeDuration);
+      } else if (i < newList.length && oldList[i] != newList[i]) {
+        //calculateDiff(newList, newList);
       }
     }
     // Detect added items
     for (int i = 0; i < newList.length; i++) {
       if (!oldList.contains(newList[i])) {
-        listKey.currentState!.insertItem(i, insertDuration: insertDuration);
+       // listKey.currentState!.insertItem(i, insertDuration: insertDuration);
       }
     }
   }
