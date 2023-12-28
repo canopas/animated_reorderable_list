@@ -275,8 +275,6 @@ class MotionBuilderState extends State<MotionBuilder>
 
     final Widget child = widget.itemBuilder(context, _itemIndexToIndex(index));
 
-    final Widget builder = _insertItemBuilder(incomingItem, child);
-
     assert(() {
       if (child.key == null) {
         throw FlutterError(
@@ -287,6 +285,7 @@ class MotionBuilderState extends State<MotionBuilder>
     }());
 
     final Key itemGlobalKey = _MotionBuilderItemGlobalKey(child.key!, this);
+    final Widget builder = _insertItemBuilder(incomingItem, child);
 
     final motionData = childrenMap[index];
     if (motionData == null) return builder;
