@@ -128,14 +128,16 @@ abstract class MotionListBaseState<
 
   @nonVirtual
   @protected
-  Widget insertItemBuilder(Widget child, Animation<double> animation) {
+  Widget insertItemBuilder(
+      BuildContext context, Widget child, Animation<double> animation) {
     return AnimationProvider.buildAnimation(
         insertAnimationType!, child, animation);
   }
 
   @nonVirtual
   @protected
-  Widget removeItemBuilder(Widget child, Animation<double> animation) {
+  Widget removeItemBuilder(
+      BuildContext context, Widget child, Animation<double> animation) {
     return AnimationProvider.buildAnimation(
         removeAnimationType!, child, animation);
   }
