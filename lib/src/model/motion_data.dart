@@ -13,8 +13,6 @@ class MotionData {
   MotionData copyWith({
     Offset? startOffset,
     Offset? endOffset,
-    Offset? frontItemOffset,
-    Offset? nextItemOffset,
     Duration? duration,
     int? index,
   }) {
@@ -31,4 +29,8 @@ class MotionData {
           runtimeType == other.runtimeType &&
           startOffset == other.startOffset &&
           endOffset == other.endOffset;
+
+  @override
+  int get hashCode => startOffset.hashCode^endOffset.hashCode;
+
 }

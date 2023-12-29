@@ -4,7 +4,7 @@ import 'package:animated_reorderable_list/src/model/motion_data.dart';
 import '../builder/motion_animated_builder.dart';
 
 class MotionAnimatedContent extends StatefulWidget {
-  final Key key;
+
   final int index;
   final MotionData motionData;
   final Widget? child;
@@ -12,7 +12,7 @@ class MotionAnimatedContent extends StatefulWidget {
   final Function(int)? onItemRemoved;
 
   const MotionAnimatedContent(
-      {required this.key,
+      {required Key key,
       required this.index,
       required this.motionData,
       required this.child,

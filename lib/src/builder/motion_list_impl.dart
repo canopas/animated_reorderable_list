@@ -35,7 +35,6 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
     Axis? scrollDirection,
     AnimationType? insertAnimationType,
     AnimationType? removeAnimationType,
-    EqualityChecker<E>? areItemsTheSame,
   }) : super(
             key: key,
             items: items,
@@ -43,7 +42,6 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
             insertDuration: insertDuration,
             removeDuration: removeDuration,
             scrollDirection: scrollDirection,
-            areItemsTheSame: areItemsTheSame,
             sliverGridDelegate: sliverGridDelegate,
             insertAnimationType: insertAnimationType,
             removeAnimationType: removeAnimationType);
