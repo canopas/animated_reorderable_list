@@ -3,9 +3,10 @@
 A Flutter Reorderable Animated List with simple implementation and smooth transition.
 
 ## Features
-- Smooth animations when adding and removing items from the list.
-- List and Grid support.
-- Easily customize animation styles and duration to Flutter list.
+[x] Smooth animations when adding and removing items from the list.
+[x] List and Grid support.
+[x] Easily customize animation styles and duration to Flutter list.
+[ ] Drag and Drop support
 
 ## Demo
 
@@ -34,8 +35,6 @@ SliverGridMotionList(
 
 ```
 
-## Note
-Drag and drop functionality is not supported yet. We are working on it to provide it as soon as possible.
 
 ## Bugs and Feedback
 For bugs, questions and discussions please use the [Github Issues](https://github.com/canopas/animated_reorderable_list/issues).
