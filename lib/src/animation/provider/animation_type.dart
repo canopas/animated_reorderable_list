@@ -16,5 +16,4 @@ enum AnimationType {
   slideInRight,
   slideInDown,
   slideInUp,
-  sizeIn
 }

@@ -22,30 +22,21 @@ class ItemTile extends StatelessWidget {
         child: Column(
           children: [
             Container(
+              height: 60,
               width: MediaQuery.of(context).size.width,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 color: Colors.primaries[index % Colors.primaries.length],
               ),
               child: Center(
-                child: Column(
-                  children: [
-                    Text(
-                      'Item $index',
-                      style: const TextStyle(fontSize: 25),
-                    ),
-                    index % 2 == 0
-                        ? Text(
-                            'Item $index',
-                            style: const TextStyle(fontSize: 25),
-                          )
-                        : SizedBox.shrink(),
-                  ],
+                child: Text(
+                  'Item $index',
+                  style: const TextStyle(fontSize: 25),
                 ),
               ),
             ),
             const SizedBox(
-              height: 2,
+              height: 5,
             )
           ],
         ),

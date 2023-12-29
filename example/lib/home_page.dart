@@ -21,8 +21,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   AnimationType appliedStyle = AnimationType.fadeIn;
   List<User> list =
-      List.generate(3, (index) => User(name: "User $index", index: index));
-  int addedNumber = 3;
+      List.generate(8, (index) => User(name: "User $index", index: index));
+  int addedNumber = 9;
   bool isGrid = true;
 
   void insert() {
@@ -31,6 +31,8 @@ class _HomePageState extends State<HomePage> {
       list.insert(1, User(name: "User $addedNumber", index: addedNumber));
     });
   }
+
+
 
   void remove() {
     setState(() {
@@ -151,7 +153,7 @@ class _HomePageState extends State<HomePage> {
                       scrollDirection: Axis.vertical,
                       itemBuilder: (BuildContext context, int index) {
                         return ItemCard(
-                            key: Key('${list[index].name}'),
+                            key: Key(list[index].name),
                             index: list[index].index);
                       },
                       insertAnimation: appliedStyle,
@@ -166,7 +168,7 @@ class _HomePageState extends State<HomePage> {
                       items: list,
                       itemBuilder: (BuildContext context, int index) {
                         return ItemTile(
-                            key: Key('${list[index].name}'),
+                            key: Key(list[index].name),
                             index: list[index].index);
                       },
                       insertDuration: const Duration(milliseconds: 300),

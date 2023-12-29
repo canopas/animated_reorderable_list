@@ -1,7 +1,7 @@
 name: motion_list
-description: A new Flutter package project.
+description: A Flutter Animated Listview with simple implementation with animation and smooth transition.
 version: 0.0.1
-homepage:
+repository: https://github.com/canopas/motion_list
 
 environment:
   sdk: '>=3.0.6 <4.0.0'
@@ -10,7 +10,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  diffutil_dart: ^4.0.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
