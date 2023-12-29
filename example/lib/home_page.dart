@@ -22,26 +22,17 @@ class _HomePageState extends State<HomePage> {
   AnimationType appliedStyle = AnimationType.fadeIn;
   List<User> list =
       List.generate(8, (index) => User(name: "User $index", index: index));
-  int addedNumber = 8;
+  int addedNumber = 9;
   bool isGrid = true;
 
-  // void insert() {
-  //   addedNumber += 1;
-  //   setState(() {
-  //     list.insert(1, User(name: "User $addedNumber", index: addedNumber));
-  //   });
-  // }
-
   void insert() {
-    List<User> newList = List.generate(
-        8,
-            (index) => User(
-            name: "User ${addedNumber + index}", index: addedNumber + index));
-    addedNumber++;
-    list.clear();
-    list.insertAll(0, newList);
-    setState(() {});
+    addedNumber += 1;
+    setState(() {
+      list.insert(1, User(name: "User $addedNumber", index: addedNumber));
+    });
   }
+
+
 
   void remove() {
     setState(() {
@@ -162,7 +153,7 @@ class _HomePageState extends State<HomePage> {
                       scrollDirection: Axis.vertical,
                       itemBuilder: (BuildContext context, int index) {
                         return ItemCard(
-                            key: Key('${list[index].name}'),
+                            key: Key(list[index].name),
                             index: list[index].index);
                       },
                       insertAnimation: appliedStyle,
@@ -177,7 +168,7 @@ class _HomePageState extends State<HomePage> {
                       items: list,
                       itemBuilder: (BuildContext context, int index) {
                         return ItemTile(
-                            key: Key('${list[index].name}'),
+                            key: Key(list[index].name),
                             index: list[index].index);
                       },
                       insertDuration: const Duration(milliseconds: 300),
