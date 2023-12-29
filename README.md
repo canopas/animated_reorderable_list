@@ -34,6 +34,9 @@ SliverGridMotionList(
 
 ```
 
+## Note
+Drag and drop functionality is not supported yet. We are working on it to provide it as soon as possible.
+
 ## Bugs and Feedback
 For bugs, questions and discussions please use the [Github Issues](https://github.com/canopas/animated_reorderable_list/issues).
 
