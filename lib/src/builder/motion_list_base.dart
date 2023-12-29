@@ -1,4 +1,3 @@
-import 'package:diffutil_dart/diffutil.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:motion_list/motion_list.dart';
@@ -95,51 +94,24 @@ abstract class MotionListBaseState<
   void didUpdateWidget(covariant B oldWidget) {
     super.didUpdateWidget(oldWidget);
     final newList = widget.items;
-    final diff = calculateListDiff(
-      oldList,
-      newList,
-     // detectMoves: true,
-    ).getUpdates(batch :false);
+    calculateDiff(oldList, newList);
+    oldList = List.from(newList);
+  }
 
-      for (final update in diff) {
-        _onDiffUpdate(update);
+  void calculateDiff<E>(List oldList, List newList) {
+    // Detect removed and updated items
+    for (int i = oldList.length - 1; i >= 0; i--) {
+      if (!newList.contains(oldList[i])) {
+        listKey.currentState!.removeItem(i, removeItemDuration: removeDuration);
       }
-      oldList = List.from(newList);
-  }
-
-  void _onDiffUpdate(DiffUpdate update) {
-
-    update.when(
-        insert: (pos, count) {
-          _onInserted(pos, count);
-        },
-        remove: (pos, count) {
-          _onRemoved(pos, count);
-        },
-        move: (from, to) =>(){
-         // print("changed on $from with payload $to");
-        },
-        change: (int position, Object? payload) {
-         // print("change position $position");
-        });
-  }
-
-  void _onInserted(final int position, final int count) {
-    for (var i = 0; i < count; i++) {
-      listKey.currentState!
-          .insertItem(position, insertDuration: insertDuration);
     }
-  }
     // Detect added items
-
-    void _onRemoved(final int position, final int count) {
-      for (var i = 0; i < count; i++) {
-        final index = position + i;
-        listKey.currentState!.removeItem(index, removeItemDuration: removeDuration);
+    for (int i = 0; i < newList.length; i++) {
+      if (!oldList.contains(newList[i])) {
+        listKey.currentState!.insertItem(i, insertDuration: insertDuration);
       }
     }
-
-
+  }
 
   @nonVirtual
   @protected
