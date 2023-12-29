@@ -5,8 +5,8 @@ A Flutter Reorderable Animated List with simple implementation and smooth transi
 ## Features
 - [x] Smooth transition when adding and removing items from the list.
 - [x] List and Grid support.
-- [x] Easily customize animation styles and duration to Flutter list.
-- [ ] Drag and Drop support
+- [x] Pre-built animation like fade,scale, slide, flip etc for Flutter list.
+- [ ] Drag and Drop support (in progress)
 
 ## Demo
 
