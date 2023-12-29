@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-import 'package:motion_list/motion_list.dart';
+import 'package:animated_reorderable_list/animated_reorderable_list.dart';
 
 import 'motion_animated_builder.dart';
 

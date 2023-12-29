@@ -2,7 +2,7 @@ import 'package:example/utils/extension.dart';
 import 'package:example/utils/item_card.dart';
 import 'package:example/utils/item_tile.dart';
 import 'package:flutter/material.dart';
-import 'package:motion_list/motion_list.dart';
+import 'package:animated_reorderable_list/animated_reorderable_list.dart';
 
 class User {
   final String name;

@@ -1,6 +1,6 @@
 // This is a generated file; do not edit or check into version control.
-FLUTTER_ROOT=/Users/radhikas/flutter
-FLUTTER_APPLICATION_PATH=/Users/radhikas/Projects/motion_list
+FLUTTER_ROOT=/Users/sneha/Downloads/flutter
+FLUTTER_APPLICATION_PATH=/Users/sneha/StudioProjects/motion_list
 COCOAPODS_PARALLEL_CODE_SIGN=true
 FLUTTER_BUILD_DIR=build
 FLUTTER_BUILD_NAME=0.0.1
