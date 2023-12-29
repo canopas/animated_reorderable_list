@@ -5,12 +5,12 @@ import 'package:animated_reorderable_list/src/component/motion_animated_content.
 import '../../animated_reorderable_list.dart';
 import '../model/motion_data.dart';
 
-typedef AnimatedWidgetBuilder = Widget Function(
+typedef AnimatedWidgetBuilder<E> = Widget Function(
     BuildContext context, Widget child, Animation<double> animation);
 
 class MotionBuilder<E> extends StatefulWidget {
-  final AnimatedWidgetBuilder insertAnimationBuilder;
-  final AnimatedWidgetBuilder removeAnimationBuilder;
+  final AnimatedWidgetBuilder<E> insertAnimationBuilder;
+  final AnimatedWidgetBuilder<E> removeAnimationBuilder;
   final ItemBuilder itemBuilder;
   final int initialCount;
   final Axis scrollDirection;
@@ -177,11 +177,9 @@ class MotionBuilderState extends State<MotionBuilder>
     setState(() {
       _itemsCount = childrenMap.length;
     });
-
   }
 
-  void removeItem(int index,
-      {required Duration removeItemDuration}) {
+  void removeItem(int index, {required Duration removeItemDuration}) {
     assert(index >= 0);
     final int itemIndex = _indexToItemIndex(index);
     if (itemIndex < 0 || itemIndex >= _itemsCount) {
@@ -297,8 +295,6 @@ class MotionBuilderState extends State<MotionBuilder>
         childrenMap[index] = motionData.copyWith(
           startOffset: _itemOffsetAt(index),
           endOffset: _itemOffsetAt(index),
-          enter: false,
-          exit: false,
         );
       },
       child: builder,
@@ -378,8 +374,7 @@ class _MotionBuilderItemGlobalKey extends GlobalObjectKey {
 class _ActiveItem implements Comparable<_ActiveItem> {
   _ActiveItem.animation(this.controller, this.itemIndex);
 
-  _ActiveItem.index(this.itemIndex)
-      : controller = null;
+  _ActiveItem.index(this.itemIndex) : controller = null;
 
   final AnimationController? controller;
   int itemIndex;

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class ItemCard extends StatelessWidget {
   final int index;
-  const ItemCard({super.key,required this.index});
+  const ItemCard({super.key, required this.index});
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +13,7 @@ class ItemCard extends StatelessWidget {
         color: Colors.primaries[index % Colors.primaries.length],
         child: Center(
           child: Text(
-            (index ).toString(),
+            (index).toString(),
             style: Theme.of(context).textTheme.headlineMedium,
           ),
         ),

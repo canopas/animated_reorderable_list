@@ -9,7 +9,6 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
   ///Called, as needed, to build list item widget
   final ItemBuilder itemBuilder;
 
-
   /// AnimationStyle when item is added in the list.
   final AnimationType insertAnimation;
 
@@ -28,7 +27,6 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
 
   /// The duration of the animation when an item was removed from the list.
   final Duration removeDuration;
-
 
   ///Called by the DiffUtil to decide whether two object represent the same Item.
   ///<p>

@@ -11,7 +11,6 @@ class MotionGridViewBuilder<E extends Object> extends StatelessWidget {
   ///Called, as needed, to build list item widget
   final ItemBuilder<Widget, E> itemBuilder;
 
-
   /// AnimationStyle when item is added in the list.
   final AnimationType insertAnimation;
 

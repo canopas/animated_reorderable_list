@@ -10,20 +10,18 @@ class MotionData {
       this.endOffset = Offset.zero,
       this.duration = const Duration(milliseconds: 300)});
 
-  MotionData copyWith(
-      {Offset? startOffset,
-      Offset? endOffset,
-      Offset? frontItemOffset,
-      Offset? nextItemOffset,
-        Duration? duration,
-      int? index,
-      bool? enter,
-      bool? exit}) {
+  MotionData copyWith({
+    Offset? startOffset,
+    Offset? endOffset,
+    Offset? frontItemOffset,
+    Offset? nextItemOffset,
+    Duration? duration,
+    int? index,
+  }) {
     return MotionData(
         startOffset: startOffset ?? this.startOffset,
         endOffset: endOffset ?? this.endOffset,
-      duration:duration?? this.duration
-    );
+        duration: duration ?? this.duration);
   }
 
   @override
@@ -33,9 +31,4 @@ class MotionData {
           runtimeType == other.runtimeType &&
           startOffset == other.startOffset &&
           endOffset == other.endOffset;
-
-  @override
-  String toString() {
-    return "startOffset: $startOffset, endOffset $endOffset";
-  }
 }

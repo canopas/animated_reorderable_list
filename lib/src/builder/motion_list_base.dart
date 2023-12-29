@@ -98,7 +98,7 @@ abstract class MotionListBaseState<
     oldList = List.from(newList);
   }
 
-  void calculateDiff<E>(List oldList, List newList) {
+  void calculateDiff(List oldList, List newList) {
     // Detect removed and updated items
     for (int i = oldList.length - 1; i >= 0; i--) {
       if (!newList.contains(oldList[i])) {
