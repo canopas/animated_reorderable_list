@@ -9,7 +9,6 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
   ///Called, as needed, to build list item widget
   final ItemBuilder itemBuilder;
 
-
   /// AnimationStyle when item is added in the list.
   final AnimationType insertAnimation;
 
@@ -29,16 +28,6 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
   /// The duration of the animation when an item was removed from the list.
   final Duration removeDuration;
 
-
-  ///Called by the DiffUtil to decide whether two object represent the same Item.
-  ///<p>
-  ///For example, if your items have unique ids, this method should check their id equality.
-  ///
-  ///@param oldItemPosition The position of the item in the old list
-  ///@param newItemPosition The position of the item in the new list
-  ///@return True if the two items represent the same object or false if they are different.
-  ///
-  final EqualityChecker? areItemsTheSame;
 
   /// {@template flutter.widgets.scroll_view.reverse}
   /// Whether the scroll view scrolls in the reading direction.
@@ -118,7 +107,6 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
       this.insertDuration = const Duration(milliseconds: 300),
       this.removeDuration = const Duration(milliseconds: 300),
       this.scrollDirection = Axis.vertical,
-      this.areItemsTheSame,
       this.reverse = false,
       this.controller,
       this.primary,
@@ -151,7 +139,6 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
             removeAnimationType: removeAnimation ?? insertAnimation,
             insertDuration: insertDuration,
             removeDuration: removeDuration,
-            areItemsTheSame: areItemsTheSame,
             scrollDirection: scrollDirection,
           ),
         ]);
