@@ -40,21 +40,19 @@ class _HomePageState extends State<HomePage> {
   void insert() {
     addedNumber += 1;
 
-    list.insert(1, User(name: "User $addedNumber", index: addedNumber));
-    addedNumber += 1;
-    list.insert(1, User(name: "User $addedNumber", index: addedNumber));
+    // list.insert(1, User(name: "User $addedNumber", index: addedNumber));
+    // addedNumber += 1;
+    // list.insert(1, User(name: "User $addedNumber", index: addedNumber));
     //
     // final item = list.removeAt(2);
     // list.insert(3, item);
 
-    // var number = DateTime.now().millisecondsSinceEpoch;
-    // List<User> newList = List.generate(
-    //     8,
-    //     (index) => User(
-    //         name: "User ${number + index}", index: number + index));
-    // addedNumber++;
-    // list.clear();
-    // list.insertAll(0, newList);
+    var number = DateTime.now().millisecondsSinceEpoch;
+    List<User> newList = List.generate(8,
+        (index) => User(name: "User ${number + index}", index: number + index));
+    //addedNumber++;
+    list.clear();
+    list.insertAll(0, newList);
     setState(() {});
   }
 

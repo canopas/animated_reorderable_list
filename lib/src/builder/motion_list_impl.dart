@@ -62,7 +62,7 @@ class MotionListImplState<E extends Object>
   Widget build(BuildContext context) {
     return MotionBuilder(
       key: listKey,
-      initialCount: oldList.length,
+      initialCount: widget.items.length,
       insertAnimationBuilder: insertItemBuilder,
       removeAnimationBuilder: removeItemBuilder,
       itemBuilder: itemBuilder,

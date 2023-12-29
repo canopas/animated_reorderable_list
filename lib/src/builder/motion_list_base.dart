@@ -106,6 +106,7 @@ E extends Object> extends State<B> with TickerProviderStateMixin {
       oldList,
       newList,
       detectMoves: true,
+      equalityChecker: widget.areItemsTheSame,
     ).getUpdates(batch: false);
     for (final update in diff) {
       _onDiffUpdate(update);
@@ -117,11 +118,11 @@ E extends Object> extends State<B> with TickerProviderStateMixin {
     update.when(
         insert: (pos, count) => _onInserted(pos, count),
         remove: (pos, count) => _onRemoved(pos, count),
-        move: (from, to) => listKey.currentState!
-            .itemPositionChanged(oldIndex: from, newIndex: to),
         change: (int position, Object? payload) {
           print("change position $position");
-        });
+        },
+        move: (from, to) => listKey.currentState!
+            .itemPositionChanged(oldIndex: from, newIndex: to));
   }
 
   void _onInserted(final int position, final int count) {

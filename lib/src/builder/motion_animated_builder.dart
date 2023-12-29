@@ -184,7 +184,7 @@ class MotionBuilderState extends State<MotionBuilder>
   void removeItem(int index, RemovedItemBuilder builder,
       {required Duration removeItemDuration}) {
     assert(index >= 0);
-    print("removeItem $index");
+   // print("removeItem $index");
     final int itemIndex = _indexToItemIndex(index);
     if (itemIndex < 0 || itemIndex >= _itemsCount) {
       return;
