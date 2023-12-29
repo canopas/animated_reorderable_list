@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 
-import '../../motion_list.dart';
+import '../../animated_reorderable_list.dart';
 
 /// A Flutter AnimatedGridView that animates insertion and removal of the item.
 class MotionGridViewBuilder<E extends Object> extends StatelessWidget {

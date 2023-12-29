@@ -1,5 +1,5 @@
 import 'package:flutter/widgets.dart';
-import 'package:motion_list/src/model/motion_data.dart';
+import 'package:animated_reorderable_list/src/model/motion_data.dart';
 
 import '../builder/motion_animated_builder.dart';
 

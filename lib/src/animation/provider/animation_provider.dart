@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:motion_list/src/animation/animation.dart';
+import 'package:animated_reorderable_list/src/animation/animation.dart';
 
 import 'animation_type.dart';
 

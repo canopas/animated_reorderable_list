@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-import 'package:motion_list/src/component/motion_animated_content.dart';
+import 'package:animated_reorderable_list/src/component/motion_animated_content.dart';
 
-import '../../motion_list.dart';
+import '../../animated_reorderable_list.dart';
 import '../model/motion_data.dart';
 
 typedef AnimatedWidgetBuilder = Widget Function(
