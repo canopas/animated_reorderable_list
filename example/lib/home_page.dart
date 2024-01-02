@@ -1,8 +1,8 @@
+import 'package:animated_reorderable_list/animated_reorderable_list.dart';
 import 'package:example/utils/extension.dart';
 import 'package:example/utils/item_card.dart';
 import 'package:example/utils/item_tile.dart';
 import 'package:flutter/material.dart';
-import 'package:animated_reorderable_list/animated_reorderable_list.dart';
 
 class User {
   final String name;
@@ -22,8 +22,8 @@ class _HomePageState extends State<HomePage> {
   AnimationType appliedStyle = AnimationType.fadeIn;
   List<User> list =
       List.generate(8, (index) => User(name: "User $index", index: index));
-  int addedNumber = 9;
-  bool isGrid = true;
+  int addedNumber = 8;
+  bool isGrid = false;
 
   void insert() {
     addedNumber += 1;
@@ -31,8 +31,6 @@ class _HomePageState extends State<HomePage> {
       list.insert(1, User(name: "User $addedNumber", index: addedNumber));
     });
   }
-
-
 
   void remove() {
     setState(() {
@@ -164,17 +162,26 @@ class _HomePageState extends State<HomePage> {
                           const SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 4),
                     )
-                  : MotionListViewBuilder(
+                  : AnimatedReorderableList(
                       items: list,
                       itemBuilder: (BuildContext context, int index) {
-                        return ItemTile(
-                            key: Key(list[index].name),
-                            index: list[index].index);
+                        return Reorderable(
+                          key: Key(list[index].name),
+                          child: ItemTile(index: list[index].index),
+                        );
                       },
                       insertDuration: const Duration(milliseconds: 300),
                       removeDuration: const Duration(milliseconds: 300),
                       insertAnimation: appliedStyle,
                       removeAnimation: appliedStyle,
+                      onReorderFinished:
+                          (User item, int from, int to, List<User> newItems) {
+                        setState(() {
+                          list
+                            ..clear()
+                            ..addAll(newItems);
+                        });
+                      },
                     ),
             ),
           ],

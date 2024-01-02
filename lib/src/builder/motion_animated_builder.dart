@@ -1,6 +1,6 @@
+import 'package:animated_reorderable_list/src/component/motion_animated_content.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-import 'package:animated_reorderable_list/src/component/motion_animated_content.dart';
 
 import '../../animated_reorderable_list.dart';
 import '../model/motion_data.dart';
@@ -275,6 +275,7 @@ class MotionBuilderState extends State<MotionBuilder>
 
     final Widget child = widget.itemBuilder(context, _itemIndexToIndex(index));
 
+   // print("child $child - ${child.key}");
     assert(() {
       if (child.key == null) {
         throw FlutterError(

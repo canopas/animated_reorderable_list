@@ -1,6 +1,6 @@
+import 'package:animated_reorderable_list/animated_reorderable_list.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-import 'package:animated_reorderable_list/animated_reorderable_list.dart';
 
 import 'motion_animated_builder.dart';
 
@@ -96,18 +96,22 @@ abstract class MotionListBaseState<
     final newList = widget.items;
     calculateDiff(oldList, newList);
     oldList = List.from(newList);
+
+    print("didUpdateWidget");
   }
 
   void calculateDiff<E>(List oldList, List newList) {
     // Detect removed and updated items
     for (int i = oldList.length - 1; i >= 0; i--) {
       if (!newList.contains(oldList[i])) {
+        print("removeItem $i");
         listKey.currentState!.removeItem(i, removeItemDuration: removeDuration);
       }
     }
     // Detect added items
     for (int i = 0; i < newList.length; i++) {
       if (!oldList.contains(newList[i])) {
+        print("insertItem $i");
         listKey.currentState!.insertItem(i, insertDuration: insertDuration);
       }
     }

@@ -1,10 +1,9 @@
-import 'package:flutter/widgets.dart';
 import 'package:animated_reorderable_list/src/model/motion_data.dart';
+import 'package:flutter/widgets.dart';
 
 import '../builder/motion_animated_builder.dart';
 
 class MotionAnimatedContent extends StatefulWidget {
-  final Key key;
   final int index;
   final MotionData motionData;
   final Widget? child;
@@ -12,7 +11,7 @@ class MotionAnimatedContent extends StatefulWidget {
   final Function(int)? onItemRemoved;
 
   const MotionAnimatedContent(
-      {required this.key,
+      {required Key key,
       required this.index,
       required this.motionData,
       required this.child,
@@ -48,7 +47,7 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
     _offsetAnimation = Tween<Offset>(begin: Offset.zero, end: Offset.zero)
         .animate(_positionController)
       ..addListener(() {
-        setState(() {});
+        if (mounted) setState(() {});
       });
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -61,18 +60,17 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
   @override
   void didUpdateWidget(covariant MotionAnimatedContent oldWidget) {
     if (oldWidget.index != widget.index) {
+      print("didUpdateWidget old ${oldWidget.index} index ${widget.index}");
       _listState.unregisterItem(oldWidget.index, this);
       _listState.registerItem(this);
-    }
-    if (oldWidget.index != widget.index) {
       visible = false;
     }
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      setState(() {
-        visible = true;
-      });
-      if (oldWidget.index != widget.index) _updateAnimationTranslation();
+      if (oldWidget.index != widget.index) {
+        if (mounted) setState(() => visible = true);
+        _updateAnimationTranslation();
+      }
       widget.updateMotionData?.call(widget.motionData);
     });
 
@@ -82,6 +80,8 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
   void _updateAnimationTranslation() {
     Offset endOffset = itemOffset();
 
+    print(
+        "_updateAnimationTranslation index $index endOffset $endOffset startOffset ${widget.motionData.startOffset}");
     Offset offsetDiff =
         (widget.motionData.startOffset + currentAnimatedOffset) - endOffset;
 
