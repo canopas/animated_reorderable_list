@@ -8,7 +8,6 @@ import '../util/handler.dart';
 class Handle extends StatefulWidget {
   final Widget child;
 
-  final Duration delay;
 
   final bool vibrate;
 
@@ -19,7 +18,6 @@ class Handle extends StatefulWidget {
   const Handle({
     Key? key,
     required this.child,
-    this.delay = Duration.zero,
     this.capturePointer = true,
     this.vibrate = true,
     this.enabled = true,
@@ -32,6 +30,7 @@ class Handle extends StatefulWidget {
 class _HandleState extends State<Handle> {
   ScrollableState? _parent;
   Handler? _handler;
+  final Duration _delay = const Duration(milliseconds: 200);
 
   // The parent Reorderable item.
   ReorderableState? _reorderable;
@@ -142,7 +141,7 @@ class _HandleState extends State<Handle> {
       _onUp();
 
       _handler = postDuration(
-        widget.delay,
+        _delay,
         _onDragStarted,
       );
     }

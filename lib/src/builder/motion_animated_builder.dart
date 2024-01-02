@@ -178,6 +178,13 @@ class MotionBuilderState extends State<MotionBuilder>
       _itemsCount = childrenMap.length;
     });
 
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      print("addPostFrameCallback map $childrenMap");
+      _items.forEach((key, value) {
+        print("update transition $key");
+        value.move();
+      });
+    });
   }
 
   void removeItem(int index,
@@ -243,6 +250,15 @@ class MotionBuilderState extends State<MotionBuilder>
     childrenMap.addAll(updatedChildrenMap);
 
     setState(() => _itemsCount -= 1);
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      // print("addPostFrameCallback map $childrenMap");
+      _items.forEach((key, value) {
+        if (key < itemIndex) return;
+        //  print("update transition $key");
+        value.move();
+      });
+    });
   }
 
   Offset? _itemOffsetAt(int index, {bool includeAnimation = false}) {

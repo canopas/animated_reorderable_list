@@ -6,6 +6,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 import '../../animated_reorderable_list.dart';
+import 'motion_animated_builder.dart';
 
 typedef ReorderStartedCallback<E> = void Function(E item, int index);
 
@@ -187,6 +188,7 @@ class AnimatedReorderableListState<E extends Object>
     if (widget.controller != null && widget.controller != _controller) {
       _controller = widget.controller;
     }
+    print("didUpdateWidget reorder list");
   }
 
   void onDragStarted(Key? key) {
@@ -509,15 +511,16 @@ class AnimatedReorderableListState<E extends Object>
         scrollDirection: scrollDirection,
         reverse: widget.reverse,
         primary: widget.primary,
-        physics: widget.physics,
+        physics: inDrag ? const NeverScrollableScrollPhysics() : widget.physics,
         scrollBehavior: widget.scrollBehavior,
         restorationId: widget.restorationId,
         keyboardDismissBehavior: widget.keyboardDismissBehavior,
         dragStartBehavior: widget.dragStartBehavior,
         clipBehavior: widget.clipBehavior,
         slivers: [
-          MotionListImpl(
-            items: widget.items,
+          MotionBuilder(
+            key: listKey,
+            initialCount: oldList.length,
             itemBuilder: (context, index) {
               final Reorderable reorderable =
                   itemBuilder(context, index) as Reorderable;
@@ -569,13 +572,8 @@ class AnimatedReorderableListState<E extends Object>
                 return child;
               }
             },
-            insertAnimationType: widget.insertAnimation,
-            removeAnimationType:
-                widget.removeAnimation ?? widget.insertAnimation,
-            insertDuration: insertDuration,
-            removeDuration: removeDuration,
-            areItemsTheSame: widget.areItemsTheSame,
-            scrollDirection: scrollDirection,
+            insertAnimationBuilder: insertItemBuilder,
+            removeAnimationBuilder: removeItemBuilder,
           ),
         ]);
 

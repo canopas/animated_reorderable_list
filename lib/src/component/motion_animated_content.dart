@@ -63,21 +63,18 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
       print("didUpdateWidget old ${oldWidget.index} index ${widget.index}");
       _listState.unregisterItem(oldWidget.index, this);
       _listState.registerItem(this);
-      visible = false;
+     //  visible = false;
     }
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      if (oldWidget.index != widget.index) {
-        if (mounted) setState(() => visible = true);
-        _updateAnimationTranslation();
-      }
       widget.updateMotionData?.call(widget.motionData);
+      //if (mounted) setState(() => visible = true);
     });
 
     super.didUpdateWidget(oldWidget);
   }
 
-  void _updateAnimationTranslation() {
+  void move() {
     Offset endOffset = itemOffset();
 
     print(

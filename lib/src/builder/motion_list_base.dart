@@ -97,7 +97,7 @@ abstract class MotionListBaseState<
     calculateDiff(oldList, newList);
     oldList = List.from(newList);
 
-    print("didUpdateWidget");
+    print("didUpdateWidget list base");
   }
 
   void calculateDiff<E>(List oldList, List newList) {
@@ -105,14 +105,14 @@ abstract class MotionListBaseState<
     for (int i = oldList.length - 1; i >= 0; i--) {
       if (!newList.contains(oldList[i])) {
         print("removeItem $i");
-        listKey.currentState!.removeItem(i, removeItemDuration: removeDuration);
+        list.removeItem(i, removeItemDuration: removeDuration);
       }
     }
     // Detect added items
     for (int i = 0; i < newList.length; i++) {
       if (!oldList.contains(newList[i])) {
-        print("insertItem $i");
-        listKey.currentState!.insertItem(i, insertDuration: insertDuration);
+        print("insertItem $list");
+        list.insertItem(i, insertDuration: insertDuration);
       }
     }
   }
