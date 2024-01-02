@@ -38,8 +38,8 @@ class MotionBuilderState extends State<MotionBuilder>
   int _itemsCount = 0;
 
   Map<int, MotionData> childrenMap = <int, MotionData>{};
-  final Map<int, MotionAnimatedContentState> _items =
-      <int, MotionAnimatedContentState>{};
+  final Map<Key?, MotionAnimatedContentState> _items =
+      <Key?, MotionAnimatedContentState>{};
 
   @override
   bool get wantKeepAlive => false;
@@ -54,13 +54,13 @@ class MotionBuilderState extends State<MotionBuilder>
   }
 
   void registerItem(MotionAnimatedContentState item) {
-    _items[item.index] = item;
+    _items[item.key] = item;
   }
 
-  void unregisterItem(int index, MotionAnimatedContentState item) {
-    final MotionAnimatedContentState? currentItem = _items[index];
+  void unregisterItem(MotionAnimatedContentState item) {
+    final MotionAnimatedContentState? currentItem = _items[item.key];
     if (currentItem == item) {
-      _items.remove(index);
+      _items.remove(item.key);
     }
   }
 
@@ -141,16 +141,17 @@ class MotionBuilderState extends State<MotionBuilder>
         startOffset: Offset.zero,
         duration: insertDuration);
 
+    _measureChild();
     final updatedChildrenMap = <int, MotionData>{};
     if (childrenMap.containsKey(itemIndex)) {
       for (final entry in childrenMap.entries) {
         if (entry.key == itemIndex) {
           updatedChildrenMap[itemIndex] = motionData;
-          updatedChildrenMap[entry.key + 1] = entry.value
-              .copyWith(index: entry.key + 1, duration: insertDuration);
+          updatedChildrenMap[entry.key + 1] =
+              entry.value.copyWith(duration: insertDuration);
         } else if (entry.key > itemIndex) {
-          updatedChildrenMap[entry.key + 1] = entry.value
-              .copyWith(index: entry.key + 1, duration: insertDuration);
+          updatedChildrenMap[entry.key + 1] =
+              entry.value.copyWith(duration: insertDuration);
         } else {
           updatedChildrenMap[entry.key] =
               entry.value.copyWith(duration: insertDuration);
@@ -177,18 +178,9 @@ class MotionBuilderState extends State<MotionBuilder>
     setState(() {
       _itemsCount = childrenMap.length;
     });
-
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      print("addPostFrameCallback map $childrenMap");
-      _items.forEach((key, value) {
-        print("update transition $key");
-        value.move();
-      });
-    });
   }
 
-  void removeItem(int index,
-      {required Duration removeItemDuration}) {
+  void removeItem(int index, {required Duration removeItemDuration}) {
     assert(index >= 0);
     final int itemIndex = _indexToItemIndex(index);
     if (itemIndex < 0 || itemIndex >= _itemsCount) {
@@ -196,7 +188,7 @@ class MotionBuilderState extends State<MotionBuilder>
     }
 
     assert(_activeItemAt(_outgoingItems, itemIndex) == null);
-
+    _measureChild();
     if (childrenMap.containsKey(itemIndex)) {
       final _ActiveItem? incomingItem =
           _removeActiveItemAt(_incomingItems, itemIndex);
@@ -241,8 +233,8 @@ class MotionBuilderState extends State<MotionBuilder>
         } else if (entry.key == itemIndex) {
           continue;
         } else {
-          updatedChildrenMap[entry.key - 1] = childrenMap[entry.key]!
-              .copyWith(index: entry.key - 1, duration: removeDuration);
+          updatedChildrenMap[entry.key - 1] =
+              childrenMap[entry.key]!.copyWith(duration: removeDuration);
         }
       }
     }
@@ -250,25 +242,31 @@ class MotionBuilderState extends State<MotionBuilder>
     childrenMap.addAll(updatedChildrenMap);
 
     setState(() => _itemsCount -= 1);
-
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      // print("addPostFrameCallback map $childrenMap");
-      _items.forEach((key, value) {
-        if (key < itemIndex) return;
-        //  print("update transition $key");
-        value.move();
-      });
-    });
   }
 
-  Offset? _itemOffsetAt(int index, {bool includeAnimation = false}) {
+  Offset? _itemOffsetAt(Key? key, {bool includeAnimation = false}) {
+    final item = _items[key];
+    if (item == null || !mounted || !item.mounted) {
+      return null;
+    }
+
     final currentOffset = includeAnimation
-        ? (_items[index]?.currentAnimatedOffset ?? Offset.zero)
+        ? (_items[key]?.currentAnimatedOffset ?? Offset.zero)
         : Offset.zero;
-    final itemRenderBox =
-        _items[index]?.context.findRenderObject() as RenderBox?;
+    final itemRenderBox = _items[key]?.context.findRenderObject() as RenderBox?;
     if (itemRenderBox == null) return null;
     return itemRenderBox.localToGlobal(Offset.zero) + currentOffset;
+  }
+
+  void _measureChild() {
+    childrenMap.forEach((key, value) {
+      final data = childrenMap[key];
+      final childKey = data?.key;
+
+      childrenMap[key] = data!.copyWith(
+          startOffset: _itemOffsetAt(childKey),
+          endOffset: _itemOffsetAt(childKey));
+    });
   }
 
   @override
@@ -291,7 +289,6 @@ class MotionBuilderState extends State<MotionBuilder>
 
     final Widget child = widget.itemBuilder(context, _itemIndexToIndex(index));
 
-   // print("child $child - ${child.key}");
     assert(() {
       if (child.key == null) {
         throw FlutterError(
@@ -312,11 +309,9 @@ class MotionBuilderState extends State<MotionBuilder>
       motionData: motionData,
       updateMotionData: (MotionData motionData) {
         childrenMap[index] = motionData.copyWith(
-          startOffset: _itemOffsetAt(index),
-          endOffset: _itemOffsetAt(index),
-          enter: false,
-          exit: false,
-        );
+            startOffset: _itemOffsetAt(itemGlobalKey),
+            endOffset: _itemOffsetAt(itemGlobalKey),
+            key: itemGlobalKey);
       },
       child: builder,
     );
@@ -395,8 +390,7 @@ class _MotionBuilderItemGlobalKey extends GlobalObjectKey {
 class _ActiveItem implements Comparable<_ActiveItem> {
   _ActiveItem.animation(this.controller, this.itemIndex);
 
-  _ActiveItem.index(this.itemIndex)
-      : controller = null;
+  _ActiveItem.index(this.itemIndex) : controller = null;
 
   final AnimationController? controller;
   int itemIndex;

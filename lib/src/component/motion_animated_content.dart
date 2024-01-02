@@ -23,6 +23,8 @@ class MotionAnimatedContent extends StatefulWidget {
 
 class MotionAnimatedContentState extends State<MotionAnimatedContent>
     with SingleTickerProviderStateMixin {
+  late Key key = widget.key ?? UniqueKey();
+
   late AnimationController _positionController;
   late Animation<Offset> _offsetAnimation;
 
@@ -40,12 +42,12 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
     _listState.registerItem(this);
 
     _positionController =
-        AnimationController(vsync: this, duration: widget.motionData.duration)
-          ..addStatusListener((status) {
-            if (status == AnimationStatus.completed) {
-              widget.updateMotionData?.call(widget.motionData);
-            }
-          });
+    AnimationController(vsync: this, duration: widget.motionData.duration)
+      ..addStatusListener((status) {
+        if (status == AnimationStatus.completed) {
+          widget.updateMotionData?.call(widget.motionData);
+        }
+      });
 
     _offsetAnimation = Tween<Offset>(begin: Offset.zero, end: Offset.zero)
         .animate(_positionController)
@@ -63,25 +65,23 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
   @override
   void didUpdateWidget(covariant MotionAnimatedContent oldWidget) {
     if (oldWidget.index != widget.index) {
-      print("didUpdateWidget old ${oldWidget.index} index ${widget.index}");
-      _listState.unregisterItem(oldWidget.index, this);
+      _listState.unregisterItem(this);
       _listState.registerItem(this);
-     //  visible = false;
+      //  visible = false;
     }
-
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       widget.updateMotionData?.call(widget.motionData);
-      //if (mounted) setState(() => visible = true);
+
+      // if (mounted) setState(() => visible = true);
+      if (oldWidget.index != widget.index) _updateAnimationTranslation();
     });
 
     super.didUpdateWidget(oldWidget);
   }
 
-  void move() {
+  void _updateAnimationTranslation() {
+    if (!mounted) return;
     Offset endOffset = itemOffset();
-
-    print(
-        "_updateAnimationTranslation index $index endOffset $endOffset startOffset ${widget.motionData.startOffset}");
     Offset offsetDiff =
         (widget.motionData.startOffset + currentAnimatedOffset) - endOffset;
 
@@ -95,6 +95,10 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
   }
 
   Offset itemOffset() {
+    if (!mounted) {
+      return Offset.zero;
+    }
+
     final box = context.findRenderObject() as RenderBox?;
     if (box == null) return Offset.zero;
 
@@ -114,14 +118,8 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
 
   @override
   void dispose() {
-    _listState.unregisterItem(widget.index, this);
+    _listState.unregisterItem(this);
     _positionController.dispose();
     super.dispose();
-  }
-
-  @override
-  void deactivate() {
-    _listState.unregisterItem(index, this);
-    super.deactivate();
   }
 }

@@ -184,7 +184,7 @@ class AnimatedReorderableListState<E extends Object>
     if (widget.controller != null && widget.controller != _controller) {
       _controller = widget.controller;
     }
-    print("didUpdateWidget reorder list");
+    print("didUpdateWidget reorder list scrollOffset $scrollOffset");
   }
 
   void onDragStarted(Key? key) {

@@ -4,26 +4,25 @@ class MotionData {
   final Offset startOffset;
   final Offset endOffset;
   final Duration duration;
+  final Key? key;
 
   MotionData(
-      {this.startOffset = Offset.zero,
+      {this.key,
+      this.startOffset = Offset.zero,
       this.endOffset = Offset.zero,
       this.duration = const Duration(milliseconds: 300)});
 
-  MotionData copyWith(
-      {Offset? startOffset,
-      Offset? endOffset,
-      Offset? frontItemOffset,
-      Offset? nextItemOffset,
-        Duration? duration,
-      int? index,
-      bool? enter,
-      bool? exit}) {
+  MotionData copyWith({
+    Key? key,
+    Offset? startOffset,
+    Offset? endOffset,
+    Duration? duration,
+  }) {
     return MotionData(
+        key: key ?? this.key,
         startOffset: startOffset ?? this.startOffset,
         endOffset: endOffset ?? this.endOffset,
-      duration:duration?? this.duration
-    );
+        duration: duration ?? this.duration);
   }
 
   @override
@@ -32,6 +31,7 @@ class MotionData {
       other is MotionData &&
           runtimeType == other.runtimeType &&
           startOffset == other.startOffset &&
+          key == other.key &&
           endOffset == other.endOffset;
 
   @override

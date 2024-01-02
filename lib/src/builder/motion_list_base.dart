@@ -116,7 +116,7 @@ abstract class MotionListBaseState<
     // Detect added items
     for (int i = 0; i < newList.length; i++) {
       if (!oldList.contains(newList[i])) {
-        print("insertItem $list");
+        print("insertItem $i");
         list.insertItem(i, insertDuration: insertDuration);
       }
     }
