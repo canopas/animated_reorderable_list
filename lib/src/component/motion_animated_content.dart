@@ -8,15 +8,13 @@ class MotionAnimatedContent extends StatefulWidget {
   final MotionData motionData;
   final Widget? child;
   final Function(MotionData)? updateMotionData;
-  final Function(int)? onItemRemoved;
 
   const MotionAnimatedContent(
       {required Key key,
       required this.index,
       required this.motionData,
       required this.child,
-      this.updateMotionData,
-      this.onItemRemoved})
+      this.updateMotionData})
       : super(key: key);
 
   @override
@@ -42,7 +40,12 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
     _listState.registerItem(this);
 
     _positionController =
-        AnimationController(vsync: this, duration: widget.motionData.duration);
+        AnimationController(vsync: this, duration: widget.motionData.duration)
+          ..addStatusListener((status) {
+            if (status == AnimationStatus.completed) {
+              widget.updateMotionData?.call(widget.motionData);
+            }
+          });
 
     _offsetAnimation = Tween<Offset>(begin: Offset.zero, end: Offset.zero)
         .animate(_positionController)

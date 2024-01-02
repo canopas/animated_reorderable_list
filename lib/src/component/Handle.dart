@@ -30,7 +30,7 @@ class Handle extends StatefulWidget {
 class _HandleState extends State<Handle> {
   ScrollableState? _parent;
   Handler? _handler;
-  final Duration _delay = const Duration(milliseconds: 200);
+  final Duration _delay = const Duration(milliseconds: 150);
 
   // The parent Reorderable item.
   ReorderableState? _reorderable;
@@ -38,7 +38,7 @@ class _HandleState extends State<Handle> {
   // The parent list.
   AnimatedReorderableListState? _list;
 
-  // Whether the ImplicitlyAnimatedReorderableList has a
+  // Whether the AnimatedReorderableList has a
   // scrollDirection of Axis.vertical.
   bool get _isVertical => _list?.isVertical ?? true;
 
@@ -111,7 +111,7 @@ class _HandleState extends State<Handle> {
 
     _list = AnimatedReorderableList.maybeOf(context);
     assert(_list != null,
-        'No ancestor ImplicitlyAnimatedReorderableList was found in the hierarchy!');
+        'No ancestor AnimatedReorderableList was found in the hierarchy!');
     _reorderable = Reorderable.maybeOf(context);
     assert(_reorderable != null,
         'No ancestor Reorderable was found in the hierarchy!');

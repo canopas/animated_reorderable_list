@@ -109,10 +109,6 @@ class AnimatedReorderableListState<E extends Object>
   Widget? _dragWidget;
   VoidCallback? _onDragEnd;
 
-  late List<E> _data = List<E>.from(widget.items);
-
-  List<E> get data => _data;
-
   bool get isVertical => widget.scrollDirection != Axis.horizontal;
 
   double _listSize = 0.0;

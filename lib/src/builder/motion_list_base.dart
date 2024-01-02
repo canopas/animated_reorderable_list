@@ -47,6 +47,10 @@ abstract class MotionListBaseState<
     E extends Object> extends State<B> with TickerProviderStateMixin {
   late List<E> oldList;
 
+  late List<E> _data = List<E>.from(widget.items);
+
+  List<E> get data => _data;
+
   @protected
   GlobalKey<MotionBuilderState> listKey = GlobalKey();
 
@@ -97,6 +101,7 @@ abstract class MotionListBaseState<
     calculateDiff(oldList, newList);
     oldList = List.from(newList);
 
+    _data = List<E>.from(newList);
     print("didUpdateWidget list base");
   }
 
