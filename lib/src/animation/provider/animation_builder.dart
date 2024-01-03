@@ -1,7 +1,10 @@
 import 'package:flutter/cupertino.dart';
 
+import 'animation_effect.dart';
+
 class AnimationItemBuilder extends StatefulWidget {
-  const AnimationItemBuilder({super.key});
+   List<AnimationEffect> effects=[];
+   AnimationItemBuilder({super.key,required this.effects});
 
   @override
   State<AnimationItemBuilder> createState() => _AnimationItemBuilderState();

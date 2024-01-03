@@ -1,3 +1,4 @@
+import 'package:animated_reorderable_list/src/animation/provider/animation_effect.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:animated_reorderable_list/animated_reorderable_list.dart';
 
@@ -13,6 +14,7 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
     Axis? scrollDirection,
     AnimationType? insertAnimationType,
     AnimationType? removeAnimationType,
+    List<AnimationEffect>? onEnter,
     EqualityChecker<E>? areItemsTheSame,
   }) : super(
             key: key,
@@ -20,6 +22,7 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
             itemBuilder: itemBuilder,
             insertDuration: insertDuration,
             removeDuration: removeDuration,
+            onEnter: onEnter,
             scrollDirection: scrollDirection,
             areItemsTheSame: areItemsTheSame,
             insertAnimationType: insertAnimationType,

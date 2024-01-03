@@ -1,3 +1,4 @@
+import 'package:animated_reorderable_list/src/animation/provider/animation_effect.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:animated_reorderable_list/animated_reorderable_list.dart';
@@ -88,6 +89,8 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
   /// dismiss the keyboard automatically.
   final ScrollViewKeyboardDismissBehavior keyboardDismissBehavior;
 
+  final List<AnimationEffect>? onEnter;
+
   /// Defaults to [Clip.hardEdge].
   ///
   /// Creates a ScrollView that creates custom scroll effects using slivers.
@@ -108,6 +111,7 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
       this.removeDuration = const Duration(milliseconds: 300),
       this.scrollDirection = Axis.vertical,
       this.reverse = false,
+        this.onEnter,
       this.controller,
       this.primary,
       this.physics,
@@ -138,6 +142,7 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
             insertAnimationType: insertAnimation,
             removeAnimationType: removeAnimation ?? insertAnimation,
             insertDuration: insertDuration,
+            onEnter: onEnter,
             removeDuration: removeDuration,
             scrollDirection: scrollDirection,
           ),

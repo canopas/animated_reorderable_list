@@ -1,3 +1,4 @@
+import 'package:animated_reorderable_list/src/animation/provider/animation_effect.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:animated_reorderable_list/animated_reorderable_list.dart';
@@ -21,6 +22,7 @@ abstract class MotionListBase<W extends Widget, E extends Object>
   final Duration? insertDuration;
   final Duration? removeDuration;
   final Axis? scrollDirection;
+  final List<AnimationEffect>? onEnter;
   final AnimationType? insertAnimationType;
   final AnimationType? removeAnimationType;
   final EqualityChecker<E>? areItemsTheSame;
@@ -35,6 +37,7 @@ abstract class MotionListBase<W extends Widget, E extends Object>
       this.removeDuration,
       this.insertAnimationType,
       this.scrollDirection,
+        this.onEnter,
       this.sliverGridDelegate,
       this.removeAnimationType,
       this.areItemsTheSame})
@@ -78,6 +81,8 @@ abstract class MotionListBaseState<
   @protected
   AnimationType? get insertAnimationType => widget.insertAnimationType;
 
+  List<AnimationEffect>? get onEnter => widget.onEnter;
+
   @nonVirtual
   @protected
   AnimationType? get removeAnimationType => widget.removeAnimationType;
@@ -117,6 +122,8 @@ abstract class MotionListBaseState<
   @protected
   Widget insertItemBuilder(
       BuildContext context, Widget child, Animation<double> animation) {
+
+    return AnimationTransition(onEnter??[]).applyAnimation(context, child, animation);
     return AnimationProvider.buildAnimation(
         insertAnimationType!, child, animation);
   }
