@@ -283,7 +283,8 @@ class MotionBuilderState extends State<MotionBuilder>
     final _ActiveItem? incomingItem = _activeItemAt(_incomingItems, index);
 
     if (outgoingItem != null) {
-      final child = _items[index]!.widget;
+      final key = childrenMap[index]!.key;
+      final child = _items[key]!.widget;
       return _removeItemBuilder(outgoingItem, child);
     }
 
