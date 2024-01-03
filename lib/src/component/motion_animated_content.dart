@@ -65,12 +65,11 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
   @override
   void didUpdateWidget(covariant MotionAnimatedContent oldWidget) {
     if (oldWidget.index != widget.index) {
-      //  visible = false;
+        visible = false;
     }
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       widget.updateMotionData?.call(widget.motionData);
-
-      // if (mounted) setState(() => visible = true);
+       if (mounted) setState(() => visible = true);
       if (oldWidget.index != widget.index) _updateAnimationTranslation();
     });
 
@@ -89,6 +88,7 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
       _offsetAnimation = Tween<Offset>(begin: offsetDiff, end: Offset.zero)
           .animate(_positionController);
       _positionController.forward(from: 0);
+      visible=true;
     }
   }
 
@@ -107,6 +107,9 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
   Widget build(BuildContext context) {
     _listState.registerItem(this);
     return Visibility(
+      maintainState: true,
+      maintainAnimation: true,
+      maintainSize: true,
       visible: visible,
       child: Transform.translate(
           offset: _offsetAnimation.value,
