@@ -23,7 +23,7 @@ class _HomePageState extends State<HomePage> {
   List<User> list =
       List.generate(8, (index) => User(name: "User $index", index: index));
   int addedNumber = 9;
-  bool isGrid = true;
+  bool isGrid = false;
 
   void insert() {
     addedNumber += 1;
@@ -169,8 +169,8 @@ class _HomePageState extends State<HomePage> {
                             key: Key(list[index].name),
                             index: list[index].index);
                       },
-                      onEnter: [FadeEffect(),ScaleEffect()],
-                      insertDuration: const Duration(milliseconds: 300),
+                      onEnter: [ ScaleEffect(duration: Duration(seconds:3)),FadeEffect(duration:Duration(seconds: 5),delay: Duration(seconds: 2)), ],
+                     // insertDuration: const Duration(seconds: 6),
                       removeDuration: const Duration(milliseconds: 300),
                       insertAnimation: appliedStyle,
                       removeAnimation: appliedStyle,

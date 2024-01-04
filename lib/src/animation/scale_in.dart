@@ -10,8 +10,12 @@ class ScaleEffect extends AnimationEffect {
       :super(begin: begin ?? beginValue, end: end ?? endValue);
 
   @override
-  Widget build(BuildContext context, Widget child, Animation<double> animation){
-    return ScaleIn(animation: buildAnimation(animation) as Animation<double>, child: child);
+  Widget build(BuildContext context, Widget child, Animation<double> animation,EffectEntry entry){
+    final scale= buildAnimation(entry).animate(animation);
+    return ScaleTransition(
+      scale: scale,
+      child: child,
+    );
   }
 }
 

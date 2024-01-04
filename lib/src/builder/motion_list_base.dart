@@ -15,7 +15,7 @@ const Duration _kInsertItemDuration = Duration(milliseconds: 300);
 const Duration _kRemoveItemDuration = Duration(milliseconds: 300);
 
 abstract class MotionListBase<W extends Widget, E extends Object>
-    extends StatefulWidget {
+    extends StatefulWidget with AnimateManager {
   final ItemBuilder<W, E> itemBuilder;
   final List<E> items;
   final Duration? resizeDuration;
@@ -28,7 +28,7 @@ abstract class MotionListBase<W extends Widget, E extends Object>
   final EqualityChecker<E>? areItemsTheSame;
   final SliverGridDelegate? sliverGridDelegate;
 
-  const MotionListBase(
+  MotionListBase(
       {Key? key,
       required this.items,
       required this.itemBuilder,
@@ -37,7 +37,7 @@ abstract class MotionListBase<W extends Widget, E extends Object>
       this.removeDuration,
       this.insertAnimationType,
       this.scrollDirection,
-        this.onEnter,
+      this.onEnter,
       this.sliverGridDelegate,
       this.removeAnimationType,
       this.areItemsTheSame})
@@ -49,6 +49,12 @@ abstract class MotionListBaseState<
     B extends MotionListBase<W, E>,
     E extends Object> extends State<B> with TickerProviderStateMixin {
   late List<E> oldList;
+  Duration _duration = const Duration(milliseconds: 300);
+  List<EffectEntry> _enteries = [];
+  EffectEntry? _lastEntry;
+  final Duration _baseDelay = Duration.zero;
+
+  Duration get duration => _duration;
 
   @protected
   GlobalKey<MotionBuilderState> listKey = GlobalKey();
@@ -67,7 +73,7 @@ abstract class MotionListBaseState<
 
   @nonVirtual
   @protected
-  Duration get insertDuration => widget.insertDuration ?? _kInsertItemDuration;
+  Duration get insertDuration => widget.insertDuration ?? _duration;
 
   @nonVirtual
   @protected
@@ -81,7 +87,7 @@ abstract class MotionListBaseState<
   @protected
   AnimationType? get insertAnimationType => widget.insertAnimationType;
 
-  List<AnimationEffect>? get onEnter => widget.onEnter;
+  List<AnimationEffect> get onEnter => widget.onEnter ?? [];
 
   @nonVirtual
   @protected
@@ -99,8 +105,44 @@ abstract class MotionListBaseState<
   void didUpdateWidget(covariant B oldWidget) {
     super.didUpdateWidget(oldWidget);
     final newList = widget.items;
+    if (oldWidget.onEnter != onEnter) {
+      _enteries = [];
+      addEffects(onEnter);
+    }
     calculateDiff(oldList, newList);
     oldList = List.from(newList);
+  }
+
+  void addEffects(List<AnimationEffect> effects) {
+    for (AnimationEffect effect in effects) {
+      addEffect(effect);
+    }
+  }
+
+  void addEffect(AnimationEffect effect) {
+    EffectEntry? prior = _lastEntry;
+    Duration zero = Duration.zero, delay = zero;
+    if (effect.delay != null) {
+      delay = _baseDelay + effect.delay!;
+    } else {
+      delay = prior?.delay ?? _baseDelay;
+    }
+    assert(delay >= zero, "calculared delay can not be negative");
+
+    // if (effect.duration != null) {
+    //   _duration = effect.duration! > _duration ? effect.duration! : _duration;
+    // }
+
+    EffectEntry entry = EffectEntry(
+        animationEffect: effect,
+        delay: delay,
+        duration: effect.duration ?? prior?.duration ?? _kInsertItemDuration,
+        curve: effect.curve ?? prior?.curve ?? Curves.linear);
+
+    _enteries.add(entry);
+    _lastEntry = entry;
+     if (entry.end > _duration) _duration = entry.end;
+     print("--------- duration: $_duration");
   }
 
   void calculateDiff(List oldList, List newList) {
@@ -113,7 +155,8 @@ abstract class MotionListBaseState<
     // Detect added items
     for (int i = 0; i < newList.length; i++) {
       if (!oldList.contains(newList[i])) {
-        listKey.currentState!.insertItem(i, insertDuration: insertDuration);
+        print("Insert duration: $_duration");
+        listKey.currentState!.insertItem(i, insertDuration: _duration);
       }
     }
   }
@@ -122,10 +165,15 @@ abstract class MotionListBaseState<
   @protected
   Widget insertItemBuilder(
       BuildContext context, Widget child, Animation<double> animation) {
-
-    return AnimationTransition(onEnter??[]).applyAnimation(context, child, animation);
-    return AnimationProvider.buildAnimation(
-        insertAnimationType!, child, animation);
+    Widget animatedChild= child;
+    for(EffectEntry entry in _enteries){
+      animatedChild = entry.animationEffect.build(context, animatedChild, animation, entry);
+    }
+    return animatedChild;
+    // return AnimationTransition(_enteries)
+    //     .applyAnimation(context, child, animation);
+    // return AnimationProvider.buildAnimation(
+    //     insertAnimationType!, child, animation);
   }
 
   @nonVirtual

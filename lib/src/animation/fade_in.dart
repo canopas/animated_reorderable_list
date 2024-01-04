@@ -8,11 +8,12 @@ class FadeEffect extends AnimationEffect {
 
   FadeEffect(
       {super.delay, super.duration, super.curve, double? begin, double? end})
-      :super(begin: begin ?? beginValue, end: end ?? endValue);
+      :super(begin: begin ?? (end==null?beginValue:endValue), end: end ?? endValue);
   
   @override
-  Widget build(BuildContext context, Widget child, Animation<double> animation){
-    return FadeInAnimation(animation: buildAnimation(animation), child: child);
+  Widget build(BuildContext context, Widget child, Animation<double> animation,EffectEntry entry){
+    final opacity= buildAnimation(entry).animate(animation);
+    return FadeTransition(opacity:opacity, child: child);
   }
 }
 
