@@ -167,8 +167,8 @@ class _HomePageState extends State<HomePage> {
                             key: Key(list[index].name),
                             index: list[index].index);
                       },
-                      enterTransition: [FadeAnimation(duration: Duration(seconds: 5)),],
-                      exitTransition: [ScaleEffect(duration: Duration(seconds: 3))],
+                      enterTransition: [SlideInDown()],
+                      exitTransition: [ScaleIn(duration: Duration(seconds: 3))],
                      // insertDuration: const Duration(seconds: 6),
                     //  removeDuration: const Duration(milliseconds: 300),
                     ),
