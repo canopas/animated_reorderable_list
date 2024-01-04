@@ -52,8 +52,10 @@ abstract class MotionListBaseState<
     E extends Object> extends State<B> with TickerProviderStateMixin {
   late List<E> oldList;
   Duration _duration = const Duration(milliseconds: 300);
-  List<EffectEntry> _enteries = [];
-  EffectEntry? _lastEntry;
+  List<EffectEntry> _enterAnimations = [];
+  List<EffectEntry> _exitAnimations = [];
+
+
 
   Duration get duration => _duration;
 
@@ -113,26 +115,30 @@ abstract class MotionListBaseState<
     super.didUpdateWidget(oldWidget);
     final newList = widget.items;
     if (!listEquals(oldWidget.enterTransition, enterTransition)) {
-      addEffects(enterTransition);
+      _enterAnimations = [];
+      addEffects(enterTransition, _enterAnimations);
+    }
+    if (!listEquals(oldWidget.exitTransition, exitTransition)) {
+      _exitAnimations = [];
+      addEffects(exitTransition,_exitAnimations);
     }
     calculateDiff(oldList, newList);
     oldList = List.from(newList);
   }
 
-  void addEffects(List<AnimationEffect> effects) {
-    _enteries = [];
+  void addEffects(List<AnimationEffect> effects, List<EffectEntry> enteries) {
+
     if (effects.isNotEmpty) {
       for (AnimationEffect effect in effects) {
-        addEffect(effect);
+        addEffect(effect, enteries);
       }
     } else {
-      addEffect(FadeAnimation());
+      addEffect(FadeAnimation(),enteries);
     }
   }
 
-  void addEffect(AnimationEffect effect) {
-    EffectEntry? prior = _lastEntry;
-    Duration zero = Duration.zero, delay = zero;
+  void addEffect(AnimationEffect effect, List<EffectEntry> enteries) {
+    Duration zero = Duration.zero;
 
     if (effect.duration != null) {
       _duration = effect.duration! > _duration ? effect.duration! : _duration;
@@ -145,8 +151,7 @@ abstract class MotionListBaseState<
         duration: effect.duration ?? _kInsertItemDuration,
         curve: effect.curve ?? Curves.linear);
 
-    _enteries.add(entry);
-    _lastEntry = entry;
+    enteries.add(entry);
   }
 
   void calculateDiff(List oldList, List newList) {
@@ -169,7 +174,7 @@ abstract class MotionListBaseState<
   Widget insertItemBuilder(
       BuildContext context, Widget child, Animation<double> animation) {
     Widget animatedChild = child;
-    for (EffectEntry entry in _enteries) {
+    for (EffectEntry entry in _enterAnimations) {
       animatedChild =
           entry.animationEffect.build(context, animatedChild, animation, entry);
     }
@@ -180,7 +185,11 @@ abstract class MotionListBaseState<
   @protected
   Widget removeItemBuilder(
       BuildContext context, Widget child, Animation<double> animation) {
-    return AnimationProvider.buildAnimation(
-        removeAnimationType!, child, animation);
+    Widget animatedChild = child;
+    for (EffectEntry entry in _exitAnimations) {
+      animatedChild =
+          entry.animationEffect.build(context, animatedChild, animation, entry);
+    }
+    return animatedChild;
   }
 }
