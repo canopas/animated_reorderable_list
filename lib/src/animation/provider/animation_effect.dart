@@ -7,12 +7,13 @@ class AnimationTransition {
 
   AnimationTransition(this.effects);
 
-
   Widget applyAnimation(
       BuildContext context, Widget child, Animation<double> animation) {
-    Widget animatedChild= child;;
-    for(EffectEntry entry in effects){
-      animatedChild = entry.animationEffect.build(context, animatedChild, animation, entry);
+    Widget animatedChild = child;
+    ;
+    for (EffectEntry entry in effects) {
+      animatedChild =
+          entry.animationEffect.build(context, animatedChild, animation, entry);
     }
     return animatedChild;
   }
@@ -38,8 +39,7 @@ abstract class AnimationEffect<T> {
     return child;
   }
 
-  Animatable<double> buildAnimation(
-       EffectEntry entry) {
+  Animatable<double> buildAnimation(EffectEntry entry) {
     return Tween<double>(begin: begin, end: end).chain(entry.buildAnimation());
   }
 }
@@ -69,26 +69,30 @@ class EffectEntry {
   Duration get begin => delay;
 
   /// The end time for this entry.
-  Duration get end => duration ;
+  Duration get end => duration;
 
   /// Builds a sub-animation based on the properties of this entry.
   CurveTween buildAnimation({
     Curve? curve,
   }) {
     int ttlT = duration.inMicroseconds;
-    int beginT = begin.inMicroseconds,
-        endT = end.inMicroseconds;
-    print("begin: ${beginT / ttlT} end: ${endT / ttlT}");
+    int beginT = begin.inMicroseconds, endT = end.inMicroseconds;
+    // print("begin: ${beginT / ttlT} end: ${endT / ttlT}");
 
     return CurveTween(
       curve: Interval(beginT / ttlT, endT / ttlT, curve: curve ?? this.curve),
     );
   }
-}
 
+  @override
+  String toString() {
+    return "delay: $delay, Duration: $duration, curve: $curve, begin: $begin, end: $end, Effect: $animationEffect";
+  }
+}
 
 mixin AnimateManager<T> {
   T addEffect(AnimationEffect effect) => throw (UnimplementedError());
+
   T addEffects(List<AnimationEffect> effects) {
     for (AnimationEffect o in effects) {
       addEffect(o);

@@ -122,27 +122,27 @@ abstract class MotionListBaseState<
   void addEffect(AnimationEffect effect) {
     EffectEntry? prior = _lastEntry;
     Duration zero = Duration.zero, delay = zero;
-    if (effect.delay != null) {
-      delay = _baseDelay + effect.delay!;
-    } else {
-      delay = prior?.delay ?? _baseDelay;
-    }
+    // if (effect.delay != null) {
+    //   delay = _baseDelay + effect.delay!;
+    // } else {
+    //   delay = prior?.delay ?? _baseDelay;
+    // }
     assert(delay >= zero, "calculared delay can not be negative");
 
-    // if (effect.duration != null) {
-    //   _duration = effect.duration! > _duration ? effect.duration! : _duration;
-    // }
+    if (effect.duration != null) {
+      _duration = effect.duration! > _duration ? effect.duration! : _duration;
+    }
 
     EffectEntry entry = EffectEntry(
         animationEffect: effect,
-        delay: delay,
+        delay: effect.delay ?? _baseDelay,
         duration: effect.duration ?? prior?.duration ?? _kInsertItemDuration,
         curve: effect.curve ?? prior?.curve ?? Curves.linear);
 
     _enteries.add(entry);
     _lastEntry = entry;
-     if (entry.end > _duration) _duration = entry.end;
-     print("--------- duration: $_duration");
+    // if (entry.end > _duration) _duration = entry.end;
+    print("--------- duration: $_duration");
   }
 
   void calculateDiff(List oldList, List newList) {
@@ -167,13 +167,10 @@ abstract class MotionListBaseState<
       BuildContext context, Widget child, Animation<double> animation) {
     Widget animatedChild= child;
     for(EffectEntry entry in _enteries){
+      print(entry.toString());
       animatedChild = entry.animationEffect.build(context, animatedChild, animation, entry);
     }
     return animatedChild;
-    // return AnimationTransition(_enteries)
-    //     .applyAnimation(context, child, animation);
-    // return AnimationProvider.buildAnimation(
-    //     insertAnimationType!, child, animation);
   }
 
   @nonVirtual
