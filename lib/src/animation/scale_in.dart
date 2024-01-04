@@ -1,7 +1,7 @@
 import 'package:animated_reorderable_list/src/animation/provider/animation_effect.dart';
 import 'package:flutter/cupertino.dart';
 
-class ScaleEffect extends AnimationEffect {
+class ScaleEffect extends AnimationEffect<double> {
   static const double beginValue = 0.0;
   static const double endValue = 1.0;
 
@@ -11,7 +11,7 @@ class ScaleEffect extends AnimationEffect {
 
   @override
   Widget build(BuildContext context, Widget child, Animation<double> animation,EffectEntry entry){
-    final Animation<double> scale= buildAnimation(entry,animation) as Animation<double>;
+    final Animation<double> scale= buildAnimation(entry).animate(animation);
     return ScaleTransition(
       scale: scale,
       child: child,

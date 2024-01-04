@@ -2,7 +2,7 @@ import 'package:animated_reorderable_list/src/animation/provider/animation_effec
 import 'package:flutter/cupertino.dart';
 
 
-class FadeEffect extends AnimationEffect {
+class FadeEffect extends AnimationEffect<double> {
   static const double beginValue = 0.0;
   static const double endValue = 1.0;
 
@@ -12,7 +12,7 @@ class FadeEffect extends AnimationEffect {
   
   @override
   Widget build(BuildContext context, Widget child, Animation<double> animation,EffectEntry entry){
-    final Animation<double> opacity= buildAnimation(entry,animation) as Animation<double>;
+    final Animation<double> opacity= buildAnimation(entry).animate(animation);
     return FadeTransition(opacity:opacity, child: child);
   }
 }

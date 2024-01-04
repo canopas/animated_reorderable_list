@@ -5,8 +5,8 @@ abstract class AnimationEffect<T> {
   final Duration? delay;
   final Duration? duration;
   final Curve? curve;
-  final double? begin;
-  final double? end;
+  final T? begin;
+  final T? end;
 
   AnimationEffect({
     this.delay = Duration.zero,
@@ -21,8 +21,8 @@ abstract class AnimationEffect<T> {
     return child;
   }
 
-  Animation<double> buildAnimation(EffectEntry entry,Animation<double> animation) {
-    return animation.drive(Tween<double>(begin: begin, end: end).chain(entry.buildAnimation()));
+  Animatable<T> buildAnimation(EffectEntry entry) {
+    return Tween<T>(begin: begin, end: end).chain(entry.buildAnimation());
   }
 }
 
