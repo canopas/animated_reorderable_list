@@ -10,9 +10,7 @@ typedef ItemBuilder<W extends Widget, E> = Widget Function(
 
 typedef EqualityChecker<E> = bool Function(E, E);
 
-const Duration _kInsertItemDuration = Duration(milliseconds: 300);
-
-const Duration _kRemoveItemDuration = Duration(milliseconds: 300);
+const Duration _kAnimationDuration = Duration(milliseconds: 300);
 
 abstract class MotionListBase<W extends Widget, E extends Object>
     extends StatefulWidget {
@@ -29,7 +27,7 @@ abstract class MotionListBase<W extends Widget, E extends Object>
   final EqualityChecker<E>? areItemsTheSame;
   final SliverGridDelegate? sliverGridDelegate;
 
-  MotionListBase(
+  const MotionListBase(
       {Key? key,
       required this.items,
       required this.itemBuilder,
@@ -51,13 +49,16 @@ abstract class MotionListBaseState<
     B extends MotionListBase<W, E>,
     E extends Object> extends State<B> with TickerProviderStateMixin {
   late List<E> oldList;
-  Duration _duration = const Duration(milliseconds: 300);
+
+  Duration _enterDuration = _kAnimationDuration;
+  Duration _exitDuration = _kAnimationDuration;
+
   List<EffectEntry> _enterAnimations = [];
   List<EffectEntry> _exitAnimations = [];
 
+  Duration get enterDuration => _enterDuration;
 
-
-  Duration get duration => _duration;
+  Duration get exitDuration => _exitDuration;
 
   @protected
   GlobalKey<MotionBuilderState> listKey = GlobalKey();
@@ -76,11 +77,11 @@ abstract class MotionListBaseState<
 
   @nonVirtual
   @protected
-  Duration get insertDuration => widget.insertDuration ?? _duration;
+  Duration get insertDuration => widget.insertDuration ?? enterDuration;
 
   @nonVirtual
   @protected
-  Duration get removeDuration => widget.removeDuration ?? _kRemoveItemDuration;
+  Duration get removeDuration => widget.removeDuration ?? exitDuration;
 
   @protected
   @nonVirtual
@@ -116,39 +117,48 @@ abstract class MotionListBaseState<
     final newList = widget.items;
     if (!listEquals(oldWidget.enterTransition, enterTransition)) {
       _enterAnimations = [];
-      addEffects(enterTransition, _enterAnimations);
+      addEffects(enterTransition, _enterAnimations, enter: true);
     }
     if (!listEquals(oldWidget.exitTransition, exitTransition)) {
       _exitAnimations = [];
-      addEffects(exitTransition,_exitAnimations);
+      addEffects(exitTransition, _exitAnimations, enter: false);
     }
     calculateDiff(oldList, newList);
     oldList = List.from(newList);
   }
 
-  void addEffects(List<AnimationEffect> effects, List<EffectEntry> enteries) {
-
+  void addEffects(List<AnimationEffect> effects, List<EffectEntry> enteries,
+      {required bool enter}) {
     if (effects.isNotEmpty) {
       for (AnimationEffect effect in effects) {
-        addEffect(effect, enteries);
+        addEffect(effect, enteries, enter: enter);
       }
     } else {
-      addEffect(FadeAnimation(),enteries);
+      addEffect(FadeAnimation(), enteries, enter: enter);
     }
   }
 
-  void addEffect(AnimationEffect effect, List<EffectEntry> enteries) {
+  void addEffect(AnimationEffect effect, List<EffectEntry> enteries,
+      {required bool enter}) {
     Duration zero = Duration.zero;
 
     if (effect.duration != null) {
-      _duration = effect.duration! > _duration ? effect.duration! : _duration;
+      if (enter) {
+        _enterDuration = effect.duration! > _enterDuration
+            ? effect.duration!
+            : _enterDuration;
+        assert(_enterDuration >= zero, "Duration can not be negative");
+      } else {
+        _exitDuration =
+            effect.duration! > _exitDuration ? effect.duration! : _exitDuration;
+        assert(_exitDuration >= zero, "Duration can not be negative");
+      }
     }
-    assert(_duration >= zero, "calculated duration can not be negative");
 
     EffectEntry entry = EffectEntry(
         animationEffect: effect,
         delay: effect.delay ?? zero,
-        duration: effect.duration ?? _kInsertItemDuration,
+        duration: effect.duration ?? _kAnimationDuration,
         curve: effect.curve ?? Curves.linear);
 
     enteries.add(entry);
@@ -164,7 +174,7 @@ abstract class MotionListBaseState<
     // Detect added items
     for (int i = 0; i < newList.length; i++) {
       if (!oldList.contains(newList[i])) {
-        listKey.currentState!.insertItem(i, insertDuration: _duration);
+        listKey.currentState!.insertItem(i, insertDuration: insertDuration);
       }
     }
   }

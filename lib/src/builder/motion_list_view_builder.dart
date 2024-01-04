@@ -32,10 +32,10 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
   final Axis scrollDirection;
 
   /// The duration of the animation when an item was inserted into the list.
-  final Duration insertDuration;
+  final Duration? insertDuration;
 
   /// The duration of the animation when an item was removed from the list.
-  final Duration removeDuration;
+  final Duration? removeDuration;
 
   /// {@template flutter.widgets.scroll_view.reverse}
   /// Whether the scroll view scrolls in the reading direction.
@@ -112,8 +112,8 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
       required this.itemBuilder,
       this.enterTransition,
       this.exitTransition,
-      this.insertDuration = const Duration(milliseconds: 300),
-      this.removeDuration = const Duration(milliseconds: 300),
+      this.insertDuration,
+      this.removeDuration ,
       this.scrollDirection = Axis.vertical,
       this.reverse = false,
       this.controller,

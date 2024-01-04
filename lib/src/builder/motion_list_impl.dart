@@ -5,7 +5,7 @@ import 'package:animated_reorderable_list/animated_reorderable_list.dart';
 import 'motion_animated_builder.dart';
 
 class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
-  MotionListImpl({
+  const MotionListImpl({
     Key? key,
     required List<E> items,
     required ItemBuilder itemBuilder,
@@ -30,7 +30,7 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
             insertAnimationType: insertAnimationType,
             removeAnimationType: removeAnimationType);
 
-  MotionListImpl.grid({
+  const MotionListImpl.grid({
     Key? key,
     required List<E> items,
     required ItemBuilder itemBuilder,

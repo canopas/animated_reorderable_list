@@ -1,4 +1,3 @@
-import 'package:animated_reorderable_list/src/animation/provider/animation_effect.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:animated_reorderable_list/src/component/motion_animated_content.dart';
