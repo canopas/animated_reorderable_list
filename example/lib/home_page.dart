@@ -154,8 +154,6 @@ class _HomePageState extends State<HomePage> {
                             key: Key(list[index].name),
                             index: list[index].index);
                       },
-                      insertAnimation: appliedStyle,
-                      removeAnimation: appliedStyle,
                       insertDuration: const Duration(milliseconds: 300),
                       removeDuration: const Duration(milliseconds: 300),
                       sliverGridDelegate:
@@ -169,14 +167,10 @@ class _HomePageState extends State<HomePage> {
                             key: Key(list[index].name),
                             index: list[index].index);
                       },
-                      onEnter: [
-                        //ScaleEffect(duration: Duration(seconds:3),curve: Curves.easeInBack),
-                        FadeEffect(),
-                      SlideInDownEffect()],
+                      enterTransition: [FadeAnimation()],
                      // insertDuration: const Duration(seconds: 6),
                       removeDuration: const Duration(milliseconds: 300),
                      // insertAnimation: appliedStyle,
-                      removeAnimation: appliedStyle,
                     ),
             ),
           ],

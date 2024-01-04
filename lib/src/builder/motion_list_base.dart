@@ -15,14 +15,15 @@ const Duration _kInsertItemDuration = Duration(milliseconds: 300);
 const Duration _kRemoveItemDuration = Duration(milliseconds: 300);
 
 abstract class MotionListBase<W extends Widget, E extends Object>
-    extends StatefulWidget{
+    extends StatefulWidget {
   final ItemBuilder<W, E> itemBuilder;
   final List<E> items;
   final Duration? resizeDuration;
   final Duration? insertDuration;
   final Duration? removeDuration;
   final Axis? scrollDirection;
-  final List<AnimationEffect>? onEnter;
+  final List<AnimationEffect>? enterTransition;
+  final List<AnimationEffect>? exitTransition;
   final AnimationType? insertAnimationType;
   final AnimationType? removeAnimationType;
   final EqualityChecker<E>? areItemsTheSame;
@@ -37,7 +38,8 @@ abstract class MotionListBase<W extends Widget, E extends Object>
       this.removeDuration,
       this.insertAnimationType,
       this.scrollDirection,
-      this.onEnter,
+      this.enterTransition,
+      this.exitTransition,
       this.sliverGridDelegate,
       this.removeAnimationType,
       this.areItemsTheSame})
@@ -88,7 +90,11 @@ abstract class MotionListBaseState<
 
   @nonVirtual
   @protected
-  List<AnimationEffect> get onEnter => widget.onEnter ?? [];
+  List<AnimationEffect> get enterTransition => widget.enterTransition ?? [];
+
+  @nonVirtual
+  @protected
+  List<AnimationEffect> get exitTransition => widget.exitTransition ?? [];
 
   @nonVirtual
   @protected
@@ -106,8 +112,8 @@ abstract class MotionListBaseState<
   void didUpdateWidget(covariant B oldWidget) {
     super.didUpdateWidget(oldWidget);
     final newList = widget.items;
-    if(!listEquals(oldWidget.onEnter, onEnter)){
-      addEffects(onEnter);
+    if (!listEquals(oldWidget.enterTransition, enterTransition)) {
+      addEffects(enterTransition);
     }
     calculateDiff(oldList, newList);
     oldList = List.from(newList);
@@ -115,29 +121,29 @@ abstract class MotionListBaseState<
 
   void addEffects(List<AnimationEffect> effects) {
     _enteries = [];
-    if(effects.isNotEmpty){
+    if (effects.isNotEmpty) {
       for (AnimationEffect effect in effects) {
         addEffect(effect);
       }
-    }else{
-      addEffect(FadeEffect());
+    } else {
+      addEffect(FadeAnimation());
     }
   }
 
   void addEffect(AnimationEffect effect) {
     EffectEntry? prior = _lastEntry;
     Duration zero = Duration.zero, delay = zero;
-    assert(delay >= zero, "calculared delay can not be negative");
 
     if (effect.duration != null) {
       _duration = effect.duration! > _duration ? effect.duration! : _duration;
     }
+    assert(_duration >= zero, "calculated duration can not be negative");
 
     EffectEntry entry = EffectEntry(
         animationEffect: effect,
         delay: effect.delay ?? zero,
-        duration: effect.duration ?? prior?.duration ?? _kInsertItemDuration,
-        curve: effect.curve ?? prior?.curve ?? Curves.linear);
+        duration: effect.duration ?? _kInsertItemDuration,
+        curve: effect.curve ?? Curves.linear);
 
     _enteries.add(entry);
     _lastEntry = entry;
@@ -162,9 +168,10 @@ abstract class MotionListBaseState<
   @protected
   Widget insertItemBuilder(
       BuildContext context, Widget child, Animation<double> animation) {
-    Widget animatedChild= child;
-    for(EffectEntry entry in _enteries){
-      animatedChild = entry.animationEffect.build(context, animatedChild, animation, entry);
+    Widget animatedChild = child;
+    for (EffectEntry entry in _enteries) {
+      animatedChild =
+          entry.animationEffect.build(context, animatedChild, animation, entry);
     }
     return animatedChild;
   }

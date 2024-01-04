@@ -5,16 +5,17 @@ import 'package:animated_reorderable_list/animated_reorderable_list.dart';
 import 'motion_animated_builder.dart';
 
 class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
-   MotionListImpl({
+  MotionListImpl({
     Key? key,
     required List<E> items,
     required ItemBuilder itemBuilder,
+    List<AnimationEffect>? enterTransition,
+    List<AnimationEffect>? exitTransition,
     Duration? insertDuration,
     Duration? removeDuration,
     Axis? scrollDirection,
     AnimationType? insertAnimationType,
     AnimationType? removeAnimationType,
-    List<AnimationEffect>? onEnter,
     EqualityChecker<E>? areItemsTheSame,
   }) : super(
             key: key,
@@ -22,32 +23,34 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
             itemBuilder: itemBuilder,
             insertDuration: insertDuration,
             removeDuration: removeDuration,
-            onEnter: onEnter,
+            enterTransition: enterTransition,
+            exitTransition: exitTransition,
             scrollDirection: scrollDirection,
             areItemsTheSame: areItemsTheSame,
             insertAnimationType: insertAnimationType,
             removeAnimationType: removeAnimationType);
 
-   MotionListImpl.grid({
+  MotionListImpl.grid({
     Key? key,
     required List<E> items,
     required ItemBuilder itemBuilder,
     required SliverGridDelegate sliverGridDelegate,
+    List<AnimationEffect>? enterTransition,
+    List<AnimationEffect>? exitTransition,
     Duration? insertDuration,
     Duration? removeDuration,
     Axis? scrollDirection,
-    AnimationType? insertAnimationType,
-    AnimationType? removeAnimationType,
   }) : super(
             key: key,
             items: items,
             itemBuilder: itemBuilder,
+            sliverGridDelegate: sliverGridDelegate,
+            enterTransition: enterTransition,
+            exitTransition: exitTransition,
             insertDuration: insertDuration,
             removeDuration: removeDuration,
             scrollDirection: scrollDirection,
-            sliverGridDelegate: sliverGridDelegate,
-            insertAnimationType: insertAnimationType,
-            removeAnimationType: removeAnimationType);
+            );
 
   @override
   MotionListImplState<E> createState() => MotionListImplState<E>();

@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 
 import '../../animated_reorderable_list.dart';
+import '../animation/provider/animation_effect.dart';
 
 /// A Flutter AnimatedGridView that animates insertion and removal of the item.
 class MotionGridViewBuilder<E extends Object> extends StatelessWidget {
@@ -11,13 +12,15 @@ class MotionGridViewBuilder<E extends Object> extends StatelessWidget {
   ///Called, as needed, to build list item widget
   final ItemBuilder<Widget, E> itemBuilder;
 
-  /// AnimationStyle when item is added in the list.
-  final AnimationType insertAnimation;
-
-  /// AnimationStyle when item is removed from the list.
+  ///List [AnimationEffect](s) used for the appearing animation when item is added in the list.
   ///
-  /// If not specified, it is same as insertAnimation.
-  final AnimationType? removeAnimation;
+  ///Defaults to [FadeAnimation()]
+  final List<AnimationEffect>? enterTransition;
+
+  ///List [AnimationEffect](s) used for the disappearing animation when item is removed from list.
+  ///
+  ///Defaults to [FadeAnimation()]
+  final List<AnimationEffect>? exitTransition;
 
   /// The axis along which the scroll view scrolls.
   ///
@@ -36,7 +39,6 @@ class MotionGridViewBuilder<E extends Object> extends StatelessWidget {
   /// The tiles can be placed arbitrarily,
   /// but it is more efficient to place tiles in roughly in order by scroll offset because grids reify a contiguous sequence of children.
   final SliverGridDelegate sliverGridDelegate;
-
 
   /// {@template flutter.widgets.scroll_view.reverse}
   /// Whether the scroll view scrolls in the reading direction.
@@ -111,11 +113,11 @@ class MotionGridViewBuilder<E extends Object> extends StatelessWidget {
       {Key? key,
       required this.items,
       required this.itemBuilder,
-      this.insertAnimation = AnimationType.fadeIn,
-      this.removeAnimation,
+      required this.sliverGridDelegate,
+      this.enterTransition,
+      this.exitTransition,
       this.insertDuration,
       this.removeDuration,
-      required this.sliverGridDelegate,
       this.scrollDirection = Axis.vertical,
       this.reverse = false,
       this.controller,
@@ -145,8 +147,8 @@ class MotionGridViewBuilder<E extends Object> extends StatelessWidget {
           MotionListImpl.grid(
             items: items,
             itemBuilder: itemBuilder,
-            insertAnimationType: insertAnimation,
-            removeAnimationType: removeAnimation ?? insertAnimation,
+            enterTransition: enterTransition,
+            exitTransition: exitTransition,
             insertDuration: insertDuration,
             removeDuration: removeDuration,
             scrollDirection: scrollDirection,
