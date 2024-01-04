@@ -15,7 +15,7 @@ const Duration _kInsertItemDuration = Duration(milliseconds: 300);
 const Duration _kRemoveItemDuration = Duration(milliseconds: 300);
 
 abstract class MotionListBase<W extends Widget, E extends Object>
-    extends StatefulWidget with AnimateManager {
+    extends StatefulWidget{
   final ItemBuilder<W, E> itemBuilder;
   final List<E> items;
   final Duration? resizeDuration;
@@ -122,11 +122,6 @@ abstract class MotionListBaseState<
   void addEffect(AnimationEffect effect) {
     EffectEntry? prior = _lastEntry;
     Duration zero = Duration.zero, delay = zero;
-    // if (effect.delay != null) {
-    //   delay = _baseDelay + effect.delay!;
-    // } else {
-    //   delay = prior?.delay ?? _baseDelay;
-    // }
     assert(delay >= zero, "calculared delay can not be negative");
 
     if (effect.duration != null) {
@@ -141,8 +136,6 @@ abstract class MotionListBaseState<
 
     _enteries.add(entry);
     _lastEntry = entry;
-    // if (entry.end > _duration) _duration = entry.end;
-    print("--------- duration: $_duration");
   }
 
   void calculateDiff(List oldList, List newList) {
@@ -155,7 +148,6 @@ abstract class MotionListBaseState<
     // Detect added items
     for (int i = 0; i < newList.length; i++) {
       if (!oldList.contains(newList[i])) {
-        print("Insert duration: $_duration");
         listKey.currentState!.insertItem(i, insertDuration: _duration);
       }
     }
@@ -167,7 +159,6 @@ abstract class MotionListBaseState<
       BuildContext context, Widget child, Animation<double> animation) {
     Widget animatedChild= child;
     for(EffectEntry entry in _enteries){
-      print(entry.toString());
       animatedChild = entry.animationEffect.build(context, animatedChild, animation, entry);
     }
     return animatedChild;

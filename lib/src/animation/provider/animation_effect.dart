@@ -2,22 +2,22 @@ import 'package:flutter/cupertino.dart';
 
 extension AnimationPlusExtension on AnimationEffect {}
 
-class AnimationTransition {
-  List<EffectEntry> effects = [];
-
-  AnimationTransition(this.effects);
-
-  Widget applyAnimation(
-      BuildContext context, Widget child, Animation<double> animation) {
-    Widget animatedChild = child;
-    ;
-    for (EffectEntry entry in effects) {
-      animatedChild =
-          entry.animationEffect.build(context, animatedChild, animation, entry);
-    }
-    return animatedChild;
-  }
-}
+// class AnimationTransition {
+//   List<EffectEntry> effects = [];
+//
+//   AnimationTransition(this.effects);
+//
+//   Widget applyAnimation(
+//       BuildContext context, Widget child, Animation<double> animation) {
+//     Widget animatedChild = child;
+//     ;
+//     for (EffectEntry entry in effects) {
+//       animatedChild =
+//           entry.animationEffect.build(context, animatedChild, animation, entry);
+//     }
+//     return animatedChild;
+//   }
+// }
 
 abstract class AnimationEffect<T> {
   final Duration? delay;
@@ -39,8 +39,8 @@ abstract class AnimationEffect<T> {
     return child;
   }
 
-  Animatable<double> buildAnimation(EffectEntry entry) {
-    return Tween<double>(begin: begin, end: end).chain(entry.buildAnimation());
+  Animation<double> buildAnimation(EffectEntry entry,Animation<double> animation) {
+    return animation.drive(Tween<double>(begin: begin, end: end).chain(entry.buildAnimation()));
   }
 }
 
@@ -77,8 +77,6 @@ class EffectEntry {
   }) {
     int ttlT = duration.inMicroseconds;
     int beginT = begin.inMicroseconds, endT = end.inMicroseconds;
-    // print("begin: ${beginT / ttlT} end: ${endT / ttlT}");
-
     return CurveTween(
       curve: Interval(beginT / ttlT, endT / ttlT, curve: curve ?? this.curve),
     );
@@ -90,13 +88,3 @@ class EffectEntry {
   }
 }
 
-mixin AnimateManager<T> {
-  T addEffect(AnimationEffect effect) => throw (UnimplementedError());
-
-  T addEffects(List<AnimationEffect> effects) {
-    for (AnimationEffect o in effects) {
-      addEffect(o);
-    }
-    return this as T;
-  }
-}
