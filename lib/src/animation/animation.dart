@@ -1,8 +1,4 @@
 export 'fade_in.dart';
-export 'fade_in_down.dart';
-export 'fade_in_up.dart';
-export 'fadein_left.dart';
-export 'fadein_right.dart';
 export 'flipin_x.dart';
 export 'flipin_y.dart';
 export 'landing.dart';

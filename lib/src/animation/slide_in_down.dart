@@ -12,9 +12,12 @@ class SlideInDown extends AnimationEffect<Offset> {
   @override
   Widget build(BuildContext context, Widget child, Animation<double> animation,EffectEntry entry){
     final Animation<Offset> position= buildAnimation(entry).animate(animation);
-    return SlideTransition(
-      position: position,
-      child: child,
+    return ClipRect(
+      clipBehavior: Clip.hardEdge,
+      child: SlideTransition(
+        position: position,
+        child: child,
+      ),
     );
   }
 }

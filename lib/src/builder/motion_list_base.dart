@@ -16,14 +16,11 @@ abstract class MotionListBase<W extends Widget, E extends Object>
     extends StatefulWidget {
   final ItemBuilder<W, E> itemBuilder;
   final List<E> items;
-  final Duration? resizeDuration;
+  final List<AnimationEffect>? enterTransition;
+  final List<AnimationEffect>? exitTransition;
   final Duration? insertDuration;
   final Duration? removeDuration;
   final Axis? scrollDirection;
-  final List<AnimationEffect>? enterTransition;
-  final List<AnimationEffect>? exitTransition;
-  final AnimationType? insertAnimationType;
-  final AnimationType? removeAnimationType;
   final EqualityChecker<E>? areItemsTheSame;
   final SliverGridDelegate? sliverGridDelegate;
 
@@ -31,15 +28,12 @@ abstract class MotionListBase<W extends Widget, E extends Object>
       {Key? key,
       required this.items,
       required this.itemBuilder,
-      this.resizeDuration,
+        this.enterTransition,
+        this.exitTransition,
       this.insertDuration,
       this.removeDuration,
-      this.insertAnimationType,
       this.scrollDirection,
-      this.enterTransition,
-      this.exitTransition,
       this.sliverGridDelegate,
-      this.removeAnimationType,
       this.areItemsTheSame})
       : super(key: key);
 }
@@ -89,19 +83,11 @@ abstract class MotionListBaseState<
 
   @nonVirtual
   @protected
-  AnimationType? get insertAnimationType => widget.insertAnimationType;
-
-  @nonVirtual
-  @protected
   List<AnimationEffect> get enterTransition => widget.enterTransition ?? [];
 
   @nonVirtual
   @protected
   List<AnimationEffect> get exitTransition => widget.exitTransition ?? [];
-
-  @nonVirtual
-  @protected
-  AnimationType? get removeAnimationType => widget.removeAnimationType;
 
   late final resizeAnimController = AnimationController(vsync: this);
 
@@ -134,7 +120,7 @@ abstract class MotionListBaseState<
         addEffect(effect, enteries, enter: enter);
       }
     } else {
-      addEffect(FadeAnimation(), enteries, enter: enter);
+      addEffect(FadeIn(), enteries, enter: enter);
     }
   }
 

@@ -14,8 +14,6 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
     Duration? insertDuration,
     Duration? removeDuration,
     Axis? scrollDirection,
-    AnimationType? insertAnimationType,
-    AnimationType? removeAnimationType,
     EqualityChecker<E>? areItemsTheSame,
   }) : super(
             key: key,
@@ -27,8 +25,7 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
             exitTransition: exitTransition,
             scrollDirection: scrollDirection,
             areItemsTheSame: areItemsTheSame,
-            insertAnimationType: insertAnimationType,
-            removeAnimationType: removeAnimationType);
+     );
 
   const MotionListImpl.grid({
     Key? key,
