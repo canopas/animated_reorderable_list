@@ -105,6 +105,9 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
   Widget build(BuildContext context) {
     _listState.registerItem(this);
     return Visibility(
+      maintainSize: true,
+      maintainAnimation: true,
+      maintainState: true,
       visible: visible,
       child: Transform.translate(
           offset: _offsetAnimation.value,

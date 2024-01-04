@@ -169,10 +169,13 @@ class _HomePageState extends State<HomePage> {
                             key: Key(list[index].name),
                             index: list[index].index);
                       },
-                      onEnter: [ ScaleEffect(duration: Duration(seconds:3)),FadeEffect(begin:0.7,duration:Duration(seconds: 6),delay: Duration(seconds: 5)), ],
+                      onEnter: [
+                        //ScaleEffect(duration: Duration(seconds:3),curve: Curves.easeInBack),
+                        FadeEffect(),
+                      SlideInDownEffect()],
                      // insertDuration: const Duration(seconds: 6),
                       removeDuration: const Duration(milliseconds: 300),
-                      insertAnimation: appliedStyle,
+                     // insertAnimation: appliedStyle,
                       removeAnimation: appliedStyle,
                     ),
             ),

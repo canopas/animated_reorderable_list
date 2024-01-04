@@ -1,23 +1,5 @@
 import 'package:flutter/cupertino.dart';
 
-extension AnimationPlusExtension on AnimationEffect {}
-
-// class AnimationTransition {
-//   List<EffectEntry> effects = [];
-//
-//   AnimationTransition(this.effects);
-//
-//   Widget applyAnimation(
-//       BuildContext context, Widget child, Animation<double> animation) {
-//     Widget animatedChild = child;
-//     ;
-//     for (EffectEntry entry in effects) {
-//       animatedChild =
-//           entry.animationEffect.build(context, animatedChild, animation, entry);
-//     }
-//     return animatedChild;
-//   }
-// }
 
 abstract class AnimationEffect<T> {
   final Duration? delay;

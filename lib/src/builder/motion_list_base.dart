@@ -52,7 +52,6 @@ abstract class MotionListBaseState<
   Duration _duration = const Duration(milliseconds: 300);
   List<EffectEntry> _enteries = [];
   EffectEntry? _lastEntry;
-  final Duration _baseDelay = Duration.zero;
 
   Duration get duration => _duration;
 
@@ -87,6 +86,8 @@ abstract class MotionListBaseState<
   @protected
   AnimationType? get insertAnimationType => widget.insertAnimationType;
 
+  @nonVirtual
+  @protected
   List<AnimationEffect> get onEnter => widget.onEnter ?? [];
 
   @nonVirtual
@@ -105,8 +106,7 @@ abstract class MotionListBaseState<
   void didUpdateWidget(covariant B oldWidget) {
     super.didUpdateWidget(oldWidget);
     final newList = widget.items;
-    if (oldWidget.onEnter != onEnter) {
-      _enteries = [];
+    if(!listEquals(oldWidget.onEnter, onEnter)){
       addEffects(onEnter);
     }
     calculateDiff(oldList, newList);
@@ -114,8 +114,13 @@ abstract class MotionListBaseState<
   }
 
   void addEffects(List<AnimationEffect> effects) {
-    for (AnimationEffect effect in effects) {
-      addEffect(effect);
+    _enteries = [];
+    if(effects.isNotEmpty){
+      for (AnimationEffect effect in effects) {
+        addEffect(effect);
+      }
+    }else{
+      addEffect(FadeEffect());
     }
   }
 
@@ -130,7 +135,7 @@ abstract class MotionListBaseState<
 
     EffectEntry entry = EffectEntry(
         animationEffect: effect,
-        delay: effect.delay ?? _baseDelay,
+        delay: effect.delay ?? zero,
         duration: effect.duration ?? prior?.duration ?? _kInsertItemDuration,
         curve: effect.curve ?? prior?.curve ?? Curves.linear);
 

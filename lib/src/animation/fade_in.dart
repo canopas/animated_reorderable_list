@@ -12,7 +12,7 @@ class FadeEffect extends AnimationEffect {
   
   @override
   Widget build(BuildContext context, Widget child, Animation<double> animation,EffectEntry entry){
-    final opacity= buildAnimation(entry,animation);
+    final Animation<double> opacity= buildAnimation(entry,animation) as Animation<double>;
     return FadeTransition(opacity:opacity, child: child);
   }
 }

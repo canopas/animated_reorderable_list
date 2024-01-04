@@ -11,7 +11,7 @@ class ScaleEffect extends AnimationEffect {
 
   @override
   Widget build(BuildContext context, Widget child, Animation<double> animation,EffectEntry entry){
-    final scale= buildAnimation(entry,animation);
+    final Animation<double> scale= buildAnimation(entry,animation) as Animation<double>;
     return ScaleTransition(
       scale: scale,
       child: child,
