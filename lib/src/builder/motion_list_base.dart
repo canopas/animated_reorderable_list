@@ -147,7 +147,7 @@ abstract class MotionListBaseState<
     EffectEntry entry = EffectEntry(
         animationEffect: effect,
         delay: effect.delay ?? zero,
-        duration: effect.duration ?? _kAnimationDuration,
+        duration: effect.duration ?? removeDuration,
         curve: effect.curve ?? Curves.linear);
 
     enteries.add(entry);
@@ -186,7 +186,6 @@ abstract class MotionListBaseState<
       BuildContext context, Widget child, Animation<double> animation) {
     Widget animatedChild = child;
     for (EffectEntry entry in _exitAnimations) {
-      print(entry);
       animatedChild =
           entry.animationEffect.build(context, animatedChild, animation, entry);
     }

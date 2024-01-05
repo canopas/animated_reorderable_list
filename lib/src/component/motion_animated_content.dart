@@ -119,8 +119,6 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
 
   @override
   void dispose() {
-    _positionController.removeListener(() {});
-    _positionController.removeStatusListener((status) {});
     _listState.unregisterItem(widget.index, this);
     _positionController.dispose();
     super.dispose();
