@@ -31,6 +31,7 @@ class MotionBuilder<E> extends StatefulWidget {
   State<MotionBuilder> createState() => MotionBuilderState();
 }
 
+
 class MotionBuilderState extends State<MotionBuilder>
     with TickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   final List<_ActiveItem> _incomingItems = <_ActiveItem>[];
@@ -158,6 +159,7 @@ class MotionBuilderState extends State<MotionBuilder>
       }
       childrenMap.clear();
       childrenMap.addAll(updatedChildrenMap);
+
       Future.delayed(insertDuration).then((value) {
         controller.forward().then<void>((_) {
           _removeActiveItemAt(_incomingItems, incomingItem.itemIndex)!
