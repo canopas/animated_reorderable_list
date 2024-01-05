@@ -25,7 +25,7 @@ class _HomePageState extends State<HomePage> {
   List<User> list =
       List.generate(8, (index) => User(name: "User $index", index: index));
   int addedNumber = 9;
-  bool isGrid = false;
+  bool isGrid = true;
 
   List<AnimationEffect> animations = [FadeIn()];
 

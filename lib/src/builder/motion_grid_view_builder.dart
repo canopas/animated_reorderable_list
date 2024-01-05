@@ -12,12 +12,12 @@ class MotionGridViewBuilder<E extends Object> extends StatelessWidget {
   ///Called, as needed, to build list item widget
   final ItemBuilder<Widget, E> itemBuilder;
 
-  ///List [AnimationEffect](s) used for the appearing animation when item is added in the list.
+  ///List of [AnimationEffect](s) used for the appearing animation when item is added in the list.
   ///
   ///Defaults to [FadeAnimation()]
   final List<AnimationEffect>? enterTransition;
 
-  ///List [AnimationEffect](s) used for the disappearing animation when item is removed from list.
+  ///List of [AnimationEffect](s) used for the disappearing animation when item is removed from list.
   ///
   ///Defaults to [FadeAnimation()]
   final List<AnimationEffect>? exitTransition;

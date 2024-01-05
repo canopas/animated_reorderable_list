@@ -16,12 +16,12 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
   ///Called, as needed, to build list item widget
   final ItemBuilder itemBuilder;
 
-  ///List [AnimationEffect](s) used for the appearing animation when item is added in the list.
+  ///List of [AnimationEffect](s) used for the appearing animation when an item was inserted into the list.
   ///
   ///Defaults to [FadeAnimation()]
   final List<AnimationEffect>? enterTransition;
 
-  ///List [AnimationEffect](s) used for the disappearing animation when item is removed from list.
+  ///List of [AnimationEffect](s) used for the disappearing animation when an item was removed from the list.
   ///
   ///Defaults to [FadeAnimation()]
   final List<AnimationEffect>? exitTransition;
