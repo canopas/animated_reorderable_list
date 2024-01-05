@@ -4,7 +4,6 @@ import 'package:animated_reorderable_list/src/model/motion_data.dart';
 import '../builder/motion_animated_builder.dart';
 
 class MotionAnimatedContent extends StatefulWidget {
-
   final int index;
   final MotionData motionData;
   final Widget? child;
@@ -35,7 +34,7 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
 
   Offset get currentAnimatedOffset =>
       _positionController.isAnimating ? _offsetAnimation.value : Offset.zero;
-  bool visible = true;
+  bool visible = false;
 
   @override
   void initState() {
@@ -48,10 +47,14 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
     _offsetAnimation = Tween<Offset>(begin: Offset.zero, end: Offset.zero)
         .animate(_positionController)
       ..addListener(() {
+        if(_offsetAnimation.isCompleted){
+          visible = true;
+        }
         setState(() {});
       });
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _positionController.forward(from: 0);
       widget.updateMotionData?.call(widget.motionData);
     });
 
@@ -97,7 +100,6 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
   Offset itemOffset() {
     final box = context.findRenderObject() as RenderBox?;
     if (box == null) return Offset.zero;
-
     return box.localToGlobal(Offset.zero);
   }
 
@@ -117,6 +119,8 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
 
   @override
   void dispose() {
+    _positionController.removeListener(() {});
+    _positionController.removeStatusListener((status) {});
     _listState.unregisterItem(widget.index, this);
     _positionController.dispose();
     super.dispose();

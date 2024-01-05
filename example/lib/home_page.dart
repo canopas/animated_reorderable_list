@@ -174,7 +174,7 @@ class _HomePageState extends State<HomePage> {
                             key: Key(list[index].name),
                             index: list[index].index);
                       },
-                      enterTransition: animations,
+                      enterTransition:animations,
                       exitTransition: animations,
                       insertDuration: const Duration(seconds: 1),
                       removeDuration: const Duration(milliseconds: 300),
@@ -233,6 +233,5 @@ class AnimationProvider {
       case (AnimationType.slideInDown):
         return SlideInDown();
     }
-    return FadeIn();
   }
 }
