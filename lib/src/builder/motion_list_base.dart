@@ -47,8 +47,8 @@ abstract class MotionListBaseState<
   Duration _enterDuration = _kAnimationDuration;
   Duration _exitDuration = _kAnimationDuration;
 
-  List<EffectEntry> _enterAnimations = [];
-  List<EffectEntry> _exitAnimations = [];
+   List<EffectEntry> _enterAnimations=[];
+   List<EffectEntry> _exitAnimations=[];
 
   Duration get enterDuration => _enterDuration;
 
@@ -95,6 +95,8 @@ abstract class MotionListBaseState<
   void initState() {
     super.initState();
     oldList = List.from(widget.items);
+    addEffects(enterTransition, _enterAnimations, enter: true);
+    addEffects(exitTransition, _exitAnimations, enter: false);
   }
 
   @override
@@ -126,6 +128,7 @@ abstract class MotionListBaseState<
 
   void addEffect(AnimationEffect effect, List<EffectEntry> enteries,
       {required bool enter}) {
+
     Duration zero = Duration.zero;
 
     if (effect.duration != null) {
@@ -183,6 +186,7 @@ abstract class MotionListBaseState<
       BuildContext context, Widget child, Animation<double> animation) {
     Widget animatedChild = child;
     for (EffectEntry entry in _exitAnimations) {
+      print(entry);
       animatedChild =
           entry.animationEffect.build(context, animatedChild, animation, entry);
     }

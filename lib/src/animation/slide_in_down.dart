@@ -2,16 +2,17 @@ import 'package:animated_reorderable_list/src/animation/provider/animation_effec
 import 'package:flutter/cupertino.dart';
 
 class SlideInDown extends AnimationEffect<Offset> {
-  static const Offset beginValue = const Offset(0, 1);
-  static const Offset endValue = const Offset(0, 0);
+  static const Offset beginValue = Offset(0, 1);
+  static const Offset endValue = Offset(0, 0);
+  final Offset? begin;
+  final Offset? end;
 
   SlideInDown(
-      {super.delay, super.duration, super.curve, Offset? begin, Offset? end})
-      :super(begin: begin ?? beginValue, end: end ?? endValue);
+      {super.delay, super.duration, super.curve, this.begin, this.end});
 
   @override
   Widget build(BuildContext context, Widget child, Animation<double> animation,EffectEntry entry){
-    final Animation<Offset> position= buildAnimation(entry).animate(animation);
+    final Animation<Offset> position= buildAnimation(entry,begin: begin ?? beginValue, end: endValue).animate(animation);
     return ClipRect(
       clipBehavior: Clip.hardEdge,
       child: SlideTransition(
@@ -22,23 +23,3 @@ class SlideInDown extends AnimationEffect<Offset> {
   }
 }
 
-// class SlideInDown extends StatelessWidget {
-//   final Widget child;
-//   final Animation<double> animation;
-//
-//   const SlideInDown({Key? key, required this.child, required this.animation})
-//       : super(key: key);
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return ClipRect(
-//       clipBehavior: Clip.hardEdge,
-//       child: SlideTransition(
-//         position:
-//             Tween<Offset>(begin: const Offset(0, 1), end: const Offset(0, 0))
-//                 .animate(animation),
-//         child: child,
-//       ),
-//     );
-//   }
-// }

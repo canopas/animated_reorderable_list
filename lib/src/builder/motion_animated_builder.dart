@@ -159,6 +159,7 @@ class MotionBuilderState extends State<MotionBuilder>
       }
       childrenMap.clear();
       childrenMap.addAll(updatedChildrenMap);
+
       Future.delayed(insertDuration).then((value) {
         controller.forward().then<void>((_) {
           _removeActiveItemAt(_incomingItems, incomingItem.itemIndex)!

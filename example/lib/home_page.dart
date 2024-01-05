@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:example/utils/extension.dart';
 import 'package:example/utils/item_card.dart';
 import 'package:example/utils/item_tile.dart';
@@ -25,7 +27,7 @@ class _HomePageState extends State<HomePage> {
   int addedNumber = 9;
   bool isGrid = false;
 
-  List<AnimationEffect> animations = [];
+  List<AnimationEffect> animations = [FadeIn()];
 
   void insert() {
     addedNumber += 1;
@@ -68,12 +70,12 @@ class _HomePageState extends State<HomePage> {
                     );
                   }).toList(),
                   onChanged: (AnimationType? animationType) {
-                    animations=[];
                     if (animationType == null) {
                       return;
                     }
+                    animations = [];
                     AnimationEffect animation =
-                    AnimationProvider.buildAnimation(animationType);
+                        AnimationProvider.buildAnimation(animationType);
                     animations.add(animation);
                     setState(() {
                       appliedStyle = animationType;
@@ -160,6 +162,8 @@ class _HomePageState extends State<HomePage> {
                             key: Key(list[index].name),
                             index: list[index].index);
                       },
+                      enterTransition: animations,
+                      exitTransition: animations,
                       insertDuration: const Duration(milliseconds: 300),
                       removeDuration: const Duration(milliseconds: 300),
                       sliverGridDelegate:
@@ -169,15 +173,14 @@ class _HomePageState extends State<HomePage> {
                   : MotionListViewBuilder(
                       items: list,
                       itemBuilder: (BuildContext context, int index) {
-
                         return ItemTile(
                             key: Key(list[index].name),
                             index: list[index].index);
                       },
-                      enterTransition:animations,
+                      enterTransition: animations,
                       exitTransition: animations,
-                      insertDuration: const Duration(seconds: 1),
-                      removeDuration: const Duration(milliseconds: 300),
+                      insertDuration: const Duration(seconds: 3),
+                      removeDuration: const Duration(seconds: 3),
                     ),
             ),
           ],

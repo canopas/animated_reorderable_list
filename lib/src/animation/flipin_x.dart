@@ -6,15 +6,17 @@ import 'package:flutter/cupertino.dart';
 class FlipInX extends AnimationEffect<double> {
   static const double beginValue = pi / 2;
   static const double endValue = 0.0;
+  final double? begin;
+  final double? end;
 
-  FlipInX(
-      {super.delay, super.duration, super.curve, double? begin, double? end})
-      : super(begin: begin ?? beginValue, end: end ?? endValue);
+  FlipInX({super.delay, super.duration, super.curve, this.begin, this.end});
 
   @override
   Widget build(BuildContext context, Widget child, Animation<double> animation,
       EffectEntry entry) {
-    final Animation<double> rotation = buildAnimation(entry).animate(animation);
+    final Animation<double> rotation =
+        buildAnimation(entry, begin: begin ?? beginValue, end: endValue)
+            .animate(animation);
     return AnimatedBuilder(
         animation: animation,
         builder: (BuildContext context, Widget? child) {
@@ -28,26 +30,3 @@ class FlipInX extends AnimationEffect<double> {
   }
 }
 
-// class FlipInX extends StatelessWidget {
-//   final Animation<double> animation;
-//   final Widget child;
-//
-//   const FlipInX({Key? key, required this.animation, required this.child})
-//       : super(key: key);
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return AnimatedBuilder(
-//       animation: animation,
-//       builder: (BuildContext context, Widget? child) {
-//         final rotateAnim = Tween(begin: pi / 2, end: 0.0).animate(animation);
-//         return Transform(
-//           transform: Matrix4.rotationX(rotateAnim.value),
-//           alignment: Alignment.center,
-//           child: child,
-//         );
-//       },
-//       child: child,
-//     );
-//   }
-// }

@@ -4,14 +4,15 @@ import 'package:flutter/cupertino.dart';
 class ScaleIn extends AnimationEffect<double> {
   static const double beginValue = 0.0;
   static const double endValue = 1.0;
+  final double? begin;
+  final double? end;
 
   ScaleIn(
-      {super.delay, super.duration, super.curve, double? begin, double? end})
-      :super(begin: begin ?? beginValue, end: end ?? endValue);
+      {super.delay, super.duration, super.curve, this.begin, this.end});
 
   @override
   Widget build(BuildContext context, Widget child, Animation<double> animation,EffectEntry entry){
-    final Animation<double> scale= buildAnimation(entry).animate(animation);
+    final Animation<double> scale= buildAnimation(entry,begin: begin ?? beginValue, end: endValue).animate(animation);
     return ScaleTransition(
       scale: scale,
       child: child,
@@ -19,17 +20,4 @@ class ScaleIn extends AnimationEffect<double> {
   }
 }
 
-// class ScaleIn extends StatelessWidget {
-//   final Widget child;
-//   final Animation<double> animation;
-//   const ScaleIn({Key? key, required this.child, required this.animation})
-//       : super(key: key);
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return ScaleTransition(
-//       scale: animation,
-//       child: child,
-//     );
-//   }
-// }
+

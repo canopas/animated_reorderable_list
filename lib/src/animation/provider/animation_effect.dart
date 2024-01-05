@@ -5,15 +5,11 @@ abstract class AnimationEffect<T> {
   final Duration? delay;
   final Duration? duration;
   final Curve? curve;
-  final T? begin;
-  final T? end;
 
   AnimationEffect({
     this.delay = Duration.zero,
     this.duration = const Duration(milliseconds: 300),
     this.curve,
-    this.begin,
-    this.end,
   });
 
   Widget build(BuildContext context, Widget child, Animation<double> animation,
@@ -21,7 +17,7 @@ abstract class AnimationEffect<T> {
     return child;
   }
 
-  Animatable<T> buildAnimation(EffectEntry entry) {
+  Animatable<T> buildAnimation(EffectEntry entry, {required T begin, required T end}) {
     return Tween<T>(begin: begin, end: end).chain(entry.buildAnimation());
   }
 }
