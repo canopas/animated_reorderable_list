@@ -11,6 +11,10 @@ class MotionGridViewBuilder<E extends Object> extends StatelessWidget {
   ///Called, as needed, to build list item widget
   final ItemBuilder<Widget, E> itemBuilder;
 
+  final ReorderCallback onReorder;
+  final void Function(int)? onReorderStart;
+  final void Function(int)? onReorderEnd;
+
   /// AnimationStyle when item is added in the list.
   final AnimationType insertAnimation;
 
@@ -36,7 +40,6 @@ class MotionGridViewBuilder<E extends Object> extends StatelessWidget {
   /// The tiles can be placed arbitrarily,
   /// but it is more efficient to place tiles in roughly in order by scroll offset because grids reify a contiguous sequence of children.
   final SliverGridDelegate sliverGridDelegate;
-
 
   /// {@template flutter.widgets.scroll_view.reverse}
   /// Whether the scroll view scrolls in the reading direction.
@@ -111,6 +114,9 @@ class MotionGridViewBuilder<E extends Object> extends StatelessWidget {
       {Key? key,
       required this.items,
       required this.itemBuilder,
+      required this.onReorder,
+      this.onReorderStart,
+      this.onReorderEnd,
       this.insertAnimation = AnimationType.fadeIn,
       this.removeAnimation,
       this.insertDuration,
@@ -145,6 +151,9 @@ class MotionGridViewBuilder<E extends Object> extends StatelessWidget {
           MotionListImpl.grid(
             items: items,
             itemBuilder: itemBuilder,
+            onReorder: onReorder,
+            onReorderStart: onReorderStart,
+            onReorderEnd: onReorderEnd,
             insertAnimationType: insertAnimation,
             removeAnimationType: removeAnimation ?? insertAnimation,
             insertDuration: insertDuration,

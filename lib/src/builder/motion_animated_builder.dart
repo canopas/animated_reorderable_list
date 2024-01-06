@@ -1,4 +1,9 @@
+import 'dart:math';
+
 import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 import 'package:animated_reorderable_list/src/component/motion_animated_content.dart';
 
@@ -8,9 +13,20 @@ import '../model/motion_data.dart';
 typedef AnimatedWidgetBuilder<E> = Widget Function(
     BuildContext context, Widget child, Animation<double> animation);
 
+typedef ReorderSatrtedCallback<E> = void Function(E item, int index);
+typedef ReorderFinishedCallback<E> = void Function(
+    E item, int from, int to, List<E> newItems);
+
+typedef ReorderItemProxyDecorator = Widget Function(
+    Widget child, int index, Animation<double> animation);
+
 class MotionBuilder<E> extends StatefulWidget {
   final AnimatedWidgetBuilder<E> insertAnimationBuilder;
   final AnimatedWidgetBuilder<E> removeAnimationBuilder;
+  final ReorderCallback onRerder;
+  final void Function(int index)? onReorderStart;
+  final void Function(int index)? onReorderEnd;
+  final ReorderItemProxyDecorator? proxyDecorator;
   final ItemBuilder itemBuilder;
   final int initialCount;
   final Axis scrollDirection;
@@ -20,6 +36,10 @@ class MotionBuilder<E> extends StatefulWidget {
       {Key? key,
       required this.insertAnimationBuilder,
       required this.removeAnimationBuilder,
+      required this.onRerder,
+      this.onReorderEnd,
+      this.onReorderStart,
+      this.proxyDecorator,
       this.initialCount = 0,
       this.delegateBuilder,
       this.scrollDirection = Axis.vertical,
@@ -29,6 +49,30 @@ class MotionBuilder<E> extends StatefulWidget {
 
   @override
   State<MotionBuilder> createState() => MotionBuilderState();
+
+  static MotionBuilderState of(BuildContext context) {
+    final MotionBuilderState? result =
+        context.findAncestorStateOfType<MotionBuilderState>();
+    assert(() {
+      if (result == null) {
+        throw FlutterError(
+          'MotionBuilderState.of() called with a context that does not contain a MotionBuilderState.\n'
+          'No MotionBuilderState ancestor could be found starting from the '
+          'context that was passed to MotionBuilderState.of(). This can '
+          'happen when the context provided is from the same StatefulWidget that '
+          'built the AnimatedList.'
+          'The context used was:\n'
+          '  $context',
+        );
+      }
+      return true;
+    }());
+    return result!;
+  }
+
+  static MotionBuilderState? maybeOf(BuildContext context) {
+    return context.findAncestorStateOfType<MotionBuilderState>();
+  }
 }
 
 class MotionBuilderState extends State<MotionBuilder>
@@ -41,6 +85,25 @@ class MotionBuilderState extends State<MotionBuilder>
   final Map<int, MotionAnimatedContentState> _items =
       <int, MotionAnimatedContentState>{};
 
+  OverlayEntry? _overlayEntry;
+  int? _dragIndex;
+  _DragInfo? _dragInfo;
+  int? _insertIndex;
+  Offset? _finalDropPosition;
+  MultiDragGestureRecognizer? _recognizer;
+  int? _recognizerPointer;
+  bool _dragStartTransitionComplete = false;
+  EdgeDraggingAutoScroller? _autoScroller;
+  late ScrollableState _scrollable;
+
+  bool autoScrolling = false;
+
+  Axis get scrollDirection => axisDirectionToAxis(_scrollable.axisDirection);
+
+  bool get _reverse =>
+      _scrollable.axisDirection == AxisDirection.up ||
+      _scrollable.axisDirection == AxisDirection.left;
+
   @override
   bool get wantKeepAlive => false;
 
@@ -51,6 +114,258 @@ class MotionBuilderState extends State<MotionBuilder>
       childrenMap[i] = MotionData();
     }
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _scrollable = Scrollable.of(context);
+    if (_autoScroller?.scrollable != _scrollable) {
+      _autoScroller?.stopAutoScroll();
+      _autoScroller = EdgeDraggingAutoScroller(_scrollable,
+          onScrollViewScrolled: _handleScrollableAutoScrolled,
+          velocityScalar: 50);
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant MotionBuilder oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.initialCount != oldWidget.initialCount) {
+      cancelReorder();
+    }
+  }
+
+  void startItemDragReorder(
+      {required int index,
+      required PointerDownEvent event,
+      required MultiDragGestureRecognizer recognizer}) {
+    assert(0 <= index && index < widget.initialCount);
+    setState(() {
+      if (_dragInfo != null) {
+        cancelReorder();
+      } else if (_recognizer != null && _recognizerPointer != event.pointer) {
+        _recognizer!.dispose();
+        _recognizer = null;
+        _recognizerPointer = null;
+      }
+      if (_items.containsKey(index)) {
+        _dragIndex = index;
+        _recognizer = recognizer
+          ..onStart = _dragStart
+          ..addPointer(event);
+        _recognizerPointer = event.pointer;
+      } else {
+        throw Exception("Attempting ro start drag on a non-visible item");
+      }
+    });
+  }
+
+  Drag? _dragStart(Offset position) {
+    assert(_dragInfo == null);
+    final MotionAnimatedContentState item = _items[_dragIndex]!;
+    item.dragging = true;
+    widget.onReorderStart?.call(_dragIndex!);
+    item.rebuild();
+    _dragStartTransitionComplete = false;
+    SchedulerBinding.instance.addPostFrameCallback((Duration duration) {
+      _dragStartTransitionComplete = true;
+    });
+    _insertIndex = item.index;
+    _dragInfo = _DragInfo(
+        item: item,
+        initialPosition: position,
+        scrollDirection: scrollDirection,
+        onUpdate: _dragUpdate,
+        onCancel: _dragCancel,
+        onEnd: _dragEnd,
+        onDragCompleted: _dropCompleted,
+        proxyDecorator: widget.proxyDecorator,
+        tickerProvider: this);
+
+    _dragInfo!.startDrag();
+
+    final OverlayState overlay = Overlay.of(context, debugRequiredFor: widget);
+    assert(_overlayEntry == null);
+    _overlayEntry = OverlayEntry(builder: _dragInfo!.createProxy);
+    overlay.insert(_overlayEntry!);
+
+    for (final MotionAnimatedContentState childItem in _items.values) {
+      if (childItem == item || !childItem.mounted) {
+        continue;
+      }
+      childItem.updateForGap(
+          _insertIndex!, _dragInfo!.itemExtent, false, _reverse);
+    }
+    return _dragInfo;
+  }
+
+  void _dragUpdate(_DragInfo item, Offset position, Offset delta) {
+    setState(() {
+      _overlayEntry?.markNeedsBuild();
+      _dragUpdateItems();
+      _autoScroller?.startAutoScrollIfNecessary(_dragTargetRect);
+    });
+  }
+
+  void _dragCancel(_DragInfo item) {
+    setState(() {
+      _dragReset();
+    });
+  }
+
+  void _dragEnd(_DragInfo item) {
+    if ((_insertIndex! + 1 == _items.length) && _reverse) {
+      final RenderBox lastItemRenderBox =
+          _items[_items.length - 1]!.context.findRenderObject()! as RenderBox;
+      final Offset lastItemOffset =
+          lastItemRenderBox.localToGlobal(Offset.zero);
+
+      final double delta = item.itemSize.height;
+
+      setState(() {
+        _finalDropPosition =
+            Offset(lastItemOffset.dx, lastItemOffset.dy - delta);
+      });
+      return;
+    }
+    setState(() {
+      if (_insertIndex == item.index) {
+        _finalDropPosition = _itemOffsetAt(_insertIndex! + (_reverse ? 1 : 0));
+      } else if (_insertIndex! < _itemsCount - 1) {
+        _finalDropPosition = _itemOffsetAt(_insertIndex!);
+      } else {
+        final int itemIndex =
+            _items.length > 1 ? _insertIndex! - 1 : _insertIndex!;
+        if (_reverse) {
+          _finalDropPosition = _itemOffsetAt(itemIndex)! -
+              _extentOffset(item.itemExtent, scrollDirection);
+        } else {
+          _finalDropPosition = _itemOffsetAt(itemIndex)! +
+              _extentOffset(item!.itemExtent, scrollDirection);
+        }
+      }
+    });
+    widget.onReorderEnd?.call(_insertIndex!);
+  }
+
+  void _dropCompleted() {
+    final int fromIndex = _dragIndex!;
+    final int toIndex = _insertIndex!;
+    if (fromIndex != toIndex) {
+      widget.onRerder.call(fromIndex, toIndex);
+    }
+    setState(() {
+      _dragReset();
+    });
+  }
+
+  void cancelReorder() {
+    setState(() {
+      _dragReset();
+    });
+  }
+
+  void _dragReset() {
+    if (_dragInfo != null) {
+      if (_dragIndex != null && _items.containsKey(_dragIndex)) {
+        final MotionAnimatedContentState dragItem = _items[_dragIndex]!;
+        dragItem.dragging = false;
+        dragItem.rebuild();
+        _dragIndex = null;
+      }
+      _dragInfo?.dispose();
+      _dragInfo = null;
+      _autoScroller?.stopAutoScroll();
+      _resetItemGap();
+      _recognizer?.dispose();
+      _recognizer = null;
+      _overlayEntry?.remove();
+      _overlayEntry?.dispose();
+      _overlayEntry = null;
+      _finalDropPosition = null;
+    }
+  }
+
+  void _resetItemGap() {
+    for (final MotionAnimatedContentState item in _items.values) {
+      item.resetGap();
+    }
+  }
+
+  void _handleScrollableAutoScrolled() {
+    if (_dragInfo == null) {
+      return;
+    }
+    _dragUpdateItems();
+  }
+
+  void _dragUpdateItems() {
+    assert(_dragInfo != null);
+    final double gapExtent = _dragInfo!.itemExtent;
+    final double proxyItemStart = _offsetExtent(
+        _dragInfo!.dragPosition - _dragInfo!.dragOffset, scrollDirection);
+    final double proxyItemEnd = proxyItemStart + gapExtent;
+
+    int newIndex = _insertIndex!;
+    for (final MotionAnimatedContentState item in _items.values) {
+      if (item.index == _dragIndex! || !item.mounted) {
+        continue;
+      }
+
+      Rect geometry = item.targetGeometryNonOffset();
+      if (!_dragStartTransitionComplete && _dragIndex! <= item.index) {
+        final Offset transitionOffset =
+            _extentOffset(_reverse ? -gapExtent : gapExtent, scrollDirection);
+        geometry = (geometry.topLeft - transitionOffset) & geometry.size;
+      }
+      final double itemStart =
+          scrollDirection == Axis.vertical ? geometry.top : geometry.left;
+      final double itemExtent =
+          scrollDirection == Axis.vertical ? geometry.height : geometry.width;
+      final double itemEnd = itemStart + itemExtent;
+      final double itemMiddle = itemStart + itemExtent / 2;
+
+      if (_reverse) {
+        if (itemEnd > proxyItemEnd && proxyItemEnd >= itemMiddle) {
+          newIndex = item.index;
+          break;
+        } else if (itemMiddle > proxyItemStart && proxyItemStart >= itemStart) {
+          newIndex = item.index + 1;
+          break;
+        } else if (itemStart > proxyItemEnd && newIndex < (item.index + 1)) {
+          newIndex = item.index + 1;
+        } else if (proxyItemStart > itemEnd && newIndex > item.index) {
+          newIndex = item.index;
+        }
+      }
+    }
+    if (newIndex != _insertIndex) {
+      _insertIndex = newIndex;
+      for (final MotionAnimatedContentState item in _items.values) {
+        if (item.index == _dragIndex! || !item.mounted) {
+          continue;
+        }
+        item.updateForGap(newIndex, gapExtent, true, _reverse);
+      }
+    }
+  }
+
+  Offset calculateNextDragOffset(int index) {
+    int minPos = min(_dragIndex!, _insertIndex!);
+    int maxPos = max(_dragIndex!, _insertIndex!);
+    print("$_dragIndex   $_insertIndex");
+
+    if (index < minPos || index > maxPos) return Offset.zero;
+
+    final int direction = _insertIndex! > _dragIndex! ? -1 : 1;
+    return _itemOffsetAt(index + direction)! - _itemOffsetAt(index)!;
+  }
+
+  Rect get _dragTargetRect {
+    final Offset origin = _dragInfo!.dragPosition - _dragInfo!.dragOffset;
+    return Rect.fromLTWH(origin.dx, origin.dy, _dragInfo!.itemSize.width,
+        _dragInfo!.itemSize.height);
   }
 
   void registerItem(MotionAnimatedContentState item) {
@@ -69,6 +384,7 @@ class MotionBuilderState extends State<MotionBuilder>
     for (final _ActiveItem item in _incomingItems.followedBy(_outgoingItems)) {
       item.controller?.dispose();
     }
+    _dragReset();
     super.dispose();
   }
 
@@ -270,6 +586,11 @@ class MotionBuilderState extends State<MotionBuilder>
       final child = _items[index]!.widget;
       return _removeItemBuilder(outgoingItem, child);
     }
+    if (_dragInfo != null && index >= _itemsCount) {
+      print("Widget item count: ${_itemsCount}");
+      print("index    $index");
+      return SizedBox.fromSize(size: _dragInfo!.itemSize);
+    }
 
     final Widget child = widget.itemBuilder(context, _itemIndexToIndex(index));
 
@@ -287,6 +608,8 @@ class MotionBuilderState extends State<MotionBuilder>
 
     final motionData = childrenMap[index];
     if (motionData == null) return builder;
+    final OverlayState overlay = Overlay.of(context, debugRequiredFor: widget);
+
     return MotionAnimatedContent(
       index: index,
       key: itemGlobalKey,
@@ -297,9 +620,12 @@ class MotionBuilderState extends State<MotionBuilder>
           endOffset: _itemOffsetAt(index),
         );
       },
+      capturedThemes:
+      InheritedTheme.capture(from: context, to: overlay.context),
       child: builder,
     );
   }
+
 
   SliverChildDelegate _createDelegate() {
     return SliverChildBuilderDelegate(_itemBuilder, childCount: _itemsCount);
@@ -324,30 +650,284 @@ class MotionBuilderState extends State<MotionBuilder>
       animation,
     );
   }
+}
 
-  static MotionBuilderState of(BuildContext context) {
-    final MotionBuilderState? result =
-        context.findAncestorStateOfType<MotionBuilderState>();
-    assert(() {
-      if (result == null) {
-        throw FlutterError(
-          'MotionBuilderState.of() called with a context that does not contain a MotionBuilderState.\n'
-          'No MotionBuilderState ancestor could be found starting from the '
-          'context that was passed to MotionBuilderState.of(). This can '
-          'happen when the context provided is from the same StatefulWidget that '
-          'built the AnimatedList.'
-          'The context used was:\n'
-          '  $context',
-        );
-      }
-      return true;
-    }());
-    return result!;
+typedef _DragItemUpdate = void Function(
+    _DragInfo item, Offset position, Offset delta);
+typedef _DragItemCallback = void Function(_DragInfo item);
+
+class _DragInfo extends Drag {
+  final Axis scrollDirection;
+  final _DragItemUpdate? onUpdate;
+  final _DragItemCallback? onEnd;
+  final _DragItemCallback? onCancel;
+  final VoidCallback? onDragCompleted;
+  final ReorderItemProxyDecorator? proxyDecorator;
+  final TickerProvider tickerProvider;
+
+  late MotionBuilderState listState;
+  late int index;
+  late Widget child;
+  late Offset dragPosition;
+  late Offset dragOffset;
+  late Size itemSize;
+  late double itemExtent;
+  late CapturedThemes capturedThemes;
+  ScrollableState? scrollable;
+  AnimationController? _proxyAnimation;
+
+  _DragInfo({
+    required MotionAnimatedContentState item,
+    Offset initialPosition = Offset.zero,
+    this.scrollDirection = Axis.vertical,
+    this.onUpdate,
+    this.onEnd,
+    this.onCancel,
+    this.onDragCompleted,
+    this.proxyDecorator,
+    required this.tickerProvider,
+  }) {
+    final RenderBox itemRenderBox =
+        item.context.findRenderObject()! as RenderBox;
+    listState = item.listState;
+    index = item.index;
+    child = item.widget.child;
+    capturedThemes = item.widget.capturedThemes!;
+    dragPosition = initialPosition;
+    dragOffset = itemRenderBox.globalToLocal(initialPosition);
+    itemSize = item.context.size!;
+    itemExtent = _sizeExtent(itemSize, scrollDirection);
+    scrollable = Scrollable.of(item.context);
   }
 
-  static MotionBuilderState? maybeOf(BuildContext context) {
-    return context.findAncestorStateOfType<MotionBuilderState>();
+  void dispose() {
+    _proxyAnimation?.dispose();
   }
+
+  void startDrag() {
+    _proxyAnimation = AnimationController(
+        vsync: tickerProvider, duration: Duration(milliseconds: 250))
+      ..addStatusListener((status) {
+        if (status == AnimationStatus.dismissed) {
+          _dropCompleted();
+        }
+      })
+      ..forward();
+  }
+
+  @override
+  void update(DragUpdateDetails details) {
+    final Offset delta = _restrictAxis(details.delta, scrollDirection);
+    dragPosition += delta;
+    onUpdate?.call(this, dragPosition, details.delta);
+  }
+
+  @override
+  void cancel() {
+    _proxyAnimation?.dispose();
+    _proxyAnimation = null;
+    onCancel?.call(this);
+  }
+
+  void _dropCompleted() {
+    _proxyAnimation?.dispose();
+    _proxyAnimation = null;
+    onDragCompleted?.call();
+  }
+
+  Widget createProxy(BuildContext context) {
+    return capturedThemes.wrap(_DragItemProxy(
+        listState: listState,
+        index: index,
+        position: dragPosition - dragOffset - _overlayOrigin(context),
+        size: itemSize,
+        animation: _proxyAnimation!,
+        proxyDecorator: proxyDecorator,
+        child: child));
+  }
+}
+
+class _DragItemProxy extends StatelessWidget {
+  final MotionBuilderState listState;
+  final int index;
+  final Widget child;
+  final Offset position;
+  final Size size;
+  final AnimationController animation;
+  final ReorderItemProxyDecorator? proxyDecorator;
+
+  const _DragItemProxy(
+      {required this.listState,
+      required this.index,
+      required this.child,
+      required this.position,
+      required this.size,
+      required this.animation,
+      required this.proxyDecorator});
+
+  @override
+  Widget build(BuildContext context) {
+    final Widget proxyChild =
+        proxyDecorator?.call(child, index, animation.view) ?? child;
+    final Offset overlayOrigin = _overlayOrigin(context);
+    return MediaQuery(
+        data: MediaQuery.of(context).removePadding(removeTop: true),
+        child: AnimatedBuilder(
+          animation: animation,
+          builder: (BuildContext context, Widget? child) {
+            Offset effectivePosition = position;
+            final Offset? dropPosition = listState._finalDropPosition;
+            if (dropPosition != null) {
+              effectivePosition = Offset.lerp(
+                  dropPosition - overlayOrigin,
+                  effectivePosition,
+                  Curves.easeOut.transform(animation.value))!;
+            }
+            return Positioned(
+                left: effectivePosition.dx,
+                top: effectivePosition.dy,
+                child: SizedBox(
+                  width: size.width,
+                  height: size.height,
+                  child: child,
+                ));
+          },
+          child: proxyChild,
+        ));
+  }
+}
+
+class ReorderableGridDragStartListener extends StatelessWidget {
+  /// Creates a listener for a drag immediately following a pointer down
+  /// event over the given child widget.
+  ///
+  /// This is most commonly used to wrap part of a grid item like a drag
+  /// handle.
+  const ReorderableGridDragStartListener({
+    Key? key,
+    required this.child,
+    required this.index,
+    this.enabled = true,
+  }) : super(key: key);
+
+  /// The widget for which the application would like to respond to a tap and
+  /// drag gesture by starting a reordering drag on a reorderable grid.
+  final Widget child;
+
+  /// The index of the associated item that will be dragged in the grid.
+  final int index;
+
+  /// Whether the [child] item can be dragged and moved in the grid.
+  ///
+  /// If true, the item can be moved to another location in the grid when the
+  /// user taps on the child. If false, tapping on the child will be ignored.
+  final bool enabled;
+
+  @override
+  Widget build(BuildContext context) {
+    return Listener(
+      onPointerDown: enabled
+          ? (PointerDownEvent event) => _startDragging(context, event)
+          : null,
+      child: child,
+    );
+  }
+
+  /// Provides the gesture recognizer used to indicate the start of a reordering
+  /// drag operation.
+  ///
+  /// By default this returns an [ImmediateMultiDragGestureRecognizer] but
+  /// subclasses can use this to customize the drag start gesture.
+  @protected
+  MultiDragGestureRecognizer createRecognizer() {
+    return ImmediateMultiDragGestureRecognizer(debugOwner: this);
+  }
+
+  void _startDragging(BuildContext context, PointerDownEvent event) {
+    final MotionBuilderState? list = MotionBuilder.maybeOf(context);
+    list?.startItemDragReorder(
+      index: index,
+      event: event,
+      recognizer: createRecognizer(),
+    );
+  }
+}
+
+/// A wrapper widget that will recognize the start of a drag operation by
+/// looking for a long press event. Once it is recognized, it will start
+/// a drag operation on the wrapped item in the reorderable grid.
+///
+/// See also:
+///
+///  * [ReorderableGridDragStartListener], a similar wrapper that will
+///    recognize the start of the drag immediately after a pointer down event.
+///  * [ReorderableGrid], a widget grid that allows the user to reorder
+///    its items.
+///  * [SliverReorderableGrid], a sliver grid that allows the user to reorder
+///    its items.
+///  * [ReorderableGridView], a material design grid that allows the user to
+///    reorder its items.
+class ReorderableGridDelayedDragStartListener
+    extends ReorderableGridDragStartListener {
+  /// Creates a listener for an drag following a long press event over the
+  /// given child widget.
+  ///
+  /// This is most commonly used to wrap an entire grid item in a reorderable
+  /// grid.
+  const ReorderableGridDelayedDragStartListener({
+    Key? key,
+    required Widget child,
+    required int index,
+    bool enabled = true,
+  }) : super(key: key, child: child, index: index, enabled: enabled);
+
+  @override
+  MultiDragGestureRecognizer createRecognizer() {
+    return DelayedMultiDragGestureRecognizer(debugOwner: this);
+  }
+}
+
+double _offsetExtent(Offset offset, Axis scrollDirection) {
+  switch (scrollDirection) {
+    case Axis.horizontal:
+      return offset.dx;
+    case Axis.vertical:
+      return offset.dy;
+  }
+}
+
+Offset _extentOffset(double extent, Axis scrollDirection) {
+  switch (scrollDirection) {
+    case Axis.horizontal:
+      return Offset(extent, 0.0);
+    case Axis.vertical:
+      return Offset(0.0, extent);
+  }
+}
+
+double _sizeExtent(Size size, Axis scrollDirection) {
+  switch (scrollDirection) {
+    case Axis.horizontal:
+      return size.width;
+    case Axis.vertical:
+      return size.height;
+  }
+}
+
+Offset _restrictAxis(Offset offset, Axis scrollDirection) {
+  switch (scrollDirection) {
+    case Axis.horizontal:
+      return Offset(offset.dx, 0.0);
+    case Axis.vertical:
+      return Offset(0.0, offset.dy);
+  }
+}
+
+Offset _overlayOrigin(BuildContext context) {
+  final OverlayState overlay =
+      Overlay.of(context, debugRequiredFor: context.widget);
+  final RenderBox overlayBox = overlay.context.findRenderObject()! as RenderBox;
+  return overlayBox.localToGlobal(Offset.zero);
 }
 
 @optionalTypeArgs

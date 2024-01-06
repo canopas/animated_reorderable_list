@@ -17,6 +17,9 @@ abstract class MotionListBase<W extends Widget, E extends Object>
     extends StatefulWidget {
   final ItemBuilder<W, E> itemBuilder;
   final List<E> items;
+  final ReorderCallback onReorder;
+  final void Function(int)? onReorderStart;
+  final void Function(int)? onReorderEnd;
   final Duration? resizeDuration;
   final Duration? insertDuration;
   final Duration? removeDuration;
@@ -30,6 +33,9 @@ abstract class MotionListBase<W extends Widget, E extends Object>
       {Key? key,
       required this.items,
       required this.itemBuilder,
+      required this.onReorder,
+      this.onReorderEnd,
+      this.onReorderStart,
       this.resizeDuration,
       this.insertDuration,
       this.removeDuration,
@@ -61,6 +67,17 @@ abstract class MotionListBaseState<
   @nonVirtual
   @protected
   SliverGridDelegate? get sliverGridDelegate => widget.sliverGridDelegate;
+
+  @nonVirtual
+  @protected
+  ReorderCallback get onReorder=> widget.onReorder;
+  @nonVirtual
+  @protected
+  void Function(int)? get onReorderStart=> widget.onReorderStart;
+  @nonVirtual
+  @protected
+  void Function(int)? get onReorderEnd=> widget.onReorderEnd;
+
 
   @nonVirtual
   @protected

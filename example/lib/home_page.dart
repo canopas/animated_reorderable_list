@@ -154,6 +154,15 @@ class _HomePageState extends State<HomePage> {
                             key: Key(list[index].name),
                             index: list[index].index);
                       },
+                      onReorder: (int oldIndex, int newIndex) {
+                        setState(() {
+                          if (oldIndex < newIndex) {
+                            newIndex -= 1;
+                          }
+                          final User user = list.removeAt(oldIndex);
+                          list.insert(newIndex, user);
+                        });
+                      },
                       insertAnimation: appliedStyle,
                       removeAnimation: appliedStyle,
                       insertDuration: const Duration(milliseconds: 300),
@@ -168,6 +177,15 @@ class _HomePageState extends State<HomePage> {
                         return ItemTile(
                             key: Key(list[index].name),
                             index: list[index].index);
+                      },
+                      onReorder: (int oldIndex, int newIndex) {
+                        setState(() {
+                          if (oldIndex < newIndex) {
+                            newIndex -= 1;
+                          }
+                          final User user = list.removeAt(oldIndex);
+                          list.insert(newIndex, user);
+                        });
                       },
                       insertDuration: const Duration(milliseconds: 300),
                       removeDuration: const Duration(milliseconds: 300),

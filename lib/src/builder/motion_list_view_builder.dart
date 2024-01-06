@@ -9,6 +9,10 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
   ///Called, as needed, to build list item widget
   final ItemBuilder itemBuilder;
 
+  final ReorderCallback onReorder;
+  final void Function(int)? onReorderStart;
+  final void Function(int)? onReorderEnd;
+
   /// AnimationStyle when item is added in the list.
   final AnimationType insertAnimation;
 
@@ -98,24 +102,26 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
   /// See the ScrollView constructor for more details on these arguments.
   final DragStartBehavior dragStartBehavior;
 
-  const MotionListViewBuilder(
-      {Key? key,
-      required this.items,
-      required this.itemBuilder,
-      this.insertAnimation = AnimationType.fadeIn,
-      this.removeAnimation,
-      this.insertDuration = const Duration(milliseconds: 300),
-      this.removeDuration = const Duration(milliseconds: 300),
-      this.scrollDirection = Axis.vertical,
-      this.reverse = false,
-      this.controller,
-      this.primary,
-      this.physics,
-      this.scrollBehavior,
-      this.restorationId,
-      this.keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.manual,
-      this.dragStartBehavior = DragStartBehavior.start,
-      this.clipBehavior = Clip.hardEdge})
+  const MotionListViewBuilder({Key? key,
+    required this.items,
+    required this.itemBuilder,
+    required this.onReorder,
+    this.onReorderStart,
+    this.onReorderEnd,
+    this.insertAnimation = AnimationType.fadeIn,
+    this.removeAnimation,
+    this.insertDuration = const Duration(milliseconds: 300),
+    this.removeDuration = const Duration(milliseconds: 300),
+    this.scrollDirection = Axis.vertical,
+    this.reverse = false,
+    this.controller,
+    this.primary,
+    this.physics,
+    this.scrollBehavior,
+    this.restorationId,
+    this.keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.manual,
+    this.dragStartBehavior = DragStartBehavior.start,
+    this.clipBehavior = Clip.hardEdge})
       : super(key: key);
 
   @override
@@ -140,6 +146,9 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
             insertDuration: insertDuration,
             removeDuration: removeDuration,
             scrollDirection: scrollDirection,
+            onReorder: onReorder,
+            onReorderStart: onReorderStart,
+            onReorderEnd: onReorderEnd
           ),
         ]);
   }
