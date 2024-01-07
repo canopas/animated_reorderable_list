@@ -28,9 +28,10 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
   late MotionBuilderState listState;
 
   late AnimationController _positionController;
-  late Animation<Offset> _offsetAnimation;
+  late Animation<Offset> _dragAnimation;
   Offset _targetOffset = Offset.zero;
   Offset _startOffset = Offset.zero;
+  AnimationController? _offsetAnimation;
 
   bool _dragging = false;
 
@@ -47,7 +48,7 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
   int get index => widget.index;
 
   Offset get currentAnimatedOffset =>
-      _positionController.isAnimating ? _offsetAnimation.value : Offset.zero;
+      _positionController.isAnimating ? _dragAnimation.value : Offset.zero;
   bool visible = true;
 
   @override
@@ -58,10 +59,14 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
     _positionController =
         AnimationController(vsync: this, duration: widget.motionData.duration);
 
-    _offsetAnimation = Tween<Offset>(begin: Offset.zero, end: Offset.zero)
+    _dragAnimation = Tween<Offset>(begin: Offset.zero, end: Offset.zero)
         .animate(_positionController)
       ..addListener(() {
         setState(() {});
+        if(_dragAnimation.isCompleted){
+          widget.updateMotionData?.call(widget.motionData);
+
+        }
       });
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -85,7 +90,7 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
       setState(() {
         visible = true;
       });
-      if (oldWidget.index != widget.index) _updateAnimationTranslation();
+    //  if (oldWidget.index != widget.index) _updateAnimationTranslation();
       widget.updateMotionData?.call(widget.motionData);
     });
 
@@ -102,36 +107,93 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
     if (offsetDiff.dx != 0 || offsetDiff.dy != 0) {
       _positionController.duration = widget.motionData.duration;
 
-      _offsetAnimation = Tween<Offset>(begin: offsetDiff, end: Offset.zero)
+      _dragAnimation = Tween<Offset>(begin: offsetDiff, end: Offset.zero)
           .animate(_positionController);
       _positionController.forward(from: 0);
     }
   }
 
-  void updateForGap(
-      int gapIndex, double gapExtent, bool animate, bool reverse) {
-    // final Offset newTargetOffset = (gapIndex <= index)
-    //     ? _extentOffset(
-    //         reverse ? -gapExtent : gapExtent, listState.scrollDirection)
-    //     : Offset.zero;
-    final Offset newTargetOffset= listState.calculateNextDragOffset(index);
-    print(newTargetOffset);
-    if (newTargetOffset != _targetOffset) {
-      _targetOffset = newTargetOffset;
-      if (animate) {
-        _offsetAnimation =
-            Tween<Offset>(begin: _startOffset, end: _targetOffset)
-                .animate(_positionController);
-        _positionController.forward();
+  Offset get offset {
+    if (_offsetAnimation != null) {
+      final double animValue =
+      Curves.easeInOut.transform(_offsetAnimation!.value);
+      return Offset.lerp(_startOffset, _targetOffset, animValue)!;
+    }
+    return _targetOffset;
+  }
+
+  void updateForGap(int gapIndex, bool animate) {
+    if (!mounted) return;
+
+    final Offset newTargetOffset = listState.calculateNextDragOffset(index);
+
+    if (newTargetOffset == _targetOffset) return;
+    _targetOffset = newTargetOffset;
+
+    if (animate) {
+      if (_offsetAnimation == null) {
+        _offsetAnimation = AnimationController(
+          vsync: listState,
+          duration: const Duration(milliseconds: 250),
+        )
+          ..addListener(rebuild)
+          ..addStatusListener((AnimationStatus status) {
+            if (status == AnimationStatus.completed) {
+              _startOffset = _targetOffset;
+              _offsetAnimation!.dispose();
+              _offsetAnimation = null;
+            }
+          })
+          ..forward();
+      } else {
+        _startOffset = offset;
+        _offsetAnimation!.forward(from: 0.0);
       }
+    } else {
+      if (_offsetAnimation != null) {
+        _offsetAnimation!.dispose();
+        _offsetAnimation = null;
+      }
+      _startOffset = _targetOffset;
     }
     rebuild();
   }
 
   void resetGap() {
+    if (_offsetAnimation != null) {
+      _offsetAnimation!.dispose();
+      _offsetAnimation = null;
+    }
     _startOffset = Offset.zero;
     _targetOffset = Offset.zero;
+    rebuild();
   }
+
+  // void updateForGap(
+  //     int gapIndex,  bool animate,) {
+  //   // final Offset newTargetOffset = (gapIndex <= index)
+  //   //     ? _extentOffset(
+  //   //         reverse ? -gapExtent : gapExtent, listState.scrollDirection)
+  //   //     : Offset.zero;
+  //   final Offset newTargetOffset= listState.calculateNextDragOffset(index);
+  //   print(newTargetOffset);
+  //   if (newTargetOffset != _targetOffset) {
+  //     _targetOffset = newTargetOffset;
+  //     if (animate) {
+  //       _offsetAnimation =
+  //           Tween<Offset>(begin: _startOffset, end: _targetOffset)
+  //               .animate(_positionController);
+  //       _positionController.forward();
+  //     }
+  //     _startOffset= _targetOffset;
+  //   }
+  //   rebuild();
+  // }
+  //
+  // void resetGap() {
+  //   _startOffset = Offset.zero;
+  //   _targetOffset = Offset.zero;
+  // }
 
   Offset itemOffset() {
     final box = context.findRenderObject() as RenderBox?;
@@ -153,8 +215,9 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
     listState.registerItem(this);
     return Visibility(
       visible: visible,
-      child: Transform.translate(
-          offset: _offsetAnimation.value, child: widget.child),
+      child: Transform(
+         transform: Matrix4.translationValues(offset.dx, offset.dy, 0.0),
+          child: widget.child),
     );
   }
 

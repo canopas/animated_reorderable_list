@@ -140,7 +140,7 @@ class MotionBuilderState extends State<MotionBuilder>
       {required int index,
       required PointerDownEvent event,
       required MultiDragGestureRecognizer recognizer}) {
-    assert(0 <= index && index < widget.initialCount);
+    assert(0 <= index && index < _itemsCount);
     setState(() {
       if (_dragInfo != null) {
         cancelReorder();
@@ -194,8 +194,7 @@ class MotionBuilderState extends State<MotionBuilder>
       if (childItem == item || !childItem.mounted) {
         continue;
       }
-      childItem.updateForGap(
-          _insertIndex!, _dragInfo!.itemExtent, false, _reverse);
+      childItem.updateForGap(_insertIndex!,  false);
     }
     return _dragInfo;
   }
@@ -204,7 +203,8 @@ class MotionBuilderState extends State<MotionBuilder>
     setState(() {
       _overlayEntry?.markNeedsBuild();
       _dragUpdateItems();
-      _autoScroller?.startAutoScrollIfNecessary(_dragTargetRect);
+      _autoScrollIfNecessary();
+     // _autoScroller?.startAutoScrollIfNecessary(_dragTargetRect);
     });
   }
 
@@ -214,44 +214,142 @@ class MotionBuilderState extends State<MotionBuilder>
     });
   }
 
-  void _dragEnd(_DragInfo item) {
-    if ((_insertIndex! + 1 == _items.length) && _reverse) {
-      final RenderBox lastItemRenderBox =
-          _items[_items.length - 1]!.context.findRenderObject()! as RenderBox;
-      final Offset lastItemOffset =
-          lastItemRenderBox.localToGlobal(Offset.zero);
-
-      final double delta = item.itemSize.height;
-
-      setState(() {
-        _finalDropPosition =
-            Offset(lastItemOffset.dx, lastItemOffset.dy - delta);
-      });
+  Future<void> _autoScrollIfNecessary() async {
+    if (autoScrolling ||
+        _dragInfo == null ||
+        _dragInfo!.scrollable == null
+    ) {
       return;
     }
-    setState(() {
-      if (_insertIndex == item.index) {
-        _finalDropPosition = _itemOffsetAt(_insertIndex! + (_reverse ? 1 : 0));
-      } else if (_insertIndex! < _itemsCount - 1) {
-        _finalDropPosition = _itemOffsetAt(_insertIndex!);
-      } else {
-        final int itemIndex =
-            _items.length > 1 ? _insertIndex! - 1 : _insertIndex!;
-        if (_reverse) {
-          _finalDropPosition = _itemOffsetAt(itemIndex)! -
-              _extentOffset(item.itemExtent, scrollDirection);
-        } else {
-          _finalDropPosition = _itemOffsetAt(itemIndex)! +
-              _extentOffset(item!.itemExtent, scrollDirection);
-        }
+
+    final position = _dragInfo!.scrollable!.position;
+    double? newOffset;
+
+    const duration = Duration(milliseconds: 14);
+    const step = 1.0;
+    const overDragMax = 20.0;
+    const overDragCoef = 10;
+
+    final isVertical = widget.scrollDirection == Axis.vertical;
+    //final isReversed = widget.reverse;
+    final isReversed= false;
+
+    /// get the scroll window position on the screen
+    final scrollRenderBox =
+    _dragInfo!.scrollable!.context.findRenderObject()! as RenderBox;
+    final Offset scrollPosition = scrollRenderBox.localToGlobal(Offset.zero);
+
+    /// calculate the start and end position for the scroll window
+    double scrollWindowStart =
+    isVertical ? scrollPosition.dy : scrollPosition.dx;
+    double scrollWindowEnd = scrollWindowStart +
+        (isVertical ? scrollRenderBox.size.height : scrollRenderBox.size.width);
+
+    /// get the proxy (dragged) object's position on the screen
+    final proxyObjectPosition = _dragInfo!.dragPosition - _dragInfo!.dragOffset;
+
+    /// calculate the start and end position for the proxy object
+    double proxyObjectStart =
+    isVertical ? proxyObjectPosition.dy : proxyObjectPosition.dx;
+    double proxyObjectEnd = proxyObjectStart +
+        (isVertical ? _dragInfo!.itemSize.height : _dragInfo!.itemSize.width);
+
+    if (!isReversed) {
+      /// if start of proxy object is before scroll window
+      if (proxyObjectStart < scrollWindowStart &&
+          position.pixels > position.minScrollExtent) {
+        final overDrag = max(scrollWindowStart - proxyObjectStart, overDragMax);
+        newOffset = max(position.minScrollExtent,
+            position.pixels - step * overDrag / overDragCoef);
       }
-    });
-    widget.onReorderEnd?.call(_insertIndex!);
+
+      /// if end of proxy object is after scroll window
+      else if (proxyObjectEnd > scrollWindowEnd &&
+          position.pixels < position.maxScrollExtent) {
+        final overDrag = max(proxyObjectEnd - scrollWindowEnd, overDragMax);
+        newOffset = min(position.maxScrollExtent,
+            position.pixels + step * overDrag / overDragCoef);
+      }
+    } else {
+      /// if start of proxy object is before scroll window
+      if (proxyObjectStart < scrollWindowStart &&
+          position.pixels < position.maxScrollExtent) {
+        final overDrag = max(scrollWindowStart - proxyObjectStart, overDragMax);
+        newOffset = max(position.minScrollExtent,
+            position.pixels + step * overDrag / overDragCoef);
+      }
+
+      /// if end of proxy object is after scroll window
+      else if (proxyObjectEnd > scrollWindowEnd &&
+          position.pixels > position.minScrollExtent) {
+        final overDrag = max(proxyObjectEnd - scrollWindowEnd, overDragMax);
+        newOffset = min(position.maxScrollExtent,
+            position.pixels - step * overDrag / overDragCoef);
+      }
+    }
+
+    if (newOffset != null && (newOffset - position.pixels).abs() >= 1.0) {
+      autoScrolling = true;
+      await position.animateTo(
+        newOffset,
+        duration: duration,
+        curve: Curves.linear,
+      );
+      autoScrolling = false;
+      if (_dragInfo != null) {
+        _dragUpdateItems();
+        _autoScrollIfNecessary();
+      }
+    }
   }
 
+
+  // void _dragEnd(_DragInfo item) {
+  //   if ((_insertIndex! + 1 == _items.length) && _reverse) {
+  //     final RenderBox lastItemRenderBox =
+  //         _items[_items.length - 1]!.context.findRenderObject()! as RenderBox;
+  //     final Offset lastItemOffset =
+  //         lastItemRenderBox.localToGlobal(Offset.zero);
+  //
+  //     final double delta = item.itemSize.height;
+  //
+  //     setState(() {
+  //       _finalDropPosition =
+  //           Offset(lastItemOffset.dx, lastItemOffset.dy - delta);
+  //     });
+  //     return;
+  //   }
+  //   setState(() {
+  //     if (_insertIndex == item.index) {
+  //       _finalDropPosition = _itemOffsetAt(_insertIndex! + (_reverse ? 1 : 0));
+  //     } else if (_insertIndex! < _itemsCount - 1) {
+  //       _finalDropPosition = _itemOffsetAt(_insertIndex!);
+  //     } else {
+  //       final int itemIndex =
+  //           _items.length > 1 ? _insertIndex! - 1 : _insertIndex!;
+  //       if (_reverse) {
+  //         _finalDropPosition = _itemOffsetAt(itemIndex)! -
+  //             _extentOffset(item.itemExtent, scrollDirection);
+  //       } else {
+  //         _finalDropPosition = _itemOffsetAt(itemIndex)! +
+  //             _extentOffset(item!.itemExtent, scrollDirection);
+  //       }
+  //     }
+  //   });
+  //   widget.onReorderEnd?.call(_insertIndex!);
+  // }
+
+
+  void _dragEnd(_DragInfo item) {
+    setState(() => _finalDropPosition = _itemOffsetAt(_insertIndex!));
+  }
   void _dropCompleted() {
     final int fromIndex = _dragIndex!;
     final int toIndex = _insertIndex!;
+    print("InserIndex: $_insertIndex   DragIndex: $_dragIndex");
+    // childrenMap[_insertIndex]!= childrenMap[_insertIndex]!.copyWith(index: _dragIndex,);
+    // childrenMap[_dragIndex]!= childrenMap[_dragIndex]!.copyWith(index: _insertIndex);
+
     if (fromIndex != toIndex) {
       widget.onRerder.call(fromIndex, toIndex);
     }
@@ -284,6 +382,7 @@ class MotionBuilderState extends State<MotionBuilder>
       _overlayEntry?.dispose();
       _overlayEntry = null;
       _finalDropPosition = null;
+     // _insertIndex= null;
     }
   }
 
@@ -300,61 +399,90 @@ class MotionBuilderState extends State<MotionBuilder>
     _dragUpdateItems();
   }
 
+
   void _dragUpdateItems() {
     assert(_dragInfo != null);
-    final double gapExtent = _dragInfo!.itemExtent;
-    final double proxyItemStart = _offsetExtent(
-        _dragInfo!.dragPosition - _dragInfo!.dragOffset, scrollDirection);
-    final double proxyItemEnd = proxyItemStart + gapExtent;
 
     int newIndex = _insertIndex!;
+
+    final dragCenter = _dragInfo!.itemSize
+        .center(_dragInfo!.dragPosition - _dragInfo!.dragOffset);
+
     for (final MotionAnimatedContentState item in _items.values) {
-      if (item.index == _dragIndex! || !item.mounted) {
-        continue;
-      }
+      if (!item.mounted) continue;
 
-      Rect geometry = item.targetGeometryNonOffset();
-      if (!_dragStartTransitionComplete && _dragIndex! <= item.index) {
-        final Offset transitionOffset =
-            _extentOffset(_reverse ? -gapExtent : gapExtent, scrollDirection);
-        geometry = (geometry.topLeft - transitionOffset) & geometry.size;
-      }
-      final double itemStart =
-          scrollDirection == Axis.vertical ? geometry.top : geometry.left;
-      final double itemExtent =
-          scrollDirection == Axis.vertical ? geometry.height : geometry.width;
-      final double itemEnd = itemStart + itemExtent;
-      final double itemMiddle = itemStart + itemExtent / 2;
+      final Rect geometry = item.targetGeometryNonOffset();
 
-      if (_reverse) {
-        if (itemEnd > proxyItemEnd && proxyItemEnd >= itemMiddle) {
-          newIndex = item.index;
-          break;
-        } else if (itemMiddle > proxyItemStart && proxyItemStart >= itemStart) {
-          newIndex = item.index + 1;
-          break;
-        } else if (itemStart > proxyItemEnd && newIndex < (item.index + 1)) {
-          newIndex = item.index + 1;
-        } else if (proxyItemStart > itemEnd && newIndex > item.index) {
-          newIndex = item.index;
-        }
+      if (geometry.contains(dragCenter)) {
+        newIndex = item.index;
+        break;
       }
     }
-    if (newIndex != _insertIndex) {
-      _insertIndex = newIndex;
-      for (final MotionAnimatedContentState item in _items.values) {
-        if (item.index == _dragIndex! || !item.mounted) {
-          continue;
-        }
-        item.updateForGap(newIndex, gapExtent, true, _reverse);
-      }
+
+    if (newIndex == _insertIndex) return;
+    _insertIndex = newIndex;
+
+    for (final MotionAnimatedContentState item in _items.values) {
+      item.updateForGap(_insertIndex!, true);
     }
   }
+
+
+  // void _dragUpdateItems() {
+  //   assert(_dragInfo != null);
+  //   final double gapExtent = _dragInfo!.itemExtent;
+  //   final double proxyItemStart = _offsetExtent(
+  //       _dragInfo!.dragPosition - _dragInfo!.dragOffset, scrollDirection);
+  //   final double proxyItemEnd = proxyItemStart + gapExtent;
+  //
+  //   int newIndex = _insertIndex!;
+  //   for (final MotionAnimatedContentState item in _items.values) {
+  //     if (item.index == _dragIndex! || !item.mounted) {
+  //       continue;
+  //     }
+  //
+  //     Rect geometry = item.targetGeometryNonOffset();
+  //     if (!_dragStartTransitionComplete && _dragIndex! <= item.index) {
+  //       final Offset transitionOffset =
+  //           _extentOffset(_reverse ? -gapExtent : gapExtent, scrollDirection);
+  //       geometry = (geometry.topLeft - transitionOffset) & geometry.size;
+  //     }
+  //     final double itemStart =
+  //         scrollDirection == Axis.vertical ? geometry.top : geometry.left;
+  //     final double itemExtent =
+  //         scrollDirection == Axis.vertical ? geometry.height : geometry.width;
+  //     final double itemEnd = itemStart + itemExtent;
+  //     final double itemMiddle = itemStart + itemExtent / 2;
+  //
+  //     if (_reverse) {
+  //       if (itemEnd > proxyItemEnd && proxyItemEnd >= itemMiddle) {
+  //         newIndex = item.index;
+  //         break;
+  //       } else if (itemMiddle > proxyItemStart && proxyItemStart >= itemStart) {
+  //         newIndex = item.index + 1;
+  //         break;
+  //       } else if (itemStart > proxyItemEnd && newIndex < (item.index + 1)) {
+  //         newIndex = item.index + 1;
+  //       } else if (proxyItemStart > itemEnd && newIndex > item.index) {
+  //         newIndex = item.index;
+  //       }
+  //     }
+  //   }
+  //   if (newIndex != _insertIndex) {
+  //     _insertIndex = newIndex;
+  //     for (final MotionAnimatedContentState item in _items.values) {
+  //       if (item.index == _dragIndex! || !item.mounted) {
+  //         continue;
+  //       }
+  //       item.updateForGap(newIndex, gapExtent, true, _reverse);
+  //     }
+  //   }
+  // }
 
   Offset calculateNextDragOffset(int index) {
     int minPos = min(_dragIndex!, _insertIndex!);
     int maxPos = max(_dragIndex!, _insertIndex!);
-    print("$_dragIndex   $_insertIndex");
+   // print("$_dragIndex   $_insertIndex");
 
     if (index < minPos || index > maxPos) return Offset.zero;
 
@@ -370,6 +498,10 @@ class MotionBuilderState extends State<MotionBuilder>
 
   void registerItem(MotionAnimatedContentState item) {
     _items[item.index] = item;
+    if (item.index == _dragInfo?.index) {
+      item.dragging = true;
+      item.rebuild();
+    }
   }
 
   void unregisterItem(int index, MotionAnimatedContentState item) {
@@ -489,7 +621,6 @@ class MotionBuilderState extends State<MotionBuilder>
             .dispose();
       });
     }
-
     setState(() {
       _itemsCount = childrenMap.length;
     });
@@ -603,7 +734,7 @@ class MotionBuilderState extends State<MotionBuilder>
       return true;
     }());
 
-    final Key itemGlobalKey = _MotionBuilderItemGlobalKey(child.key!, this);
+    final Key itemGlobalKey = _MotionBuilderItemGlobalKey(child.key!, this,index);
     final Widget builder = _insertItemBuilder(incomingItem, child);
 
     final motionData = childrenMap[index];
@@ -706,7 +837,7 @@ class _DragInfo extends Drag {
 
   void startDrag() {
     _proxyAnimation = AnimationController(
-        vsync: tickerProvider, duration: Duration(milliseconds: 250))
+        vsync: tickerProvider, duration: const Duration(milliseconds: 250))
       ..addStatusListener((status) {
         if (status == AnimationStatus.dismissed) {
           _dropCompleted();
@@ -717,9 +848,14 @@ class _DragInfo extends Drag {
 
   @override
   void update(DragUpdateDetails details) {
-    final Offset delta = _restrictAxis(details.delta, scrollDirection);
-    dragPosition += delta;
+  //  final Offset delta = _restrictAxis(details.delta, scrollDirection);
+    dragPosition += details.delta;
     onUpdate?.call(this, dragPosition, details.delta);
+  }
+  @override
+  void end(DragEndDetails details) {
+    _proxyAnimation!.reverse();
+    onEnd?.call(this);
   }
 
   @override
@@ -932,10 +1068,11 @@ Offset _overlayOrigin(BuildContext context) {
 
 @optionalTypeArgs
 class _MotionBuilderItemGlobalKey extends GlobalObjectKey {
-  const _MotionBuilderItemGlobalKey(this.subKey, this.state) : super(subKey);
+  const _MotionBuilderItemGlobalKey(this.subKey, this.state,this.index) : super(subKey);
 
   final Key subKey;
   final State state;
+  final int index;
 
   @override
   bool operator ==(Object other) {
@@ -944,7 +1081,8 @@ class _MotionBuilderItemGlobalKey extends GlobalObjectKey {
     }
     return other is _MotionBuilderItemGlobalKey &&
         other.subKey == subKey &&
-        other.state == state;
+        other.state == state &&
+    other.index == index;
   }
 
   @override

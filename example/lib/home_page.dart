@@ -156,9 +156,6 @@ class _HomePageState extends State<HomePage> {
                       },
                       onReorder: (int oldIndex, int newIndex) {
                         setState(() {
-                          if (oldIndex < newIndex) {
-                            newIndex -= 1;
-                          }
                           final User user = list.removeAt(oldIndex);
                           list.insert(newIndex, user);
                         });
