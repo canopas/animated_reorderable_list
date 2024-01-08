@@ -90,7 +90,7 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
       setState(() {
         visible = true;
       });
-    //  if (oldWidget.index != widget.index) _updateAnimationTranslation();
+     if (oldWidget.index != widget.index) _updateAnimationTranslation();
       widget.updateMotionData?.call(widget.motionData);
     });
 
@@ -100,16 +100,33 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
   void _updateAnimationTranslation() {
     Offset endOffset = itemOffset();
 
-    Offset offsetDiff =
-        (widget.motionData.startOffset + currentAnimatedOffset) - endOffset;
-    _targetOffset = offsetDiff;
+    Offset offsetDiff = widget.motionData.startOffset - endOffset;
+    _startOffset = offsetDiff;
 
     if (offsetDiff.dx != 0 || offsetDiff.dy != 0) {
-      _positionController.duration = widget.motionData.duration;
-
-      _dragAnimation = Tween<Offset>(begin: offsetDiff, end: Offset.zero)
-          .animate(_positionController);
-      _positionController.forward(from: 0);
+      if (_offsetAnimation == null) {
+        _offsetAnimation = AnimationController(
+          vsync: listState,
+          duration: widget.motionData.duration,
+        )
+          ..addListener(rebuild)
+          ..addStatusListener((AnimationStatus status) {
+            if (status == AnimationStatus.completed) {
+              _startOffset = _targetOffset;
+              _offsetAnimation!.dispose();
+              _offsetAnimation = null;
+            }
+          })
+          ..forward();
+      } else {
+        //_startOffset = offset;
+        _offsetAnimation!.forward(from: _offsetAnimation!.value);
+      }
+      // _positionController.duration = widget.motionData.duration;
+      //
+      // _dragAnimation = Tween<Offset>(begin: offsetDiff, end: Offset.zero)
+      //     .animate(_positionController);
+      // _positionController.forward(from: 0);
     }
   }
 
@@ -169,32 +186,6 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
     rebuild();
   }
 
-  // void updateForGap(
-  //     int gapIndex,  bool animate,) {
-  //   // final Offset newTargetOffset = (gapIndex <= index)
-  //   //     ? _extentOffset(
-  //   //         reverse ? -gapExtent : gapExtent, listState.scrollDirection)
-  //   //     : Offset.zero;
-  //   final Offset newTargetOffset= listState.calculateNextDragOffset(index);
-  //   print(newTargetOffset);
-  //   if (newTargetOffset != _targetOffset) {
-  //     _targetOffset = newTargetOffset;
-  //     if (animate) {
-  //       _offsetAnimation =
-  //           Tween<Offset>(begin: _startOffset, end: _targetOffset)
-  //               .animate(_positionController);
-  //       _positionController.forward();
-  //     }
-  //     _startOffset= _targetOffset;
-  //   }
-  //   rebuild();
-  // }
-  //
-  // void resetGap() {
-  //   _startOffset = Offset.zero;
-  //   _targetOffset = Offset.zero;
-  // }
-
   Offset itemOffset() {
     final box = context.findRenderObject() as RenderBox?;
     if (box == null) return Offset.zero;
@@ -214,6 +205,9 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
     }
     listState.registerItem(this);
     return Visibility(
+      maintainSize: true,
+      maintainAnimation: true,
+      maintainState: true,
       visible: visible,
       child: Transform(
          transform: Matrix4.translationValues(offset.dx, offset.dy, 0.0),

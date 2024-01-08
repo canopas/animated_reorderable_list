@@ -549,11 +549,11 @@ class MotionBuilderState extends State<MotionBuilder>
               duration: removeItemDuration, value: 1.0, vsync: this);
       final _ActiveItem outgoingItem =
           _ActiveItem.animation(controller, itemIndex);
-      setState(() {
+      //setState(() {
         _outgoingItems
           ..add(outgoingItem)
           ..sort();
-      });
+     // });
 
       controller.reverse().then<void>((void value) {
         _removeActiveItemAt(_outgoingItems, outgoingItem.itemIndex)!
@@ -595,14 +595,11 @@ class MotionBuilderState extends State<MotionBuilder>
     setState(() => _itemsCount -= 1);
   }
 
-  Offset? _itemOffsetAt(int index, {bool includeAnimation = false}) {
-    final currentOffset = includeAnimation
-        ? (_items[index]?.currentAnimatedOffset ?? Offset.zero)
-        : Offset.zero;
+  Offset? _itemOffsetAt(int index) {
     final itemRenderBox =
         _items[index]?.context.findRenderObject() as RenderBox?;
     if (itemRenderBox == null) return null;
-    return itemRenderBox.localToGlobal(Offset.zero) + currentOffset;
+    return itemRenderBox.localToGlobal(Offset.zero) ;
   }
 
   @override
@@ -639,7 +636,7 @@ class MotionBuilderState extends State<MotionBuilder>
       return true;
     }());
 
-    final Key itemGlobalKey = _MotionBuilderItemGlobalKey(child.key!, this,index);
+    final Key itemGlobalKey = _MotionBuilderItemGlobalKey(child.key!, this);
     final Widget builder = _insertItemBuilder(incomingItem, child);
 
     final motionData = childrenMap[index];
@@ -973,11 +970,10 @@ Offset _overlayOrigin(BuildContext context) {
 
 @optionalTypeArgs
 class _MotionBuilderItemGlobalKey extends GlobalObjectKey {
-  const _MotionBuilderItemGlobalKey(this.subKey, this.state,this.index) : super(subKey);
+  const _MotionBuilderItemGlobalKey(this.subKey, this.state) : super(subKey);
 
   final Key subKey;
   final State state;
-  final int index;
 
   @override
   bool operator ==(Object other) {
@@ -986,8 +982,7 @@ class _MotionBuilderItemGlobalKey extends GlobalObjectKey {
     }
     return other is _MotionBuilderItemGlobalKey &&
         other.subKey == subKey &&
-        other.state == state &&
-    other.index == index;
+        other.state == state;
   }
 
   @override

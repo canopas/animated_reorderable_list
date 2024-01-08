@@ -21,8 +21,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   AnimationType appliedStyle = AnimationType.fadeIn;
   List<User> list =
-      List.generate(58, (index) => User(name: "User $index", index: index));
-  int addedNumber = 59;
+      List.generate(8, (index) => User(name: "User $index", index: index));
+  int addedNumber = 9;
   bool isGrid = true;
 
   void insert() {
@@ -162,8 +162,8 @@ class _HomePageState extends State<HomePage> {
                       },
                       insertAnimation: appliedStyle,
                       removeAnimation: appliedStyle,
-                      insertDuration: const Duration(milliseconds: 300),
-                      removeDuration: const Duration(milliseconds: 300),
+                      insertDuration: const Duration(seconds: 3),
+                      removeDuration: const Duration(seconds: 3),
                       sliverGridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 4),
@@ -184,8 +184,8 @@ class _HomePageState extends State<HomePage> {
                           list.insert(newIndex, user);
                         });
                       },
-                      insertDuration: const Duration(milliseconds: 300),
-                      removeDuration: const Duration(milliseconds: 300),
+                      insertDuration: const Duration(seconds: 3),
+                      removeDuration: const Duration(seconds: 3),
                       insertAnimation: appliedStyle,
                       removeAnimation: appliedStyle,
                     ),
