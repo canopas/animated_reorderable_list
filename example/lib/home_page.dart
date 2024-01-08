@@ -184,8 +184,8 @@ class _HomePageState extends State<HomePage> {
                           list.insert(newIndex, user);
                         });
                       },
-                      insertDuration: const Duration(seconds: 3),
-                      removeDuration: const Duration(seconds: 3),
+                      insertDuration: const Duration(milliseconds: 300),
+                      removeDuration: const Duration(milliseconds: 300),
                       insertAnimation: appliedStyle,
                       removeAnimation: appliedStyle,
                     ),
