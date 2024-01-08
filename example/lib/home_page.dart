@@ -21,8 +21,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   AnimationType appliedStyle = AnimationType.fadeIn;
   List<User> list =
-      List.generate(8, (index) => User(name: "User $index", index: index));
-  int addedNumber = 9;
+      List.generate(58, (index) => User(name: "User $index", index: index));
+  int addedNumber = 59;
   bool isGrid = true;
 
   void insert() {

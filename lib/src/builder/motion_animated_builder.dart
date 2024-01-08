@@ -304,40 +304,6 @@ class MotionBuilderState extends State<MotionBuilder>
   }
 
 
-  // void _dragEnd(_DragInfo item) {
-  //   if ((_insertIndex! + 1 == _items.length) && _reverse) {
-  //     final RenderBox lastItemRenderBox =
-  //         _items[_items.length - 1]!.context.findRenderObject()! as RenderBox;
-  //     final Offset lastItemOffset =
-  //         lastItemRenderBox.localToGlobal(Offset.zero);
-  //
-  //     final double delta = item.itemSize.height;
-  //
-  //     setState(() {
-  //       _finalDropPosition =
-  //           Offset(lastItemOffset.dx, lastItemOffset.dy - delta);
-  //     });
-  //     return;
-  //   }
-  //   setState(() {
-  //     if (_insertIndex == item.index) {
-  //       _finalDropPosition = _itemOffsetAt(_insertIndex! + (_reverse ? 1 : 0));
-  //     } else if (_insertIndex! < _itemsCount - 1) {
-  //       _finalDropPosition = _itemOffsetAt(_insertIndex!);
-  //     } else {
-  //       final int itemIndex =
-  //           _items.length > 1 ? _insertIndex! - 1 : _insertIndex!;
-  //       if (_reverse) {
-  //         _finalDropPosition = _itemOffsetAt(itemIndex)! -
-  //             _extentOffset(item.itemExtent, scrollDirection);
-  //       } else {
-  //         _finalDropPosition = _itemOffsetAt(itemIndex)! +
-  //             _extentOffset(item!.itemExtent, scrollDirection);
-  //       }
-  //     }
-  //   });
-  //   widget.onReorderEnd?.call(_insertIndex!);
-  // }
 
 
   void _dragEnd(_DragInfo item) {
@@ -346,10 +312,8 @@ class MotionBuilderState extends State<MotionBuilder>
   void _dropCompleted() {
     final int fromIndex = _dragIndex!;
     final int toIndex = _insertIndex!;
-    print("InserIndex: $_insertIndex   DragIndex: $_dragIndex");
-    // childrenMap[_insertIndex]!= childrenMap[_insertIndex]!.copyWith(index: _dragIndex,);
-    // childrenMap[_dragIndex]!= childrenMap[_dragIndex]!.copyWith(index: _insertIndex);
-
+    childrenMap[_insertIndex]!= childrenMap[_insertIndex]!.copyWith(index: _dragIndex,);
+    childrenMap[_dragIndex]!= childrenMap[_dragIndex]!.copyWith(index: _insertIndex);
     if (fromIndex != toIndex) {
       widget.onRerder.call(fromIndex, toIndex);
     }
@@ -382,7 +346,6 @@ class MotionBuilderState extends State<MotionBuilder>
       _overlayEntry?.dispose();
       _overlayEntry = null;
       _finalDropPosition = null;
-     // _insertIndex= null;
     }
   }
 
@@ -428,73 +391,15 @@ class MotionBuilderState extends State<MotionBuilder>
   }
 
 
-  // void _dragUpdateItems() {
-  //   assert(_dragInfo != null);
-  //   final double gapExtent = _dragInfo!.itemExtent;
-  //   final double proxyItemStart = _offsetExtent(
-  //       _dragInfo!.dragPosition - _dragInfo!.dragOffset, scrollDirection);
-  //   final double proxyItemEnd = proxyItemStart + gapExtent;
-  //
-  //   int newIndex = _insertIndex!;
-  //   for (final MotionAnimatedContentState item in _items.values) {
-  //     if (item.index == _dragIndex! || !item.mounted) {
-  //       continue;
-  //     }
-  //
-  //     Rect geometry = item.targetGeometryNonOffset();
-  //     if (!_dragStartTransitionComplete && _dragIndex! <= item.index) {
-  //       final Offset transitionOffset =
-  //           _extentOffset(_reverse ? -gapExtent : gapExtent, scrollDirection);
-  //       geometry = (geometry.topLeft - transitionOffset) & geometry.size;
-  //     }
-  //     final double itemStart =
-  //         scrollDirection == Axis.vertical ? geometry.top : geometry.left;
-  //     final double itemExtent =
-  //         scrollDirection == Axis.vertical ? geometry.height : geometry.width;
-  //     final double itemEnd = itemStart + itemExtent;
-  //     final double itemMiddle = itemStart + itemExtent / 2;
-  //
-  //     if (_reverse) {
-  //       if (itemEnd > proxyItemEnd && proxyItemEnd >= itemMiddle) {
-  //         newIndex = item.index;
-  //         break;
-  //       } else if (itemMiddle > proxyItemStart && proxyItemStart >= itemStart) {
-  //         newIndex = item.index + 1;
-  //         break;
-  //       } else if (itemStart > proxyItemEnd && newIndex < (item.index + 1)) {
-  //         newIndex = item.index + 1;
-  //       } else if (proxyItemStart > itemEnd && newIndex > item.index) {
-  //         newIndex = item.index;
-  //       }
-  //     }
-  //   }
-  //   if (newIndex != _insertIndex) {
-  //     _insertIndex = newIndex;
-  //     for (final MotionAnimatedContentState item in _items.values) {
-  //       if (item.index == _dragIndex! || !item.mounted) {
-  //         continue;
-  //       }
-  //       item.updateForGap(newIndex, gapExtent, true, _reverse);
-  //     }
-  //   }
-  // }
-
   Offset calculateNextDragOffset(int index) {
     int minPos = min(_dragIndex!, _insertIndex!);
     int maxPos = max(_dragIndex!, _insertIndex!);
-   // print("$_dragIndex   $_insertIndex");
-
     if (index < minPos || index > maxPos) return Offset.zero;
 
     final int direction = _insertIndex! > _dragIndex! ? -1 : 1;
     return _itemOffsetAt(index + direction)! - _itemOffsetAt(index)!;
   }
 
-  Rect get _dragTargetRect {
-    final Offset origin = _dragInfo!.dragPosition - _dragInfo!.dragOffset;
-    return Rect.fromLTWH(origin.dx, origin.dy, _dragInfo!.itemSize.width,
-        _dragInfo!.itemSize.height);
-  }
 
   void registerItem(MotionAnimatedContentState item) {
     _items[item.index] = item;
