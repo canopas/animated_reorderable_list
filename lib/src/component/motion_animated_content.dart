@@ -107,7 +107,7 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
       if (_offsetAnimation == null) {
         _offsetAnimation = AnimationController(
           vsync: listState,
-          duration: widget.motionData.duration,
+          duration: const Duration(seconds: 3),
         )
           ..addListener(rebuild)
           ..addStatusListener((AnimationStatus status) {
@@ -119,7 +119,8 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
           })
           ..forward();
       } else {
-        //_startOffset = offset;
+        // Offset offsetDiff =( widget.motionData.startOffset+offset) - endOffset;
+        // _startOffset = offsetDiff;
         _offsetAnimation!.forward(from: _offsetAnimation!.value);
       }
       // _positionController.duration = widget.motionData.duration;
