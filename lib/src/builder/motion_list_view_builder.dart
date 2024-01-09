@@ -9,8 +9,23 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
   ///Called, as needed, to build list item widget
   final ItemBuilder itemBuilder;
 
-  final ReorderCallback onReorder;
+  /// A callback used by [ReorderableList] to report that a list item has moved
+  /// to a new position in the list.
+  ///
+  /// Implementations should remove the corresponding list item at [oldIndex]
+  /// and reinsert it at [newIndex].
+  final ReorderCallback? onReorder;
+
+  /// A callback that is called when an item drag has started.
+  ///
+  /// The index parameter of the callback is the index of the selected item.
   final void Function(int)? onReorderStart;
+
+  /// A callback that is called when the dragged item is dropped.
+  ///
+  /// The index parameter of the callback is the index where the item is
+  /// dropped. Unlike [onReorder], this is called even when the list item is
+  /// dropped in the same location.
   final void Function(int)? onReorderEnd;
 
   /// AnimationStyle when item is added in the list.
@@ -32,6 +47,11 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
   /// The duration of the animation when an item was removed from the list.
   final Duration removeDuration;
 
+  /// {@template flutter.widgets.reorderable_list.proxyDecorator}
+  /// A callback that allows the app to add an animated decoration around
+  /// an item when it is being dragged.
+  /// {@endtemplate}
+  final ReorderItemProxyDecorator? proxyDecorator;
 
   /// {@template flutter.widgets.scroll_view.reverse}
   /// Whether the scroll view scrolls in the reading direction.
@@ -68,6 +88,13 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
   /// Defaults to null.
   final bool? primary;
 
+  /// {@template flutter.widgets.reorderable_list.padding}
+  /// The amount of space by which to inset the list contents.
+  ///
+  /// It defaults to `EdgeInsets.all(0)`.
+  /// {@endtemplate}
+  final EdgeInsetsGeometry? padding;
+
   /// How the scroll view should respond to user input.
   ///
   /// For example, determines how the scroll view continues to animate after the
@@ -102,26 +129,29 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
   /// See the ScrollView constructor for more details on these arguments.
   final DragStartBehavior dragStartBehavior;
 
-  const MotionListViewBuilder({Key? key,
-    required this.items,
-    required this.itemBuilder,
-    required this.onReorder,
-    this.onReorderStart,
-    this.onReorderEnd,
-    this.insertAnimation = AnimationType.fadeIn,
-    this.removeAnimation,
-    this.insertDuration = const Duration(milliseconds: 300),
-    this.removeDuration = const Duration(milliseconds: 300),
-    this.scrollDirection = Axis.vertical,
-    this.reverse = false,
-    this.controller,
-    this.primary,
-    this.physics,
-    this.scrollBehavior,
-    this.restorationId,
-    this.keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.manual,
-    this.dragStartBehavior = DragStartBehavior.start,
-    this.clipBehavior = Clip.hardEdge})
+  const MotionListViewBuilder(
+      {Key? key,
+      required this.items,
+      required this.itemBuilder,
+      this.onReorder,
+      this.onReorderStart,
+      this.onReorderEnd,
+      this.proxyDecorator,
+      this.insertAnimation = AnimationType.fadeIn,
+      this.removeAnimation,
+      this.insertDuration = const Duration(milliseconds: 300),
+      this.removeDuration = const Duration(milliseconds: 300),
+      this.scrollDirection = Axis.vertical,
+      this.padding,
+      this.reverse = false,
+      this.controller,
+      this.primary,
+      this.physics,
+      this.scrollBehavior,
+      this.restorationId,
+      this.keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.manual,
+      this.dragStartBehavior = DragStartBehavior.start,
+      this.clipBehavior = Clip.hardEdge})
       : super(key: key);
 
   @override
@@ -138,17 +168,21 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
         dragStartBehavior: dragStartBehavior,
         clipBehavior: clipBehavior,
         slivers: [
-          MotionListImpl(
-            items: items,
-            itemBuilder: itemBuilder,
-            insertAnimationType: insertAnimation,
-            removeAnimationType: removeAnimation ?? insertAnimation,
-            insertDuration: insertDuration,
-            removeDuration: removeDuration,
-            scrollDirection: scrollDirection,
-            onReorder: onReorder,
-            onReorderStart: onReorderStart,
-            onReorderEnd: onReorderEnd
+          SliverPadding(
+            padding: padding ?? EdgeInsets.zero,
+            sliver: MotionListImpl(
+              items: items,
+              itemBuilder: itemBuilder,
+              insertAnimationType: insertAnimation,
+              removeAnimationType: removeAnimation ?? insertAnimation,
+              onReorder: onReorder,
+              onReorderStart: onReorderStart,
+              onReorderEnd: onReorderEnd,
+              proxyDecorator: proxyDecorator,
+              insertDuration: insertDuration,
+              removeDuration: removeDuration,
+              scrollDirection: scrollDirection,
+            ),
           ),
         ]);
   }

@@ -11,7 +11,7 @@ class MotionAnimatedContent extends StatefulWidget {
   final CapturedThemes? capturedThemes;
 
   const MotionAnimatedContent(
-      { Key? key,
+      {Key? key,
       required this.index,
       required this.motionData,
       required this.child,
@@ -33,12 +33,22 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
 
   bool _dragging = false;
 
-  bool get dragging=> _dragging;
+  bool get dragging => _dragging;
 
-  set dragging(bool dragging){
-    if(mounted){
+  set dragging(bool dragging) {
+    if (mounted) {
       setState(() {
         _dragging = dragging;
+      });
+    }
+  }
+
+  Size _dragSize = Size.zero;
+
+  set dragSize(Size itemSize) {
+    if (mounted) {
+      setState(() {
+        _dragSize = itemSize;
       });
     }
   }
@@ -69,10 +79,14 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
     }
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      setState(() {
-        visible = true;
-      });
-     if (oldWidget.index != widget.index) _updateAnimationTranslation();
+      if (mounted) {
+        setState(() {
+          visible = true;
+        });
+      }
+      if (oldWidget.index != widget.index && !_dragging) {
+        _updateAnimationTranslation();
+      }
       widget.updateMotionData?.call(widget.motionData);
     });
     super.didUpdateWidget(oldWidget);
@@ -81,7 +95,7 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
   void _updateAnimationTranslation() {
     Offset endOffset = itemOffset();
     Offset offsetDiff = (widget.motionData.startOffset + offset) - endOffset;
-    _startOffset =offsetDiff;
+    _startOffset = offsetDiff;
 
     if (offsetDiff.dx != 0 || offsetDiff.dy != 0) {
       if (_offsetAnimation == null) {
@@ -106,7 +120,8 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
 
   Offset get offset {
     if (_offsetAnimation != null) {
-      final Offset offset= Offset.lerp(_startOffset, _targetOffset, _offsetAnimation!.value)!;
+      final Offset offset =
+          Offset.lerp(_startOffset, _targetOffset, _offsetAnimation!.value)!;
       return offset;
     }
     return _targetOffset;
@@ -151,21 +166,18 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
 
   @override
   Widget build(BuildContext context) {
-    if (_dragging) {
-      return const SizedBox.shrink();
-    }
     listState.registerItem(this);
     return Visibility(
       maintainSize: true,
       maintainAnimation: true,
       maintainState: true,
-      visible: visible,
+      visible: visible && !_dragging,
       child: Transform(
-         transform: Matrix4.translationValues(offset.dx, offset.dy, 0.0),
-          child: widget.child),
+          transform: Matrix4.translationValues(offset.dx, offset.dy, 0.0),
+          child:
+              !_dragging ? widget.child : SizedBox.fromSize(size: _dragSize)),
     );
   }
-
 
   Offset itemOffset() {
     final box = context.findRenderObject() as RenderBox?;
@@ -183,21 +195,11 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
     rebuild();
   }
 
-  Rect targetGeometry() {
-    final RenderBox itemRenderBox = context.findRenderObject()! as RenderBox;
-    final Offset itemPosition =
-        itemRenderBox.localToGlobal(Offset.zero) + _targetOffset;
-    return itemPosition & itemRenderBox.size;
-  }
-
-
   Rect targetGeometryNonOffset() {
     final RenderBox itemRenderBox = context.findRenderObject()! as RenderBox;
     final Offset itemPosition = itemRenderBox.localToGlobal(Offset.zero);
     return itemPosition & itemRenderBox.size;
   }
-
-
 
   void rebuild() {
     if (mounted) {
@@ -218,4 +220,3 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
     super.deactivate();
   }
 }
-

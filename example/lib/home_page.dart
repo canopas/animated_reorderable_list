@@ -1,3 +1,4 @@
+
 import 'package:example/utils/extension.dart';
 import 'package:example/utils/item_card.dart';
 import 'package:example/utils/item_tile.dart';
@@ -23,7 +24,7 @@ class _HomePageState extends State<HomePage> {
   List<User> list =
       List.generate(8, (index) => User(name: "User $index", index: index));
   int addedNumber = 9;
-  bool isGrid = true;
+  bool isGrid = false;
 
   void insert() {
     addedNumber += 1;
@@ -97,101 +98,97 @@ class _HomePageState extends State<HomePage> {
               ))
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.teal,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        if (isGrid != false) {
-                          isGrid = false;
-                        }
-                      });
-                    },
-                    child: const Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Text(
-                        'List',
-                        style: TextStyle(fontSize: 25),
-                      ),
-                    )),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.teal),
+      body: Column(
+        children: [
+          const SizedBox(
+            height: 16,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.teal,
+                  ),
                   onPressed: () {
                     setState(() {
-                      if (isGrid != true) {
-                        isGrid = true;
+                      if (isGrid != false) {
+                        isGrid = false;
                       }
                     });
                   },
                   child: const Padding(
                     padding: EdgeInsets.all(8.0),
                     child: Text(
-                      'Grid',
+                      'List',
                       style: TextStyle(fontSize: 25),
                     ),
+                  )),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.teal),
+                onPressed: () {
+                  setState(() {
+                    if (isGrid != true) {
+                      isGrid = true;
+                    }
+                  });
+                },
+                child: const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text(
+                    'Grid',
+                    style: TextStyle(fontSize: 25),
                   ),
                 ),
-              ],
-            ),
-            const SizedBox(
-              height: 16,
-            ),
-            Expanded(
-              child: isGrid
-                  ? MotionGridViewBuilder(
-                      items: list,
-                      scrollDirection: Axis.vertical,
-                      itemBuilder: (BuildContext context, int index) {
-                        return ItemCard(
-                            key: Key(list[index].name),
-                            index: list[index].index);
-                      },
-                      onReorder: (int oldIndex, int newIndex) {
-                        setState(() {
-                          final User user = list.removeAt(oldIndex);
-                          list.insert(newIndex, user);
-                        });
-                      },
-                      insertAnimation: appliedStyle,
-                      removeAnimation: appliedStyle,
-                      insertDuration: const Duration(seconds: 3),
-                      removeDuration: const Duration(seconds: 3),
-                      sliverGridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 4),
-                    )
-                  : MotionListViewBuilder(
-                      items: list,
-                      itemBuilder: (BuildContext context, int index) {
-                        return ItemTile(
-                            key: Key(list[index].name),
-                            index: list[index].index);
-                      },
-                      onReorder: (int oldIndex, int newIndex) {
-                        setState(() {
-                          if (oldIndex < newIndex) {
-                            newIndex -= 1;
-                          }
-                          final User user = list.removeAt(oldIndex);
-                          list.insert(newIndex, user);
-                        });
-                      },
-                      insertDuration: const Duration(milliseconds: 300),
-                      removeDuration: const Duration(milliseconds: 300),
-                      insertAnimation: appliedStyle,
-                      removeAnimation: appliedStyle,
-                    ),
-            ),
-          ],
-        ),
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 16,
+          ),
+          Expanded(
+            child: isGrid
+                ? MotionGridViewBuilder(
+                    padding: const EdgeInsets.all(10),
+                    items: list,
+                    itemBuilder: (BuildContext context, int index) {
+                      return ItemCard(
+                          key: Key(list[index].name), index: list[index].index);
+                    },
+                    onReorder: (int oldIndex, int newIndex) {
+                      setState(() {
+                        final User user = list.removeAt(oldIndex);
+                        list.insert(newIndex, user);
+                      });
+                    },
+                    insertAnimation: appliedStyle,
+                    removeAnimation: appliedStyle,
+                    insertDuration: const Duration(seconds: 3),
+                    removeDuration: const Duration(seconds: 3),
+                    sliverGridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 4),
+                  )
+                : MotionListViewBuilder(
+                    padding: const EdgeInsets.all(16),
+                    items: list,
+                    itemBuilder: (BuildContext context, int index) {
+                      return ItemTile(
+                          key: Key(list[index].name), index: list[index].index);
+                    },
+                    onReorder: (int oldIndex, int newIndex) {
+                      setState(() {
+                        final User user = list.removeAt(oldIndex);
+                        list.insert(newIndex, user);
+                      });
+                    },
+                    insertDuration: const Duration(milliseconds: 300),
+                    removeDuration: const Duration(milliseconds: 300),
+                    insertAnimation: appliedStyle,
+                    removeAnimation: appliedStyle,
+                  ),
+          ),
+        ],
       ),
     );
   }
