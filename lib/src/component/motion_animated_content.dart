@@ -165,14 +165,15 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
     //   return const SizedBox.shrink();
     // }
     listState.registerItem(this);
+    print("$index --Dragging: $_dragging");
     return Visibility(
       maintainSize: true,
       maintainAnimation: true,
       maintainState: true,
-      visible: visible ,
+      visible: visible && !_dragging ,
       child: Transform(
          transform: Matrix4.translationValues(offset.dx, offset.dy, 0.0),
-          child: widget.child),
+          child:!_dragging ? widget.child:SizedBox.fromSize(size:_dragSize)),
     );
   }
 
