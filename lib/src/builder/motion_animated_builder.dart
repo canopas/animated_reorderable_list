@@ -4,7 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 import 'package:animated_reorderable_list/src/component/motion_animated_content.dart';
 
@@ -93,7 +92,6 @@ class MotionBuilderState extends State<MotionBuilder>
   Offset? _finalDropPosition;
   MultiDragGestureRecognizer? _recognizer;
   int? _recognizerPointer;
-  bool _dragStartTransitionComplete = false;
   EdgeDraggingAutoScroller? _autoScroller;
   late ScrollableState _scrollable;
 
@@ -164,10 +162,6 @@ class MotionBuilderState extends State<MotionBuilder>
     item.dragging = true;
     widget.onReorderStart?.call(_dragIndex!);
     item.rebuild();
-    _dragStartTransitionComplete = false;
-    SchedulerBinding.instance.addPostFrameCallback((Duration duration) {
-      _dragStartTransitionComplete = true;
-    });
     _insertIndex = item.index;
     _dragInfo = _DragInfo(
         item: item,
@@ -607,8 +601,6 @@ class MotionBuilderState extends State<MotionBuilder>
       return _removeItemBuilder(outgoingItem, child);
     }
     if (_dragInfo != null && index >= _itemsCount) {
-      print("Widget item count: ${_itemsCount}");
-      print("index    $index");
       return SizedBox.fromSize(size: _dragInfo!.itemSize);
     }
 
@@ -1005,23 +997,6 @@ class ReorderableGridDelayedDragStartListener
   }
 }
 
-double _offsetExtent(Offset offset, Axis scrollDirection) {
-  switch (scrollDirection) {
-    case Axis.horizontal:
-      return offset.dx;
-    case Axis.vertical:
-      return offset.dy;
-  }
-}
-
-Offset _extentOffset(double extent, Axis scrollDirection) {
-  switch (scrollDirection) {
-    case Axis.horizontal:
-      return Offset(extent, 0.0);
-    case Axis.vertical:
-      return Offset(0.0, extent);
-  }
-}
 
 double _sizeExtent(Size size, Axis scrollDirection) {
   switch (scrollDirection) {
