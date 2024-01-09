@@ -43,6 +43,16 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
     }
   }
 
+  Size _dragSize= Size.zero;
+
+  set dragSize(Size itemSize){
+    if(mounted){
+      setState(() {
+        _dragSize= itemSize;
+      });
+    }
+  }
+
   int get index => widget.index;
   bool visible = true;
 
@@ -151,15 +161,15 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
 
   @override
   Widget build(BuildContext context) {
-    if (_dragging) {
-      return const SizedBox.shrink();
-    }
+    // if (_dragging) {
+    //   return const SizedBox.shrink();
+    // }
     listState.registerItem(this);
     return Visibility(
       maintainSize: true,
       maintainAnimation: true,
       maintainState: true,
-      visible: visible,
+      visible: visible ,
       child: Transform(
          transform: Matrix4.translationValues(offset.dx, offset.dy, 0.0),
           child: widget.child),
