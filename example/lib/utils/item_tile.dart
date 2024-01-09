@@ -23,7 +23,7 @@ class ItemTile extends StatelessWidget {
           children: [
             Container(
               height: 60,
-              width: MediaQuery.of(context).size.width,
+              width: 60,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 color: Colors.primaries[index % Colors.primaries.length],

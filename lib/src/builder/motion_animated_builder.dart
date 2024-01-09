@@ -236,7 +236,7 @@ class MotionBuilderState extends State<MotionBuilder>
     double proxyObjectEnd = proxyObjectStart +
         (isVertical ? _dragInfo!.itemSize.height : _dragInfo!.itemSize.width);
 
-    if (_reverse) {
+    if (!_reverse) {
       /// if start of proxy object is before scroll window
       if (proxyObjectStart < scrollWindowStart &&
           position.pixels > position.minScrollExtent) {
