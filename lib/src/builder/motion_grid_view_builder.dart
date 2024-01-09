@@ -16,9 +16,20 @@ class MotionGridViewBuilder<E extends Object> extends StatelessWidget {
   ///
   /// Implementations should remove the corresponding list item at [oldIndex]
   /// and reinsert it at [newIndex].
-  final ReorderCallback onReorder;
+  final ReorderCallback? onReorder;
+
+  /// A callback that is called when an item drag has started.
+  ///
+  /// The index parameter of the callback is the index of the selected item.
   final void Function(int)? onReorderStart;
+
+  /// A callback that is called when the dragged item is dropped.
+  ///
+  /// The index parameter of the callback is the index where the item is
+  /// dropped. Unlike [onReorder], this is called even when the list item is
+  /// dropped in the same location.
   final void Function(int)? onReorderEnd;
+
 
   /// AnimationStyle when item is added in the list.
   final AnimationType insertAnimation;
@@ -45,6 +56,12 @@ class MotionGridViewBuilder<E extends Object> extends StatelessWidget {
   /// The tiles can be placed arbitrarily,
   /// but it is more efficient to place tiles in roughly in order by scroll offset because grids reify a contiguous sequence of children.
   final SliverGridDelegate sliverGridDelegate;
+
+  /// {@template flutter.widgets.reorderable_list.proxyDecorator}
+  /// A callback that allows the app to add an animated decoration around
+  /// an item when it is being dragged.
+  /// {@endtemplate}
+  final ReorderItemProxyDecorator? proxyDecorator;
 
   /// {@template flutter.widgets.scroll_view.reverse}
   /// Whether the scroll view scrolls in the reading direction.
@@ -119,9 +136,10 @@ class MotionGridViewBuilder<E extends Object> extends StatelessWidget {
       {Key? key,
       required this.items,
       required this.itemBuilder,
-      required this.onReorder,
+       this.onReorder,
       this.onReorderStart,
       this.onReorderEnd,
+        this.proxyDecorator,
       this.insertAnimation = AnimationType.fadeIn,
       this.removeAnimation,
       this.insertDuration,
@@ -159,6 +177,7 @@ class MotionGridViewBuilder<E extends Object> extends StatelessWidget {
             onReorder: onReorder,
             onReorderStart: onReorderStart,
             onReorderEnd: onReorderEnd,
+            proxyDecorator: proxyDecorator,
             insertAnimationType: insertAnimation,
             removeAnimationType: removeAnimation ?? insertAnimation,
             insertDuration: insertDuration,

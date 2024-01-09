@@ -13,19 +13,14 @@ import '../model/motion_data.dart';
 typedef AnimatedWidgetBuilder<E> = Widget Function(
     BuildContext context, Widget child, Animation<double> animation);
 
-typedef ReorderSatrtedCallback<E> = void Function(E item, int index);
-typedef ReorderFinishedCallback<E> = void Function(
-    E item, int from, int to, List<E> newItems);
-
-typedef ReorderItemProxyDecorator = Widget Function(
-    Widget child, int index, Animation<double> animation);
 
 class MotionBuilder<E> extends StatefulWidget {
   final AnimatedWidgetBuilder<E> insertAnimationBuilder;
   final AnimatedWidgetBuilder<E> removeAnimationBuilder;
-  final ReorderCallback onReorder;
+  final ReorderCallback? onReorder;
   final void Function(int index)? onReorderStart;
   final void Function(int index)? onReorderEnd;
+
   final ReorderItemProxyDecorator? proxyDecorator;
   final ItemBuilder itemBuilder;
   final int initialCount;
@@ -36,7 +31,7 @@ class MotionBuilder<E> extends StatefulWidget {
       {Key? key,
       required this.insertAnimationBuilder,
       required this.removeAnimationBuilder,
-      required this.onReorder,
+      this.onReorder,
       this.onReorderEnd,
       this.onReorderStart,
       this.proxyDecorator,
@@ -103,7 +98,7 @@ class MotionBuilderState extends State<MotionBuilder>
       _scrollable.axisDirection == AxisDirection.up ||
       _scrollable.axisDirection == AxisDirection.left;
 
-  bool get isGrid=> widget.delegateBuilder!=null;
+  bool get isGrid => widget.delegateBuilder != null;
 
   @override
   bool get wantKeepAlive => false;
@@ -221,7 +216,6 @@ class MotionBuilderState extends State<MotionBuilder>
 
     final isVertical = widget.scrollDirection == Axis.vertical;
 
-
     /// get the scroll window position on the screen
     final scrollRenderBox =
         _dragInfo!.scrollable!.context.findRenderObject()! as RenderBox;
@@ -305,7 +299,7 @@ class MotionBuilderState extends State<MotionBuilder>
     childrenMap[_dragIndex] !=
         childrenMap[_dragIndex]!.copyWith(index: _insertIndex);
     if (fromIndex != toIndex) {
-      widget.onReorder.call(fromIndex, toIndex);
+      widget.onReorder?.call(fromIndex, toIndex);
     }
     setState(() {
       _dragReset();
@@ -604,7 +598,9 @@ class MotionBuilderState extends State<MotionBuilder>
       return SizedBox.fromSize(size: _dragInfo!.itemSize);
     }
 
-    final Widget child = widgetBuilder(context, _itemIndexToIndex(index));
+    final Widget child = widget.onReorder != null
+        ? widgetBuilder(context, _itemIndexToIndex(index))
+        : widget.itemBuilder(context, _itemIndexToIndex(index));
 
     assert(() {
       if (child.key == null) {
@@ -665,17 +661,16 @@ class MotionBuilderState extends State<MotionBuilder>
     );
   }
 
-
   Widget _wrapWithSemantics(Widget child, int index) {
     void reorder(int startIndex, int endIndex) {
       if (startIndex != endIndex) {
-        widget.onReorder(startIndex, endIndex);
+        widget.onReorder?.call(startIndex, endIndex);
       }
     }
 
     // First, determine which semantics actions apply.
     final Map<CustomSemanticsAction, VoidCallback> semanticsActions =
-    <CustomSemanticsAction, VoidCallback>{};
+        <CustomSemanticsAction, VoidCallback>{};
 
     // Create the appropriate semantics actions.
     void moveToStart() => reorder(index, 0);
@@ -685,13 +680,12 @@ class MotionBuilderState extends State<MotionBuilder>
     // before index+2, which is after the space at index+1.
     void moveAfter() => reorder(index, index + 2);
 
-    final WidgetsLocalizations localizations =
-    WidgetsLocalizations.of(context);
+    final WidgetsLocalizations localizations = WidgetsLocalizations.of(context);
 
     // If the item can move to before its current position in the grid.
     if (index > 0) {
       semanticsActions[
-      CustomSemanticsAction(label: localizations.reorderItemToStart)] =
+              CustomSemanticsAction(label: localizations.reorderItemToStart)] =
           moveToStart;
       String reorderItemBefore = localizations.reorderItemUp;
       if (widget.scrollDirection == Axis.horizontal) {
@@ -714,7 +708,7 @@ class MotionBuilderState extends State<MotionBuilder>
       semanticsActions[CustomSemanticsAction(label: reorderItemAfter)] =
           moveAfter;
       semanticsActions[
-      CustomSemanticsAction(label: localizations.reorderItemToEnd)] =
+              CustomSemanticsAction(label: localizations.reorderItemToEnd)] =
           moveToEnd;
     }
 
@@ -731,7 +725,6 @@ class MotionBuilderState extends State<MotionBuilder>
       ),
     );
   }
-
 
   Widget _removeItemBuilder(_ActiveItem outgoingItem, Widget child) {
     final Animation<double> animation =
@@ -821,7 +814,9 @@ class _DragInfo extends Drag {
 
   @override
   void update(DragUpdateDetails details) {
-      final Offset delta = !gridView?_restrictAxis(details.delta, scrollDirection):details.delta;
+    final Offset delta = !gridView
+        ? _restrictAxis(details.delta, scrollDirection)
+        : details.delta;
     dragPosition += delta;
     onUpdate?.call(this, dragPosition, details.delta);
   }
@@ -996,7 +991,6 @@ class ReorderableGridDelayedDragStartListener
     return DelayedMultiDragGestureRecognizer(debugOwner: this);
   }
 }
-
 
 double _sizeExtent(Size size, Axis scrollDirection) {
   switch (scrollDirection) {
