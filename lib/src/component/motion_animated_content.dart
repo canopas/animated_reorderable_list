@@ -79,9 +79,11 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
     }
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      setState(() {
-        visible = true;
-      });
+      if(mounted){
+        setState(() {
+          visible = true;
+        });
+      }
      if (oldWidget.index != widget.index) _updateAnimationTranslation();
       widget.updateMotionData?.call(widget.motionData);
     });
@@ -165,7 +167,6 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
     //   return const SizedBox.shrink();
     // }
     listState.registerItem(this);
-    print("$index --Dragging: $_dragging");
     return Visibility(
       maintainSize: true,
       maintainAnimation: true,
@@ -173,7 +174,7 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
       visible: visible && !_dragging ,
       child: Transform(
          transform: Matrix4.translationValues(offset.dx, offset.dy, 0.0),
-          child:!_dragging ? widget.child:SizedBox.fromSize(size:_dragSize)),
+          child:!_dragging ? widget.child: SizedBox.fromSize(size:_dragSize)),
     );
   }
 

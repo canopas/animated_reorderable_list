@@ -184,6 +184,7 @@ class MotionBuilderState extends State<MotionBuilder>
         tickerProvider: this);
 
     _dragInfo!.startDrag();
+    item.dragSize = _dragInfo!.itemSize;
 
     final OverlayState overlay = Overlay.of(context, debugRequiredFor: widget);
     assert(_overlayEntry == null);
@@ -194,7 +195,7 @@ class MotionBuilderState extends State<MotionBuilder>
       if (childItem == item || !childItem.mounted) {
         continue;
       }
-      childItem.updateForGap(_insertIndex!,  false);
+      childItem.updateForGap(_insertIndex!, false);
     }
     return _dragInfo;
   }
@@ -204,7 +205,7 @@ class MotionBuilderState extends State<MotionBuilder>
       _overlayEntry?.markNeedsBuild();
       _dragUpdateItems();
       _autoScrollIfNecessary();
-     // _autoScroller?.startAutoScrollIfNecessary(_dragTargetRect);
+      // _autoScroller?.startAutoScrollIfNecessary(_dragTargetRect);
     });
   }
 
@@ -215,10 +216,7 @@ class MotionBuilderState extends State<MotionBuilder>
   }
 
   Future<void> _autoScrollIfNecessary() async {
-    if (autoScrolling ||
-        _dragInfo == null ||
-        _dragInfo!.scrollable == null
-    ) {
+    if (autoScrolling || _dragInfo == null || _dragInfo!.scrollable == null) {
       return;
     }
 
@@ -232,16 +230,16 @@ class MotionBuilderState extends State<MotionBuilder>
 
     final isVertical = widget.scrollDirection == Axis.vertical;
     //final isReversed = widget.reverse;
-    final isReversed= false;
+    final isReversed = false;
 
     /// get the scroll window position on the screen
     final scrollRenderBox =
-    _dragInfo!.scrollable!.context.findRenderObject()! as RenderBox;
+        _dragInfo!.scrollable!.context.findRenderObject()! as RenderBox;
     final Offset scrollPosition = scrollRenderBox.localToGlobal(Offset.zero);
 
     /// calculate the start and end position for the scroll window
     double scrollWindowStart =
-    isVertical ? scrollPosition.dy : scrollPosition.dx;
+        isVertical ? scrollPosition.dy : scrollPosition.dx;
     double scrollWindowEnd = scrollWindowStart +
         (isVertical ? scrollRenderBox.size.height : scrollRenderBox.size.width);
 
@@ -250,7 +248,7 @@ class MotionBuilderState extends State<MotionBuilder>
 
     /// calculate the start and end position for the proxy object
     double proxyObjectStart =
-    isVertical ? proxyObjectPosition.dy : proxyObjectPosition.dx;
+        isVertical ? proxyObjectPosition.dy : proxyObjectPosition.dx;
     double proxyObjectEnd = proxyObjectStart +
         (isVertical ? _dragInfo!.itemSize.height : _dragInfo!.itemSize.width);
 
@@ -303,17 +301,19 @@ class MotionBuilderState extends State<MotionBuilder>
     }
   }
 
-
-
-
   void _dragEnd(_DragInfo item) {
     setState(() => _finalDropPosition = _itemOffsetAt(_insertIndex!));
   }
+
   void _dropCompleted() {
     final int fromIndex = _dragIndex!;
     final int toIndex = _insertIndex!;
-    childrenMap[_insertIndex]!= childrenMap[_insertIndex]!.copyWith(index: _dragIndex,);
-    childrenMap[_dragIndex]!= childrenMap[_dragIndex]!.copyWith(index: _insertIndex);
+    childrenMap[_insertIndex] !=
+        childrenMap[_insertIndex]!.copyWith(
+          index: _dragIndex,
+        );
+    childrenMap[_dragIndex] !=
+        childrenMap[_dragIndex]!.copyWith(index: _insertIndex);
     if (fromIndex != toIndex) {
       widget.onRerder.call(fromIndex, toIndex);
     }
@@ -362,7 +362,6 @@ class MotionBuilderState extends State<MotionBuilder>
     _dragUpdateItems();
   }
 
-
   void _dragUpdateItems() {
     assert(_dragInfo != null);
 
@@ -373,23 +372,21 @@ class MotionBuilderState extends State<MotionBuilder>
 
     for (final MotionAnimatedContentState item in _items.values) {
       if (!item.mounted) continue;
+        final Rect geometry = item.targetGeometryNonOffset();
 
-      final Rect geometry = item.targetGeometryNonOffset();
-
-      if (geometry.contains(dragCenter)) {
-        newIndex = item.index;
-        break;
+        if (geometry.contains(dragCenter)) {
+          newIndex = item.index;
+          break;
+        }
       }
-    }
 
-    if (newIndex == _insertIndex) return;
-    _insertIndex = newIndex;
+      if (newIndex == _insertIndex) return;
+      _insertIndex = newIndex;
 
-    for (final MotionAnimatedContentState item in _items.values) {
-      item.updateForGap(_insertIndex!, true);
-    }
+      for (final MotionAnimatedContentState item in _items.values) {
+        item.updateForGap(_insertIndex!, true);
+      }
   }
-
 
   Offset calculateNextDragOffset(int index) {
     int minPos = min(_dragIndex!, _insertIndex!);
@@ -399,7 +396,6 @@ class MotionBuilderState extends State<MotionBuilder>
     final int direction = _insertIndex! > _dragIndex! ? -1 : 1;
     return _itemOffsetAt(index + direction)! - _itemOffsetAt(index)!;
   }
-
 
   void registerItem(MotionAnimatedContentState item) {
     _items[item.index] = item;
@@ -550,10 +546,10 @@ class MotionBuilderState extends State<MotionBuilder>
       final _ActiveItem outgoingItem =
           _ActiveItem.animation(controller, itemIndex);
       //setState(() {
-        _outgoingItems
-          ..add(outgoingItem)
-          ..sort();
-     // });
+      _outgoingItems
+        ..add(outgoingItem)
+        ..sort();
+      // });
 
       controller.reverse().then<void>((void value) {
         _removeActiveItemAt(_outgoingItems, outgoingItem.itemIndex)!
@@ -595,11 +591,11 @@ class MotionBuilderState extends State<MotionBuilder>
     setState(() => _itemsCount -= 1);
   }
 
-  Offset? _itemOffsetAt(int index) {
+  Offset _itemOffsetAt(int index) {
     final itemRenderBox =
         _items[index]?.context.findRenderObject() as RenderBox?;
-    if (itemRenderBox == null) return null;
-    return itemRenderBox.localToGlobal(Offset.zero) ;
+    if (itemRenderBox == null) return Offset.zero;
+    return itemRenderBox.localToGlobal(Offset.zero);
   }
 
   @override
@@ -654,11 +650,10 @@ class MotionBuilderState extends State<MotionBuilder>
         );
       },
       capturedThemes:
-      InheritedTheme.capture(from: context, to: overlay.context),
+          InheritedTheme.capture(from: context, to: overlay.context),
       child: builder,
     );
   }
-
 
   SliverChildDelegate _createDelegate() {
     return SliverChildBuilderDelegate(_itemBuilder, childCount: _itemsCount);
@@ -750,10 +745,11 @@ class _DragInfo extends Drag {
 
   @override
   void update(DragUpdateDetails details) {
-  //  final Offset delta = _restrictAxis(details.delta, scrollDirection);
+    //  final Offset delta = _restrictAxis(details.delta, scrollDirection);
     dragPosition += details.delta;
     onUpdate?.call(this, dragPosition, details.delta);
   }
+
   @override
   void end(DragEndDetails details) {
     _proxyAnimation!.reverse();
