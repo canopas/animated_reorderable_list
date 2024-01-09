@@ -23,7 +23,7 @@ class _HomePageState extends State<HomePage> {
   List<User> list =
       List.generate(58, (index) => User(name: "User $index", index: index));
   int addedNumber = 59;
-  bool isGrid = true;
+  bool isGrid = false;
 
   void insert() {
     addedNumber += 1;

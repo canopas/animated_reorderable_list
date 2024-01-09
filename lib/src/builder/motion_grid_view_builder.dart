@@ -11,6 +11,11 @@ class MotionGridViewBuilder<E extends Object> extends StatelessWidget {
   ///Called, as needed, to build list item widget
   final ItemBuilder<Widget, E> itemBuilder;
 
+  /// A callback used by [ReorderableList] to report that a list item has moved
+  /// to a new position in the list.
+  ///
+  /// Implementations should remove the corresponding list item at [oldIndex]
+  /// and reinsert it at [newIndex].
   final ReorderCallback onReorder;
   final void Function(int)? onReorderStart;
   final void Function(int)? onReorderEnd;
