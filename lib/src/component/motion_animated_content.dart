@@ -84,8 +84,9 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
           visible = true;
         });
       }
-      if (oldWidget.index != widget.index && !_dragging)
+      if (oldWidget.index != widget.index && !_dragging) {
         _updateAnimationTranslation();
+      }
       widget.updateMotionData?.call(widget.motionData);
     });
     super.didUpdateWidget(oldWidget);

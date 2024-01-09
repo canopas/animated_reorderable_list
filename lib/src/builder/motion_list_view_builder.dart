@@ -88,6 +88,13 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
   /// Defaults to null.
   final bool? primary;
 
+  /// {@template flutter.widgets.reorderable_list.padding}
+  /// The amount of space by which to inset the list contents.
+  ///
+  /// It defaults to `EdgeInsets.all(0)`.
+  /// {@endtemplate}
+  final EdgeInsetsGeometry? padding;
+
   /// How the scroll view should respond to user input.
   ///
   /// For example, determines how the scroll view continues to animate after the
@@ -135,6 +142,7 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
       this.insertDuration = const Duration(milliseconds: 300),
       this.removeDuration = const Duration(milliseconds: 300),
       this.scrollDirection = Axis.vertical,
+      this.padding,
       this.reverse = false,
       this.controller,
       this.primary,
@@ -160,7 +168,9 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
         dragStartBehavior: dragStartBehavior,
         clipBehavior: clipBehavior,
         slivers: [
-          MotionListImpl(
+          SliverPadding(
+            padding: padding ?? EdgeInsets.zero,
+            sliver: MotionListImpl(
               items: items,
               itemBuilder: itemBuilder,
               insertAnimationType: insertAnimation,
@@ -173,6 +183,7 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
               removeDuration: removeDuration,
               scrollDirection: scrollDirection,
             ),
+          ),
         ]);
   }
 }

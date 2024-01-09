@@ -63,6 +63,13 @@ class MotionGridViewBuilder<E extends Object> extends StatelessWidget {
   /// {@endtemplate}
   final ReorderItemProxyDecorator? proxyDecorator;
 
+  /// {@template flutter.widgets.reorderable_list.padding}
+  /// The amount of space by which to inset the list contents.
+  ///
+  /// It defaults to `EdgeInsets.all(0)`.
+  /// {@endtemplate}
+  final EdgeInsetsGeometry? padding;
+
   /// {@template flutter.widgets.scroll_view.reverse}
   /// Whether the scroll view scrolls in the reading direction.
   ///
@@ -144,6 +151,7 @@ class MotionGridViewBuilder<E extends Object> extends StatelessWidget {
       this.removeAnimation,
       this.insertDuration,
       this.removeDuration,
+        this.padding,
       required this.sliverGridDelegate,
       this.scrollDirection = Axis.vertical,
       this.reverse = false,
@@ -171,19 +179,22 @@ class MotionGridViewBuilder<E extends Object> extends StatelessWidget {
         dragStartBehavior: dragStartBehavior,
         clipBehavior: clipBehavior,
         slivers: [
-          MotionListImpl.grid(
-            items: items,
-            itemBuilder: itemBuilder,
-            onReorder: onReorder,
-            onReorderStart: onReorderStart,
-            onReorderEnd: onReorderEnd,
-            proxyDecorator: proxyDecorator,
-            insertAnimationType: insertAnimation,
-            removeAnimationType: removeAnimation ?? insertAnimation,
-            insertDuration: insertDuration,
-            removeDuration: removeDuration,
-            scrollDirection: scrollDirection,
-            sliverGridDelegate: sliverGridDelegate,
+          SliverPadding(
+            padding: padding?? EdgeInsets.zero,
+            sliver: MotionListImpl.grid(
+              items: items,
+              itemBuilder: itemBuilder,
+              onReorder: onReorder,
+              onReorderStart: onReorderStart,
+              onReorderEnd: onReorderEnd,
+              proxyDecorator: proxyDecorator,
+              insertAnimationType: insertAnimation,
+              removeAnimationType: removeAnimation ?? insertAnimation,
+              insertDuration: insertDuration,
+              removeDuration: removeDuration,
+              scrollDirection: scrollDirection,
+              sliverGridDelegate: sliverGridDelegate,
+            ),
           ),
         ]);
   }
