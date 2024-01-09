@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:example/utils/extension.dart';
 import 'package:example/utils/item_card.dart';
 import 'package:example/utils/item_tile.dart';
@@ -148,7 +150,7 @@ class _HomePageState extends State<HomePage> {
               child: isGrid
                   ? MotionGridViewBuilder(
                       items: list,
-                      scrollDirection: Axis.horizontal,
+                      // scrollDirection: Axis.horizontal,
                       itemBuilder: (BuildContext context, int index) {
                         return ItemCard(
                             key: Key(list[index].name),
@@ -169,7 +171,7 @@ class _HomePageState extends State<HomePage> {
                               crossAxisCount: 4),
                     )
                   : MotionListViewBuilder(
-                scrollDirection: Axis.horizontal,
+                      //  scrollDirection: Axis.horizontal,
                       items: list,
                       itemBuilder: (BuildContext context, int index) {
                         return ItemTile(
