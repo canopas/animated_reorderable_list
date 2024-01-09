@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 import 'package:animated_reorderable_list/src/component/motion_animated_content.dart';
@@ -333,6 +334,7 @@ class MotionBuilderState extends State<MotionBuilder>
       if (_dragIndex != null && _items.containsKey(_dragIndex)) {
         final MotionAnimatedContentState dragItem = _items[_dragIndex]!;
         dragItem.dragging = false;
+        dragItem.dragSize = Size.zero;
         dragItem.rebuild();
         _dragIndex = null;
       }
@@ -372,20 +374,20 @@ class MotionBuilderState extends State<MotionBuilder>
 
     for (final MotionAnimatedContentState item in _items.values) {
       if (!item.mounted) continue;
-        final Rect geometry = item.targetGeometryNonOffset();
+      final Rect geometry = item.targetGeometryNonOffset();
 
-        if (geometry.contains(dragCenter)) {
-          newIndex = item.index;
-          break;
-        }
+      if (geometry.contains(dragCenter)) {
+        newIndex = item.index;
+        break;
       }
+    }
 
-      if (newIndex == _insertIndex) return;
-      _insertIndex = newIndex;
+    if (newIndex == _insertIndex) return;
+    _insertIndex = newIndex;
 
-      for (final MotionAnimatedContentState item in _items.values) {
-        item.updateForGap(_insertIndex!, true);
-      }
+    for (final MotionAnimatedContentState item in _items.values) {
+      item.updateForGap(_insertIndex!, true);
+    }
   }
 
   Offset calculateNextDragOffset(int index) {
@@ -394,13 +396,14 @@ class MotionBuilderState extends State<MotionBuilder>
     if (index < minPos || index > maxPos) return Offset.zero;
 
     final int direction = _insertIndex! > _dragIndex! ? -1 : 1;
-    return _itemOffsetAt(index + direction)! - _itemOffsetAt(index)!;
+    return _itemOffsetAt(index + direction) - _itemOffsetAt(index);
   }
 
   void registerItem(MotionAnimatedContentState item) {
     _items[item.index] = item;
     if (item.index == _dragInfo?.index) {
       item.dragging = true;
+      item.dragSize = _dragInfo!.itemSize;
       item.rebuild();
     }
   }
@@ -621,12 +624,12 @@ class MotionBuilderState extends State<MotionBuilder>
       return SizedBox.fromSize(size: _dragInfo!.itemSize);
     }
 
-    final Widget child = widget.itemBuilder(context, _itemIndexToIndex(index));
+    final Widget child = widgetBuilder(context, _itemIndexToIndex(index));
 
     assert(() {
       if (child.key == null) {
         throw FlutterError(
-          'Every item of MotionList must have a unique key.',
+          'Every item of AnimatedReorderableList must have a unique key.',
         );
       }
       return true;
@@ -658,6 +661,97 @@ class MotionBuilderState extends State<MotionBuilder>
   SliverChildDelegate _createDelegate() {
     return SliverChildBuilderDelegate(_itemBuilder, childCount: _itemsCount);
   }
+
+  Widget widgetBuilder(BuildContext context, int index) {
+    final Widget item = widget.itemBuilder(context, index);
+    assert(() {
+      if (item.key == null) {
+        throw FlutterError(
+          'Every item of AnimatedReorderableList must have a key.',
+        );
+      }
+      return true;
+    }());
+
+    final Widget itemWithSemantics = _wrapWithSemantics(item, index);
+    final Key itemGlobalKey = _MotionBuilderItemGlobalKey(item.key!, this);
+    // final bool enable = widget.itemDragEnable(index);
+    const bool enable = true;
+    return ReorderableGridDelayedDragStartListener(
+      key: itemGlobalKey,
+      index: index,
+      enabled: enable,
+      child: itemWithSemantics,
+    );
+  }
+
+
+  Widget _wrapWithSemantics(Widget child, int index) {
+    void reorder(int startIndex, int endIndex) {
+      if (startIndex != endIndex) {
+        widget.onRerder(startIndex, endIndex);
+      }
+    }
+
+    // First, determine which semantics actions apply.
+    final Map<CustomSemanticsAction, VoidCallback> semanticsActions =
+    <CustomSemanticsAction, VoidCallback>{};
+
+    // Create the appropriate semantics actions.
+    void moveToStart() => reorder(index, 0);
+    void moveToEnd() => reorder(index, _itemsCount);
+    void moveBefore() => reorder(index, index - 1);
+    // To move after, we go to index+2 because we are moving it to the space
+    // before index+2, which is after the space at index+1.
+    void moveAfter() => reorder(index, index + 2);
+
+    final MaterialLocalizations localizations =
+    MaterialLocalizations.of(context);
+
+    // If the item can move to before its current position in the grid.
+    if (index > 0) {
+      semanticsActions[
+      CustomSemanticsAction(label: localizations.reorderItemToStart)] =
+          moveToStart;
+      String reorderItemBefore = localizations.reorderItemUp;
+      if (widget.scrollDirection == Axis.horizontal) {
+        reorderItemBefore = Directionality.of(context) == TextDirection.ltr
+            ? localizations.reorderItemLeft
+            : localizations.reorderItemRight;
+      }
+      semanticsActions[CustomSemanticsAction(label: reorderItemBefore)] =
+          moveBefore;
+    }
+
+    // If the item can move to after its current position in the grid.
+    if (index < _itemsCount - 1) {
+      String reorderItemAfter = localizations.reorderItemDown;
+      if (widget.scrollDirection == Axis.horizontal) {
+        reorderItemAfter = Directionality.of(context) == TextDirection.ltr
+            ? localizations.reorderItemRight
+            : localizations.reorderItemLeft;
+      }
+      semanticsActions[CustomSemanticsAction(label: reorderItemAfter)] =
+          moveAfter;
+      semanticsActions[
+      CustomSemanticsAction(label: localizations.reorderItemToEnd)] =
+          moveToEnd;
+    }
+
+    // We pass toWrap with a GlobalKey into the item so that when it
+    // gets dragged, the accessibility framework can preserve the selected
+    // state of the dragging item.
+    //
+    // We also apply the relevant custom accessibility actions for moving the item
+    // up, down, to the start, and to the end of the grid.
+    return MergeSemantics(
+      child: Semantics(
+        customSemanticsActions: semanticsActions,
+        child: child,
+      ),
+    );
+  }
+
 
   Widget _removeItemBuilder(_ActiveItem outgoingItem, Widget child) {
     final Animation<double> animation =

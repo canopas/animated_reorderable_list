@@ -84,7 +84,7 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
           visible = true;
         });
       }
-     if (oldWidget.index != widget.index) _updateAnimationTranslation();
+     if (oldWidget.index != widget.index && !_dragging) _updateAnimationTranslation();
       widget.updateMotionData?.call(widget.motionData);
     });
     super.didUpdateWidget(oldWidget);
@@ -163,9 +163,6 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
 
   @override
   Widget build(BuildContext context) {
-    // if (_dragging) {
-    //   return const SizedBox.shrink();
-    // }
     listState.registerItem(this);
     return Visibility(
       maintainSize: true,
