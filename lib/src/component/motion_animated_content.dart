@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/widgets.dart';
 import 'package:animated_reorderable_list/src/model/motion_data.dart';
 
@@ -129,7 +127,7 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
     return _targetOffset;
   }
 
-  void updateForGap(int insertIndex,int dragIndex,double gapExtent, bool animate,bool reverse, isGrid) {
+  void updateForGap( bool animate) {
     if (!mounted) return;
     final Offset  newTargetOffset =listState.calculateNextDragOffset(index);
       if (newTargetOffset == _targetOffset) return;

@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:animated_reorderable_list/animated_reorderable_list.dart';
 
+import 'motion_list_impl.dart';
+
 class MotionListViewBuilder<E extends Object> extends StatelessWidget {
   /// The current list of items that this[MotionListViewBuilder] should represent.
   final List<E> items;

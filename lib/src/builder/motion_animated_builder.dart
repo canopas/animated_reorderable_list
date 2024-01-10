@@ -8,7 +8,9 @@ import 'package:flutter/widgets.dart';
 import 'package:animated_reorderable_list/src/component/motion_animated_content.dart';
 
 import '../../animated_reorderable_list.dart';
+import '../component/drag_listener.dart';
 import '../model/motion_data.dart';
+part '../component/drag_item.dart';
 
 typedef AnimatedWidgetBuilder<E> = Widget Function(
     BuildContext context, Widget child, Animation<double> animation);
@@ -181,8 +183,7 @@ class MotionBuilderState extends State<MotionBuilder>
       if (childItem == item || !childItem.mounted) {
         continue;
       }
-      item.updateForGap(_insertIndex!, _dragIndex!, _dragInfo!.itemExtent,
-          false, _reverse, isGrid);
+      item.updateForGap(false);
     }
     return _dragInfo;
   }
@@ -363,8 +364,7 @@ class MotionBuilderState extends State<MotionBuilder>
 
     for (final MotionAnimatedContentState item in _items.values) {
       if (item.index == _dragIndex) continue;
-      item.updateForGap(_insertIndex!, _dragIndex!, _dragInfo!.itemExtent, true,
-          _reverse, isGrid);
+      item.updateForGap(true);
     }
   }
 
@@ -655,7 +655,6 @@ class MotionBuilderState extends State<MotionBuilder>
 
     final Widget itemWithSemantics = _wrapWithSemantics(item, index);
     final Key itemGlobalKey = _MotionBuilderItemGlobalKey(item.key!, this);
-    // final bool enable = widget.itemDragEnable(index);
     const bool enable = true;
     return ReorderableGridDelayedDragStartListener(
       key: itemGlobalKey,
@@ -751,250 +750,6 @@ class MotionBuilderState extends State<MotionBuilder>
   }
 }
 
-typedef _DragItemUpdate = void Function(
-    _DragInfo item, Offset position, Offset delta);
-typedef _DragItemCallback = void Function(_DragInfo item);
-
-class _DragInfo extends Drag {
-  final bool gridView;
-  final Axis scrollDirection;
-  final _DragItemUpdate? onUpdate;
-  final _DragItemCallback? onEnd;
-  final _DragItemCallback? onCancel;
-  final VoidCallback? onDragCompleted;
-  final ReorderItemProxyDecorator? proxyDecorator;
-  final TickerProvider tickerProvider;
-
-  late MotionBuilderState listState;
-  late int index;
-  late Widget child;
-  late Offset dragPosition;
-  late Offset dragOffset;
-  late Size itemSize;
-  late double itemExtent;
-  late CapturedThemes capturedThemes;
-  ScrollableState? scrollable;
-  AnimationController? _proxyAnimation;
-
-  _DragInfo({
-    required MotionAnimatedContentState item,
-    Offset initialPosition = Offset.zero,
-    required this.gridView,
-    this.scrollDirection = Axis.vertical,
-    this.onUpdate,
-    this.onEnd,
-    this.onCancel,
-    this.onDragCompleted,
-    this.proxyDecorator,
-    required this.tickerProvider,
-  }) {
-    final RenderBox itemRenderBox =
-        item.context.findRenderObject()! as RenderBox;
-    listState = item.listState;
-    index = item.index;
-    child = item.widget.child;
-    capturedThemes = item.widget.capturedThemes!;
-    dragPosition = initialPosition;
-    dragOffset = itemRenderBox.globalToLocal(initialPosition);
-    itemSize = item.context.size!;
-    itemExtent = _sizeExtent(itemSize, scrollDirection);
-    scrollable = Scrollable.of(item.context);
-  }
-
-  void dispose() {
-    _proxyAnimation?.dispose();
-  }
-
-  void startDrag() {
-    _proxyAnimation = AnimationController(
-        vsync: tickerProvider, duration: const Duration(milliseconds: 250))
-      ..addStatusListener((status) {
-        if (status == AnimationStatus.dismissed) {
-          _dropCompleted();
-        }
-      })
-      ..forward();
-  }
-
-  @override
-  void update(DragUpdateDetails details) {
-    final Offset delta = !gridView
-        ? _restrictAxis(details.delta, scrollDirection)
-        : details.delta;
-    dragPosition += delta;
-    onUpdate?.call(this, dragPosition, details.delta);
-  }
-
-  @override
-  void end(DragEndDetails details) {
-    _proxyAnimation!.reverse();
-    onEnd?.call(this);
-  }
-
-  @override
-  void cancel() {
-    _proxyAnimation?.dispose();
-    _proxyAnimation = null;
-    onCancel?.call(this);
-  }
-
-  void _dropCompleted() {
-    _proxyAnimation?.dispose();
-    _proxyAnimation = null;
-    onDragCompleted?.call();
-  }
-
-  Widget createProxy(BuildContext context) {
-    return capturedThemes.wrap(_DragItemProxy(
-        listState: listState,
-        index: index,
-        position: dragPosition - dragOffset - _overlayOrigin(context),
-        size: itemSize,
-        animation: _proxyAnimation!,
-        proxyDecorator: proxyDecorator,
-        child: child));
-  }
-}
-
-class _DragItemProxy extends StatelessWidget {
-  final MotionBuilderState listState;
-  final int index;
-  final Widget child;
-  final Offset position;
-  final Size size;
-  final AnimationController animation;
-  final ReorderItemProxyDecorator? proxyDecorator;
-
-  const _DragItemProxy(
-      {required this.listState,
-      required this.index,
-      required this.child,
-      required this.position,
-      required this.size,
-      required this.animation,
-      required this.proxyDecorator});
-
-  @override
-  Widget build(BuildContext context) {
-    final Widget proxyChild =
-        proxyDecorator?.call(child, index, animation.view) ?? child;
-    final Offset overlayOrigin = _overlayOrigin(context);
-    return MediaQuery(
-        data: MediaQuery.of(context).removePadding(removeTop: true),
-        child: AnimatedBuilder(
-          animation: animation,
-          builder: (BuildContext context, Widget? child) {
-            Offset effectivePosition = position;
-            final Offset? dropPosition = listState._finalDropPosition;
-            if (dropPosition != null) {
-              effectivePosition = Offset.lerp(
-                  dropPosition - overlayOrigin,
-                  effectivePosition,
-                  Curves.easeOut.transform(animation.value))!;
-            }
-            return Positioned(
-                left: effectivePosition.dx,
-                top: effectivePosition.dy,
-                child: SizedBox(
-                  width: size.width,
-                  height: size.height,
-                  child: child,
-                ));
-          },
-          child: proxyChild,
-        ));
-  }
-}
-
-class ReorderableGridDragStartListener extends StatelessWidget {
-  /// Creates a listener for a drag immediately following a pointer down
-  /// event over the given child widget.
-  ///
-  /// This is most commonly used to wrap part of a grid item like a drag
-  /// handle.
-  const ReorderableGridDragStartListener({
-    Key? key,
-    required this.child,
-    required this.index,
-    this.enabled = true,
-  }) : super(key: key);
-
-  /// The widget for which the application would like to respond to a tap and
-  /// drag gesture by starting a reordering drag on a reorderable grid.
-  final Widget child;
-
-  /// The index of the associated item that will be dragged in the grid.
-  final int index;
-
-  /// Whether the [child] item can be dragged and moved in the grid.
-  ///
-  /// If true, the item can be moved to another location in the grid when the
-  /// user taps on the child. If false, tapping on the child will be ignored.
-  final bool enabled;
-
-  @override
-  Widget build(BuildContext context) {
-    return Listener(
-      onPointerDown: enabled
-          ? (PointerDownEvent event) => _startDragging(context, event)
-          : null,
-      child: child,
-    );
-  }
-
-  /// Provides the gesture recognizer used to indicate the start of a reordering
-  /// drag operation.
-  ///
-  /// By default this returns an [ImmediateMultiDragGestureRecognizer] but
-  /// subclasses can use this to customize the drag start gesture.
-  @protected
-  MultiDragGestureRecognizer createRecognizer() {
-    return ImmediateMultiDragGestureRecognizer(debugOwner: this);
-  }
-
-  void _startDragging(BuildContext context, PointerDownEvent event) {
-    final MotionBuilderState? list = MotionBuilder.maybeOf(context);
-    list?.startItemDragReorder(
-      index: index,
-      event: event,
-      recognizer: createRecognizer(),
-    );
-  }
-}
-
-/// A wrapper widget that will recognize the start of a drag operation by
-/// looking for a long press event. Once it is recognized, it will start
-/// a drag operation on the wrapped item in the reorderable grid.
-///
-/// See also:
-///
-///  * [ReorderableGridDragStartListener], a similar wrapper that will
-///    recognize the start of the drag immediately after a pointer down event.
-///  * [ReorderableGrid], a widget grid that allows the user to reorder
-///    its items.
-///  * [SliverReorderableGrid], a sliver grid that allows the user to reorder
-///    its items.
-///  * [ReorderableGridView], a material design grid that allows the user to
-///    reorder its items.
-class ReorderableGridDelayedDragStartListener
-    extends ReorderableGridDragStartListener {
-  /// Creates a listener for an drag following a long press event over the
-  /// given child widget.
-  ///
-  /// This is most commonly used to wrap an entire grid item in a reorderable
-  /// grid.
-  const ReorderableGridDelayedDragStartListener({
-    Key? key,
-    required Widget child,
-    required int index,
-    bool enabled = true,
-  }) : super(key: key, child: child, index: index, enabled: enabled);
-
-  @override
-  MultiDragGestureRecognizer createRecognizer() {
-    return DelayedMultiDragGestureRecognizer(debugOwner: this);
-  }
-}
 
 Offset _extentOffset(double extent, Axis scrollDirection) {
   switch (scrollDirection) {
@@ -1005,30 +760,6 @@ Offset _extentOffset(double extent, Axis scrollDirection) {
   }
 }
 
-double _sizeExtent(Size size, Axis scrollDirection) {
-  switch (scrollDirection) {
-    case Axis.horizontal:
-      return size.width;
-    case Axis.vertical:
-      return size.height;
-  }
-}
-
-Offset _restrictAxis(Offset offset, Axis scrollDirection) {
-  switch (scrollDirection) {
-    case Axis.horizontal:
-      return Offset(offset.dx, 0.0);
-    case Axis.vertical:
-      return Offset(0.0, offset.dy);
-  }
-}
-
-Offset _overlayOrigin(BuildContext context) {
-  final OverlayState overlay =
-      Overlay.of(context, debugRequiredFor: context.widget);
-  final RenderBox overlayBox = overlay.context.findRenderObject()! as RenderBox;
-  return overlayBox.localToGlobal(Offset.zero);
-}
 
 @optionalTypeArgs
 class _MotionBuilderItemGlobalKey extends GlobalObjectKey {
