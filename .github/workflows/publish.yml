@@ -9,14 +9,17 @@ on:
 
 jobs:
   setup:
-  - name: Set up Flutter SDK
-    uses: subosito/flutter-action@v2
-    with:
-      channel: stable
-      version: 3.3.7
+    runs-on: ubuntu-latest
 
-  - name: Get dependencies
-    run: flutter pub get
+    steps:
+     - name: Set up Flutter SDK
+       uses: subosito/flutter-action@v2
+       with:
+         channel: stable
+         version: 3.3.7
+
+     - name: Get dependencies
+       run: flutter pub get
 
   publish:
     permissions:
