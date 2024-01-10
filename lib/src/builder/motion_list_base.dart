@@ -11,9 +11,9 @@ typedef ItemBuilder<W extends Widget, E> = Widget Function(
 
 typedef EqualityChecker<E> = bool Function(E, E);
 
-const Duration _kInsertItemDuration = Duration(milliseconds: 300);
+const Duration kInsertItemDuration = Duration(milliseconds: 300);
 
-const Duration _kRemoveItemDuration = Duration(milliseconds: 300);
+const Duration kRemoveItemDuration = Duration(milliseconds: 300);
 
 abstract class MotionListBase<W extends Widget, E extends Object>
     extends StatefulWidget {
@@ -90,11 +90,11 @@ abstract class MotionListBaseState<
 
   @nonVirtual
   @protected
-  Duration get insertDuration => widget.insertDuration ?? _kInsertItemDuration;
+  Duration get insertDuration => widget.insertDuration ?? kInsertItemDuration;
 
   @nonVirtual
   @protected
-  Duration get removeDuration => widget.removeDuration ?? _kRemoveItemDuration;
+  Duration get removeDuration => widget.removeDuration ?? kRemoveItemDuration;
 
   @protected
   @nonVirtual

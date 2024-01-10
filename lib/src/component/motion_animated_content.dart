@@ -101,7 +101,7 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
       if (_offsetAnimation == null) {
         _offsetAnimation = AnimationController(
           vsync: listState,
-          duration: const Duration(seconds: 3),
+          duration: const Duration(milliseconds: 300),
         )
           ..addListener(rebuild)
           ..addStatusListener((AnimationStatus status) {
@@ -127,42 +127,43 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
     return _targetOffset;
   }
 
-  void updateForGap(int gapIndex, bool animate) {
+  void updateForGap( bool animate) {
     if (!mounted) return;
+    final Offset  newTargetOffset =listState.calculateNextDragOffset(index);
+      if (newTargetOffset == _targetOffset) return;
+      _targetOffset = newTargetOffset;
 
-    final Offset newTargetOffset = listState.calculateNextDragOffset(index);
-
-    if (newTargetOffset == _targetOffset) return;
-    _targetOffset = newTargetOffset;
-
-    if (animate) {
-      if (_offsetAnimation == null) {
-        _offsetAnimation = AnimationController(
-          vsync: listState,
-          duration: const Duration(milliseconds: 250),
-        )
-          ..addListener(rebuild)
-          ..addStatusListener((AnimationStatus status) {
-            if (status == AnimationStatus.completed) {
-              _startOffset = _targetOffset;
-              _offsetAnimation!.dispose();
-              _offsetAnimation = null;
-            }
-          })
-          ..forward();
+      if (animate) {
+        if (_offsetAnimation == null) {
+          _offsetAnimation = AnimationController(
+            vsync: listState,
+            duration: const Duration(milliseconds: 250),
+          )
+            ..addListener(rebuild)
+            ..addStatusListener((AnimationStatus status) {
+              if (status == AnimationStatus.completed) {
+                _startOffset = _targetOffset;
+                _offsetAnimation!.dispose();
+                _offsetAnimation = null;
+              }
+            })
+            ..forward();
+        } else {
+          _startOffset = offset;
+          _offsetAnimation!.forward(from: 0.0);
+        }
       } else {
-        _startOffset = offset;
-        _offsetAnimation!.forward(from: 0.0);
+        if (_offsetAnimation != null) {
+          _offsetAnimation!.dispose();
+          _offsetAnimation = null;
+        }
+        _startOffset = _targetOffset;
       }
-    } else {
-      if (_offsetAnimation != null) {
-        _offsetAnimation!.dispose();
-        _offsetAnimation = null;
-      }
-      _startOffset = _targetOffset;
-    }
-    rebuild();
+      rebuild();
+
   }
+
+
 
   @override
   Widget build(BuildContext context) {
