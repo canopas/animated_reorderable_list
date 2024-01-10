@@ -1,6 +1,6 @@
 name: CI Tests
 
-on: pull_requests
+on: pull_request
 jobs:
   test:
     runs-on: ubuntu-latest
