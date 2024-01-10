@@ -34,7 +34,7 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
 
   Offset get currentAnimatedOffset =>
       _positionController.isAnimating ? _offsetAnimation.value : Offset.zero;
-  bool visible = false;
+  bool visible = true;
 
   @override
   void initState() {
@@ -47,14 +47,10 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
     _offsetAnimation = Tween<Offset>(begin: Offset.zero, end: Offset.zero)
         .animate(_positionController)
       ..addListener(() {
-        if(_offsetAnimation.isCompleted){
-          visible = true;
-        }
         setState(() {});
       });
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      _positionController.forward(from: 0);
       widget.updateMotionData?.call(widget.motionData);
     });
 
