@@ -13,7 +13,6 @@ import '../model/motion_data.dart';
 typedef AnimatedWidgetBuilder<E> = Widget Function(
     BuildContext context, Widget child, Animation<double> animation);
 
-
 class MotionBuilder<E> extends StatefulWidget {
   final AnimatedWidgetBuilder<E> insertAnimationBuilder;
   final AnimatedWidgetBuilder<E> removeAnimationBuilder;
@@ -182,7 +181,8 @@ class MotionBuilderState extends State<MotionBuilder>
       if (childItem == item || !childItem.mounted) {
         continue;
       }
-      childItem.updateForGap(_insertIndex!, false);
+      item.updateForGap(_insertIndex!, _dragIndex!, _dragInfo!.itemExtent,
+          false, _reverse, isGrid);
     }
     return _dragInfo;
   }
@@ -362,7 +362,9 @@ class MotionBuilderState extends State<MotionBuilder>
     _insertIndex = newIndex;
 
     for (final MotionAnimatedContentState item in _items.values) {
-      item.updateForGap(_insertIndex!, true);
+      if (item.index == _dragIndex) continue;
+      item.updateForGap(_insertIndex!, _dragIndex!, _dragInfo!.itemExtent, true,
+          _reverse, isGrid);
     }
   }
 
@@ -372,7 +374,13 @@ class MotionBuilderState extends State<MotionBuilder>
     if (index < minPos || index > maxPos) return Offset.zero;
 
     final int direction = _insertIndex! > _dragIndex! ? -1 : 1;
-    return _itemOffsetAt(index + direction) - _itemOffsetAt(index);
+    if (isGrid) {
+      return _itemOffsetAt(index + direction) - _itemOffsetAt(index);
+    } else {
+      final Offset offset =
+          _extentOffset(_dragInfo!.itemExtent, scrollDirection);
+      return _insertIndex! > _dragIndex! ? -offset : offset;
+    }
   }
 
   void registerItem(MotionAnimatedContentState item) {
@@ -989,6 +997,15 @@ class ReorderableGridDelayedDragStartListener
   @override
   MultiDragGestureRecognizer createRecognizer() {
     return DelayedMultiDragGestureRecognizer(debugOwner: this);
+  }
+}
+
+Offset _extentOffset(double extent, Axis scrollDirection) {
+  switch (scrollDirection) {
+    case Axis.horizontal:
+      return Offset(extent, 0.0);
+    case Axis.vertical:
+      return Offset(0.0, extent);
   }
 }
 
