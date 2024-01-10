@@ -8,16 +8,6 @@ on:
     - '[0-9]+.[0-9]+.[0-9]+*'
 
 jobs:
-  set-up:
-    name: Generate Flutter SDK release
-    runs-on: ubuntu-latest
-    steps:
-      - name: Setup Flutter SDK
-        uses: flutter-actions/setup-flutter@v2
-        with:
-          channel: stable
-          version: 3.3.5
-
 
   publish:
     permissions:
