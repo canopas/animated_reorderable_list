@@ -474,8 +474,7 @@ class MotionBuilderState extends State<MotionBuilder>
 
     final motionData = MotionData(
         endOffset: Offset.zero,
-        startOffset: Offset.zero,
-        duration: insertDuration);
+        startOffset: Offset.zero);
 
     final updatedChildrenMap = <int, MotionData>{};
     if (childrenMap.containsKey(itemIndex)) {
@@ -483,18 +482,17 @@ class MotionBuilderState extends State<MotionBuilder>
         if (entry.key == itemIndex) {
           updatedChildrenMap[itemIndex] = motionData;
           updatedChildrenMap[entry.key + 1] = entry.value
-              .copyWith(index: entry.key + 1, duration: insertDuration);
+              .copyWith(index: entry.key + 1);
         } else if (entry.key > itemIndex) {
           updatedChildrenMap[entry.key + 1] = entry.value
-              .copyWith(index: entry.key + 1, duration: insertDuration);
+              .copyWith(index: entry.key + 1);
         } else {
-          updatedChildrenMap[entry.key] =
-              entry.value.copyWith(duration: insertDuration);
+          updatedChildrenMap[entry.key] = entry.value;
         }
       }
       childrenMap.clear();
       childrenMap.addAll(updatedChildrenMap);
-      Future.delayed(insertDuration).then((value) {
+      Future.delayed(kInsertItemDuration).then((value) {
         controller.forward().then<void>((_) {
           _removeActiveItemAt(_incomingItems, incomingItem.itemIndex)!
               .controller!
@@ -502,7 +500,7 @@ class MotionBuilderState extends State<MotionBuilder>
         });
       });
     } else {
-      childrenMap[itemIndex] = motionData.copyWith(duration: insertDuration);
+      childrenMap[itemIndex] = motionData;
       controller.forward().then<void>((_) {
         _removeActiveItemAt(_incomingItems, incomingItem.itemIndex)!
             .controller!
@@ -561,12 +559,12 @@ class MotionBuilderState extends State<MotionBuilder>
       for (final entry in childrenMap.entries) {
         if (entry.key < itemIndex) {
           updatedChildrenMap[entry.key] =
-              childrenMap[entry.key]!.copyWith(duration: removeDuration);
+              childrenMap[entry.key]!;
         } else if (entry.key == itemIndex) {
           continue;
         } else {
           updatedChildrenMap[entry.key - 1] = childrenMap[entry.key]!
-              .copyWith(index: entry.key - 1, duration: removeDuration);
+              .copyWith(index: entry.key - 1);
         }
       }
     }
