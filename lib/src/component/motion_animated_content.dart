@@ -51,6 +51,7 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
       });
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+
       widget.updateMotionData?.call(widget.motionData);
     });
 
