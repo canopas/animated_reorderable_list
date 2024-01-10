@@ -31,7 +31,6 @@ class MotionBuilder<E> extends StatefulWidget {
   State<MotionBuilder> createState() => MotionBuilderState();
 }
 
-
 class MotionBuilderState extends State<MotionBuilder>
     with TickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   final List<_ActiveItem> _incomingItems = <_ActiveItem>[];
@@ -140,7 +139,8 @@ class MotionBuilderState extends State<MotionBuilder>
     final motionData = MotionData(
         endOffset: Offset.zero,
         startOffset: Offset.zero,
-        duration: insertDuration);
+        duration: insertDuration,
+        visible: false);
 
     final updatedChildrenMap = <int, MotionData>{};
     if (childrenMap.containsKey(itemIndex)) {
@@ -148,10 +148,10 @@ class MotionBuilderState extends State<MotionBuilder>
         if (entry.key == itemIndex) {
           updatedChildrenMap[itemIndex] = motionData;
           updatedChildrenMap[entry.key + 1] = entry.value
-              .copyWith(index: entry.key + 1, duration: insertDuration);
+              .copyWith( duration: insertDuration);
         } else if (entry.key > itemIndex) {
           updatedChildrenMap[entry.key + 1] = entry.value
-              .copyWith(index: entry.key + 1, duration: insertDuration);
+              .copyWith( duration: insertDuration);
         } else {
           updatedChildrenMap[entry.key] =
               entry.value.copyWith(duration: insertDuration);
@@ -235,7 +235,7 @@ class MotionBuilderState extends State<MotionBuilder>
           continue;
         } else {
           updatedChildrenMap[entry.key - 1] = childrenMap[entry.key]!
-              .copyWith(index: entry.key - 1, duration: removeDuration);
+              .copyWith( duration: removeDuration);
         }
       }
     }
@@ -294,9 +294,11 @@ class MotionBuilderState extends State<MotionBuilder>
       key: itemGlobalKey,
       motionData: motionData,
       updateMotionData: (MotionData motionData) {
+        final itemOffset= _itemOffsetAt(index);
         childrenMap[index] = motionData.copyWith(
-          startOffset: _itemOffsetAt(index),
-          endOffset: _itemOffsetAt(index),
+          startOffset: itemOffset,
+          endOffset: itemOffset,
+          visible: true
         );
       },
       child: builder,
