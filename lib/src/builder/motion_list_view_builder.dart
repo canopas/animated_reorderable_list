@@ -36,7 +36,6 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
 
   /// The duration of the animation when an item was removed from the list.
   final Duration? removeDuration;
-
   /// {@template flutter.widgets.scroll_view.reverse}
   /// Whether the scroll view scrolls in the reading direction.
   ///
