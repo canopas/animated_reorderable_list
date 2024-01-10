@@ -27,8 +27,8 @@ abstract class MotionListBase<W extends Widget, E extends Object>
       {Key? key,
       required this.items,
       required this.itemBuilder,
-        this.enterTransition,
-        this.exitTransition,
+      this.enterTransition,
+      this.exitTransition,
       this.insertDuration,
       this.removeDuration,
       this.scrollDirection,
@@ -46,8 +46,8 @@ abstract class MotionListBaseState<
   Duration _enterDuration = _kAnimationDuration;
   Duration _exitDuration = _kAnimationDuration;
 
-   List<EffectEntry> _enterAnimations=[];
-   List<EffectEntry> _exitAnimations=[];
+  List<EffectEntry> _enterAnimations = [];
+  List<EffectEntry> _exitAnimations = [];
 
   Duration get enterDuration => _enterDuration;
 
@@ -127,7 +127,6 @@ abstract class MotionListBaseState<
 
   void addEffect(AnimationEffect effect, List<EffectEntry> enteries,
       {required bool enter}) {
-
     Duration zero = Duration.zero;
 
     if (effect.duration != null) {

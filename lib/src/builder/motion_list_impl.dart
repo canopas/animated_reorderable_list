@@ -15,16 +15,16 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
     Axis? scrollDirection,
     EqualityChecker<E>? areItemsTheSame,
   }) : super(
-            key: key,
-            items: items,
-            itemBuilder: itemBuilder,
-            insertDuration: insertDuration,
-            removeDuration: removeDuration,
-            enterTransition: enterTransition,
-            exitTransition: exitTransition,
-            scrollDirection: scrollDirection,
-            areItemsTheSame: areItemsTheSame,
-     );
+          key: key,
+          items: items,
+          itemBuilder: itemBuilder,
+          insertDuration: insertDuration,
+          removeDuration: removeDuration,
+          enterTransition: enterTransition,
+          exitTransition: exitTransition,
+          scrollDirection: scrollDirection,
+          areItemsTheSame: areItemsTheSame,
+        );
 
   const MotionListImpl.grid({
     Key? key,
@@ -37,16 +37,16 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
     Duration? removeDuration,
     Axis? scrollDirection,
   }) : super(
-            key: key,
-            items: items,
-            itemBuilder: itemBuilder,
-            sliverGridDelegate: sliverGridDelegate,
-            enterTransition: enterTransition,
-            exitTransition: exitTransition,
-            insertDuration: insertDuration,
-            removeDuration: removeDuration,
-            scrollDirection: scrollDirection,
-            );
+          key: key,
+          items: items,
+          itemBuilder: itemBuilder,
+          sliverGridDelegate: sliverGridDelegate,
+          enterTransition: enterTransition,
+          exitTransition: exitTransition,
+          insertDuration: insertDuration,
+          removeDuration: removeDuration,
+          scrollDirection: scrollDirection,
+        );
 
   @override
   MotionListImplState<E> createState() => MotionListImplState<E>();

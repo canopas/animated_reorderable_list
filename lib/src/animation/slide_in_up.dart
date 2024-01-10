@@ -7,16 +7,16 @@ class SlideInUp extends AnimationEffect<Offset> {
   final Offset? begin;
   final Offset? end;
 
-  SlideInUp(
-      {super.delay, super.duration, super.curve, this.begin, this.end});
+  SlideInUp({super.delay, super.duration, super.curve, this.begin, this.end});
 
   @override
   Widget build(BuildContext context, Widget child, Animation<double> animation,
       EffectEntry entry) {
-    final Animation<Offset> position = buildAnimation(entry,begin: begin ?? beginValue, end: end??endValue).animate(animation);
+    final Animation<Offset> position =
+        buildAnimation(entry, begin: begin ?? beginValue, end: end ?? endValue)
+            .animate(animation);
     return ClipRect(
-      clipBehavior: Clip.hardEdge,
+        clipBehavior: Clip.hardEdge,
         child: SlideTransition(position: position, child: child));
   }
 }
-

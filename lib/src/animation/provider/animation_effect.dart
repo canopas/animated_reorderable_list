@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 
-
 abstract class AnimationEffect<T> {
   final Duration? delay;
   final Duration? duration;
@@ -17,7 +16,8 @@ abstract class AnimationEffect<T> {
     return child;
   }
 
-  Animatable<T> buildAnimation(EffectEntry entry, {required T begin, required T end}) {
+  Animatable<T> buildAnimation(EffectEntry entry,
+      {required T begin, required T end}) {
     return Tween<T>(begin: begin, end: end).chain(entry.buildAnimation());
   }
 }
@@ -65,4 +65,3 @@ class EffectEntry {
     return "delay: $delay, Duration: $duration, curve: $curve, begin: $begin, end: $end, Effect: $animationEffect";
   }
 }
-

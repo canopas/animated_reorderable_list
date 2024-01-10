@@ -11,8 +11,11 @@ class ScaleInRight extends AnimationEffect<double> {
       {super.delay, super.duration, super.curve, this.begin, this.end});
 
   @override
-  Widget build(BuildContext context, Widget child, Animation<double> animation,EffectEntry entry){
-    final Animation<double> scale= buildAnimation(entry,begin: begin ?? beginValue, end: endValue).animate(animation);
+  Widget build(BuildContext context, Widget child, Animation<double> animation,
+      EffectEntry entry) {
+    final Animation<double> scale =
+        buildAnimation(entry, begin: begin ?? beginValue, end: endValue)
+            .animate(animation);
     return ScaleTransition(
       alignment: Alignment.centerRight,
       scale: scale,
@@ -20,4 +23,3 @@ class ScaleInRight extends AnimationEffect<double> {
     );
   }
 }
-

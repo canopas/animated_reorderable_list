@@ -29,4 +29,3 @@ class FlipInX extends AnimationEffect<double> {
         child: child);
   }
 }
-

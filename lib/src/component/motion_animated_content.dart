@@ -40,7 +40,7 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
   void initState() {
     _listState = MotionBuilderState.of(context);
     _listState.registerItem(this);
-    visible= widget.motionData.visible;
+    visible = widget.motionData.visible;
 
     _positionController =
         AnimationController(vsync: this, duration: widget.motionData.duration);
@@ -49,8 +49,8 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
         .animate(_positionController)
       ..addListener(() {
         setState(() {});
-        if(_offsetAnimation.isCompleted){
-          visible=true;
+        if (_offsetAnimation.isCompleted) {
+          visible = true;
         }
       });
 

@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:example/utils/extension.dart';
 import 'package:example/utils/item_card.dart';
 import 'package:example/utils/item_tile.dart';

@@ -7,14 +7,13 @@ class Landing extends AnimationEffect<double> {
   final double? begin;
   final double? end;
 
-  Landing(
-      {super.delay, super.duration, super.curve, this.begin, this.end});
+  Landing({super.delay, super.duration, super.curve, this.begin, this.end});
 
   @override
   Widget build(BuildContext context, Widget child, Animation<double> animation,
       EffectEntry entry) {
     final Animation<double> scale =
-        buildAnimation(entry,begin: begin ?? beginValue, end:end ?? endValue)
+        buildAnimation(entry, begin: begin ?? beginValue, end: end ?? endValue)
             .animate(animation);
     return FadeTransition(
       opacity: animation,
@@ -25,5 +24,3 @@ class Landing extends AnimationEffect<double> {
     );
   }
 }
-
-

@@ -147,11 +147,11 @@ class MotionBuilderState extends State<MotionBuilder>
       for (final entry in childrenMap.entries) {
         if (entry.key == itemIndex) {
           updatedChildrenMap[itemIndex] = motionData;
-          updatedChildrenMap[entry.key + 1] = entry.value
-              .copyWith( duration: insertDuration);
+          updatedChildrenMap[entry.key + 1] =
+              entry.value.copyWith(duration: insertDuration);
         } else if (entry.key > itemIndex) {
-          updatedChildrenMap[entry.key + 1] = entry.value
-              .copyWith( duration: insertDuration);
+          updatedChildrenMap[entry.key + 1] =
+              entry.value.copyWith(duration: insertDuration);
         } else {
           updatedChildrenMap[entry.key] =
               entry.value.copyWith(duration: insertDuration);
@@ -234,8 +234,8 @@ class MotionBuilderState extends State<MotionBuilder>
         } else if (entry.key == itemIndex) {
           continue;
         } else {
-          updatedChildrenMap[entry.key - 1] = childrenMap[entry.key]!
-              .copyWith( duration: removeDuration);
+          updatedChildrenMap[entry.key - 1] =
+              childrenMap[entry.key]!.copyWith(duration: removeDuration);
         }
       }
     }
@@ -294,12 +294,9 @@ class MotionBuilderState extends State<MotionBuilder>
       key: itemGlobalKey,
       motionData: motionData,
       updateMotionData: (MotionData motionData) {
-        final itemOffset= _itemOffsetAt(index);
+        final itemOffset = _itemOffsetAt(index);
         childrenMap[index] = motionData.copyWith(
-          startOffset: itemOffset,
-          endOffset: itemOffset,
-          visible: true
-        );
+            startOffset: itemOffset, endOffset: itemOffset, visible: true);
       },
       child: builder,
     );

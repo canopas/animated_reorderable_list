@@ -7,17 +7,17 @@ class ScaleIn extends AnimationEffect<double> {
   final double? begin;
   final double? end;
 
-  ScaleIn(
-      {super.delay, super.duration, super.curve, this.begin, this.end});
+  ScaleIn({super.delay, super.duration, super.curve, this.begin, this.end});
 
   @override
-  Widget build(BuildContext context, Widget child, Animation<double> animation,EffectEntry entry){
-    final Animation<double> scale= buildAnimation(entry,begin: begin ?? beginValue, end: endValue).animate(animation);
+  Widget build(BuildContext context, Widget child, Animation<double> animation,
+      EffectEntry entry) {
+    final Animation<double> scale =
+        buildAnimation(entry, begin: begin ?? beginValue, end: endValue)
+            .animate(animation);
     return ScaleTransition(
       scale: scale,
       child: child,
     );
   }
 }
-
-
