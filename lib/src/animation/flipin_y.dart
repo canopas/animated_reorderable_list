@@ -1,22 +1,27 @@
 import 'dart:math';
 
+import 'package:animated_reorderable_list/src/animation/provider/animation_effect.dart';
 import 'package:flutter/cupertino.dart';
 
-class FlipInY extends StatelessWidget {
-  final Animation<double> animation;
-  final Widget child;
+class FlipInY extends AnimationEffect<double> {
+  static const double beginValue = pi / 2;
+  static const double endValue = 0.0;
+  final double? begin;
+  final double? end;
 
-  const FlipInY({Key? key, required this.animation, required this.child})
-      : super(key: key);
+  FlipInY({super.delay, super.duration, super.curve, this.begin, this.end});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, Widget child, Animation<double> animation,
+      EffectEntry entry) {
+    final Animation<double> rotation =
+        buildAnimation(entry, begin: begin ?? beginValue, end: endValue)
+            .animate(animation);
     return AnimatedBuilder(
-      animation: animation,
+      animation: rotation,
       builder: (BuildContext context, Widget? child) {
-        final rotateAnim = Tween(begin: pi / 2, end: 0.0).animate(animation);
         return Transform(
-          transform: Matrix4.rotationY(rotateAnim.value),
+          transform: Matrix4.rotationY(rotation.value),
           alignment: Alignment.center,
           child: child,
         );

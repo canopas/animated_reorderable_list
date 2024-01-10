@@ -40,6 +40,7 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
   void initState() {
     _listState = MotionBuilderState.of(context);
     _listState.registerItem(this);
+    visible = widget.motionData.visible;
 
     _positionController =
         AnimationController(vsync: this, duration: widget.motionData.duration);
@@ -48,9 +49,13 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
         .animate(_positionController)
       ..addListener(() {
         setState(() {});
+        if (_offsetAnimation.isCompleted) {
+          visible = true;
+        }
       });
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _positionController.forward();
       widget.updateMotionData?.call(widget.motionData);
     });
 
@@ -96,7 +101,6 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
   Offset itemOffset() {
     final box = context.findRenderObject() as RenderBox?;
     if (box == null) return Offset.zero;
-
     return box.localToGlobal(Offset.zero);
   }
 
@@ -104,6 +108,9 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
   Widget build(BuildContext context) {
     _listState.registerItem(this);
     return Visibility(
+      maintainSize: true,
+      maintainAnimation: true,
+      maintainState: true,
       visible: visible,
       child: Transform.translate(
           offset: _offsetAnimation.value,

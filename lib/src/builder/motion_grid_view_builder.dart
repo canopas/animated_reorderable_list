@@ -11,13 +11,15 @@ class MotionGridViewBuilder<E extends Object> extends StatelessWidget {
   ///Called, as needed, to build list item widget
   final ItemBuilder<Widget, E> itemBuilder;
 
-  /// AnimationStyle when item is added in the list.
-  final AnimationType insertAnimation;
-
-  /// AnimationStyle when item is removed from the list.
+  ///List of [AnimationEffect](s) used for the appearing animation when item is added in the list.
   ///
-  /// If not specified, it is same as insertAnimation.
-  final AnimationType? removeAnimation;
+  ///Defaults to [FadeAnimation()]
+  final List<AnimationEffect>? enterTransition;
+
+  ///List of [AnimationEffect](s) used for the disappearing animation when item is removed from list.
+  ///
+  ///Defaults to [FadeAnimation()]
+  final List<AnimationEffect>? exitTransition;
 
   /// The axis along which the scroll view scrolls.
   ///
@@ -110,11 +112,11 @@ class MotionGridViewBuilder<E extends Object> extends StatelessWidget {
       {Key? key,
       required this.items,
       required this.itemBuilder,
-      this.insertAnimation = AnimationType.fadeIn,
-      this.removeAnimation,
+      required this.sliverGridDelegate,
+      this.enterTransition,
+      this.exitTransition,
       this.insertDuration,
       this.removeDuration,
-      required this.sliverGridDelegate,
       this.scrollDirection = Axis.vertical,
       this.reverse = false,
       this.controller,
@@ -144,8 +146,8 @@ class MotionGridViewBuilder<E extends Object> extends StatelessWidget {
           MotionListImpl.grid(
             items: items,
             itemBuilder: itemBuilder,
-            insertAnimationType: insertAnimation,
-            removeAnimationType: removeAnimation ?? insertAnimation,
+            enterTransition: enterTransition,
+            exitTransition: exitTransition,
             insertDuration: insertDuration,
             removeDuration: removeDuration,
             scrollDirection: scrollDirection,

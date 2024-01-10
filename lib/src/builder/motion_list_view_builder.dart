@@ -2,6 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:animated_reorderable_list/animated_reorderable_list.dart';
 
+///  enterTransition: [FadeEffect(), ScaleEffect()],
+///
+/// Effects are always run in parallel (ie. the fade and scale effects in the
+/// example above would be run simultaneously), but you can apply delays to
+/// offset them or run them in sequence.
+
 class MotionListViewBuilder<E extends Object> extends StatelessWidget {
   /// The current list of items that this[MotionListViewBuilder] should represent.
   final List<E> items;
@@ -9,13 +15,15 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
   ///Called, as needed, to build list item widget
   final ItemBuilder itemBuilder;
 
-  /// AnimationStyle when item is added in the list.
-  final AnimationType insertAnimation;
-
-  /// AnimationStyle when item is removed from the list.
+  ///List of [AnimationEffect](s) used for the appearing animation when an item was inserted into the list.
   ///
-  /// If not specified, it is same as insertAnimation.
-  final AnimationType? removeAnimation;
+  ///Defaults to [FadeAnimation()]
+  final List<AnimationEffect>? enterTransition;
+
+  ///List of [AnimationEffect](s) used for the disappearing animation when an item was removed from the list.
+  ///
+  ///Defaults to [FadeAnimation()]
+  final List<AnimationEffect>? exitTransition;
 
   /// The axis along which the scroll view scrolls.
   ///
@@ -23,10 +31,10 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
   final Axis scrollDirection;
 
   /// The duration of the animation when an item was inserted into the list.
-  final Duration insertDuration;
+  final Duration? insertDuration;
 
   /// The duration of the animation when an item was removed from the list.
-  final Duration removeDuration;
+  final Duration? removeDuration;
 
   /// {@template flutter.widgets.scroll_view.reverse}
   /// Whether the scroll view scrolls in the reading direction.
@@ -101,10 +109,10 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
       {Key? key,
       required this.items,
       required this.itemBuilder,
-      this.insertAnimation = AnimationType.fadeIn,
-      this.removeAnimation,
-      this.insertDuration = const Duration(milliseconds: 300),
-      this.removeDuration = const Duration(milliseconds: 300),
+      this.enterTransition,
+      this.exitTransition,
+      this.insertDuration,
+      this.removeDuration,
       this.scrollDirection = Axis.vertical,
       this.reverse = false,
       this.controller,
@@ -134,8 +142,8 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
           MotionListImpl(
             items: items,
             itemBuilder: itemBuilder,
-            insertAnimationType: insertAnimation,
-            removeAnimationType: removeAnimation ?? insertAnimation,
+            enterTransition: enterTransition,
+            exitTransition: exitTransition,
             insertDuration: insertDuration,
             removeDuration: removeDuration,
             scrollDirection: scrollDirection,

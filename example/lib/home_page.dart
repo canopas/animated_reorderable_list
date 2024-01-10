@@ -25,6 +25,8 @@ class _HomePageState extends State<HomePage> {
   int addedNumber = 9;
   bool isGrid = true;
 
+  List<AnimationEffect> animations = [FadeIn()];
+
   void insert() {
     addedNumber += 1;
     setState(() {
@@ -69,6 +71,10 @@ class _HomePageState extends State<HomePage> {
                     if (animationType == null) {
                       return;
                     }
+                    animations = [];
+                    AnimationEffect animation =
+                        AnimationProvider.buildAnimation(animationType);
+                    animations.add(animation);
                     setState(() {
                       appliedStyle = animationType;
                     });
@@ -154,8 +160,8 @@ class _HomePageState extends State<HomePage> {
                             key: Key(list[index].name),
                             index: list[index].index);
                       },
-                      insertAnimation: appliedStyle,
-                      removeAnimation: appliedStyle,
+                      enterTransition: animations,
+                      exitTransition: animations,
                       insertDuration: const Duration(milliseconds: 300),
                       removeDuration: const Duration(milliseconds: 300),
                       sliverGridDelegate:
@@ -169,15 +175,64 @@ class _HomePageState extends State<HomePage> {
                             key: Key(list[index].name),
                             index: list[index].index);
                       },
+                      enterTransition: animations,
+                      exitTransition: animations,
                       insertDuration: const Duration(milliseconds: 300),
                       removeDuration: const Duration(milliseconds: 300),
-                      insertAnimation: appliedStyle,
-                      removeAnimation: appliedStyle,
                     ),
             ),
           ],
         ),
       ),
     );
+  }
+}
+
+enum AnimationType {
+  fadeIn,
+  flipInY,
+  flipInX,
+  landing,
+  scaleIn,
+  scaleInTop,
+  scaleInBottom,
+  scaleInLeft,
+  scaleInRight,
+  slideInLeft,
+  slideInRight,
+  slideInDown,
+  slideInUp,
+}
+
+class AnimationProvider {
+  static AnimationEffect buildAnimation(AnimationType animationType) {
+    switch (animationType) {
+      case (AnimationType.fadeIn):
+        return FadeIn();
+      case (AnimationType.flipInY):
+        return FlipInY();
+      case (AnimationType.flipInX):
+        return FlipInX();
+      case (AnimationType.landing):
+        return Landing();
+      case (AnimationType.scaleIn):
+        return ScaleIn();
+      case (AnimationType.scaleInTop):
+        return ScaleInTop();
+      case (AnimationType.scaleInBottom):
+        return ScaleInBottom();
+      case (AnimationType.scaleInLeft):
+        return ScaleInLeft();
+      case (AnimationType.scaleInRight):
+        return ScaleInRight();
+      case (AnimationType.slideInLeft):
+        return SlideInLeft();
+      case (AnimationType.slideInRight):
+        return SlideInRight();
+      case (AnimationType.slideInUp):
+        return SlideInUp();
+      case (AnimationType.slideInDown):
+        return SlideInDown();
+    }
   }
 }
