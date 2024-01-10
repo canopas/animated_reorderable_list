@@ -31,6 +31,5 @@ class MotionData {
           endOffset == other.endOffset;
 
   @override
-  int get hashCode => startOffset.hashCode^endOffset.hashCode;
-
+  int get hashCode => startOffset.hashCode ^ endOffset.hashCode;
 }

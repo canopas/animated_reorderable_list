@@ -37,7 +37,6 @@ class MotionGridViewBuilder<E extends Object> extends StatelessWidget {
   /// but it is more efficient to place tiles in roughly in order by scroll offset because grids reify a contiguous sequence of children.
   final SliverGridDelegate sliverGridDelegate;
 
-
   /// {@template flutter.widgets.scroll_view.reverse}
   /// Whether the scroll view scrolls in the reading direction.
   ///

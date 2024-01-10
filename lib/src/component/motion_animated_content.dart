@@ -4,7 +4,6 @@ import 'package:animated_reorderable_list/src/model/motion_data.dart';
 import '../builder/motion_animated_builder.dart';
 
 class MotionAnimatedContent extends StatefulWidget {
-
   final int index;
   final MotionData motionData;
   final Widget? child;
