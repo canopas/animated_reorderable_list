@@ -103,7 +103,7 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
       if (_offsetAnimation == null) {
         _offsetAnimation = AnimationController(
           vsync: listState,
-          duration: const Duration(seconds: 3),
+          duration: const Duration(milliseconds: 300),
         )
           ..addListener(rebuild)
           ..addStatusListener((AnimationStatus status) {

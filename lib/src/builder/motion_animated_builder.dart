@@ -532,11 +532,9 @@ class MotionBuilderState extends State<MotionBuilder>
               duration: removeItemDuration, value: 1.0, vsync: this);
       final _ActiveItem outgoingItem =
           _ActiveItem.animation(controller, itemIndex);
-      //setState(() {
       _outgoingItems
         ..add(outgoingItem)
         ..sort();
-      // });
 
       controller.reverse().then<void>((void value) {
         _removeActiveItemAt(_outgoingItems, outgoingItem.itemIndex)!
