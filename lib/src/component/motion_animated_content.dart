@@ -60,14 +60,8 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
   void initState() {
     listState = MotionBuilder.of(context);
     listState.registerItem(this);
-    _offsetAnimation = AnimationController(
-      vsync: listState,
-      duration: const Duration(milliseconds: 250),
-    )
-      ..addListener(rebuild);
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      _positionController.forward();
       widget.updateMotionData?.call(widget.motionData);
     });
 

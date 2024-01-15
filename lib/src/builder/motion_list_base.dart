@@ -11,7 +11,7 @@ typedef ItemBuilder<W extends Widget, E> = Widget Function(
 
 typedef EqualityChecker<E> = bool Function(E, E);
 
-const Duration _kAnimationDuration = Duration(milliseconds: 300);
+const Duration kAnimationDuration = Duration(milliseconds: 300);
 
 abstract class MotionListBase<W extends Widget, E extends Object>
     extends StatefulWidget {
@@ -53,8 +53,8 @@ abstract class MotionListBaseState<
     E extends Object> extends State<B> with TickerProviderStateMixin {
   late List<E> oldList;
 
-  Duration _enterDuration = _kAnimationDuration;
-  Duration _exitDuration = _kAnimationDuration;
+  Duration _enterDuration = kAnimationDuration;
+  Duration _exitDuration = kAnimationDuration;
 
   List<EffectEntry> _enterAnimations = [];
   List<EffectEntry> _exitAnimations = [];
@@ -80,8 +80,8 @@ abstract class MotionListBaseState<
 
   @nonVirtual
   @protected
-  Duration get insertDuration => widget.insertDuration ?? enterDuration;
   ReorderCallback? get onReorder=> widget.onReorder;
+
   @nonVirtual
   @protected
   void Function(int)? get onReorderStart=> widget.onReorderStart;
@@ -97,7 +97,7 @@ abstract class MotionListBaseState<
 
   @nonVirtual
   @protected
-  Duration get insertDuration => widget.insertDuration ?? kInsertItemDuration;
+  Duration get insertDuration => widget.insertDuration ?? enterDuration;
 
   @nonVirtual
   @protected

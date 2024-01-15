@@ -475,7 +475,6 @@ class MotionBuilderState extends State<MotionBuilder>
     final motionData = MotionData(
         endOffset: Offset.zero,
         startOffset: Offset.zero,
-        duration: insertDuration,
         visible: false);
 
     final updatedChildrenMap = <int, MotionData>{};
@@ -495,7 +494,7 @@ class MotionBuilderState extends State<MotionBuilder>
       childrenMap.clear();
       childrenMap.addAll(updatedChildrenMap);
 
-      Future.delayed(kInsertItemDuration).then((value) {
+      Future.delayed(kAnimationDuration).then((value) {
         controller.forward().then<void>((_) {
           _removeActiveItemAt(_incomingItems, incomingItem.itemIndex)!
               .controller!

@@ -21,6 +21,18 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
   ///
   ///Defaults to [FadeAnimation()]
   final List<AnimationEffect>? enterTransition;
+
+  ///List of [AnimationEffect](s) used for the disappearing animation when an item was removed from the list.
+  ///
+  ///Defaults to [FadeAnimation()]
+  final List<AnimationEffect>? exitTransition;
+
+  /// The duration of the animation when an item was inserted into the list.
+  final Duration? insertDuration;
+
+  /// The duration of the animation when an item was removed from the list.
+  final Duration? removeDuration;
+
   /// A callback used by [ReorderableList] to report that a list item has moved
   /// to a new position in the list.
   ///
@@ -40,24 +52,10 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
   /// dropped in the same location.
   final void Function(int)? onReorderEnd;
 
-  /// AnimationStyle when item is added in the list.
-  final AnimationType insertAnimation;
-
-  ///List of [AnimationEffect](s) used for the disappearing animation when an item was removed from the list.
-  ///
-  ///Defaults to [FadeAnimation()]
-  final List<AnimationEffect>? exitTransition;
-
   /// The axis along which the scroll view scrolls.
   ///
   /// Defaults to [Axis.vertical].
   final Axis scrollDirection;
-
-  /// The duration of the animation when an item was inserted into the list.
-  final Duration? insertDuration;
-
-  /// The duration of the animation when an item was removed from the list.
-  final Duration? removeDuration;
 
   /// {@template flutter.widgets.reorderable_list.proxyDecorator}
   /// A callback that allows the app to add an animated decoration around
@@ -145,14 +143,14 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
       {Key? key,
       required this.items,
       required this.itemBuilder,
-      this.onReorder,
-      this.onReorderStart,
-      this.onReorderEnd,
-      this.proxyDecorator,
       this.enterTransition,
       this.exitTransition,
       this.insertDuration,
       this.removeDuration,
+      this.onReorder,
+      this.onReorderStart,
+      this.onReorderEnd,
+      this.proxyDecorator,
       this.scrollDirection = Axis.vertical,
       this.padding,
       this.reverse = false,
@@ -187,12 +185,13 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
               itemBuilder: itemBuilder,
               enterTransition: enterTransition,
               exitTransition: exitTransition,
+              insertDuration: insertDuration,
+              removeDuration: removeDuration,
               onReorder: onReorder,
               onReorderStart: onReorderStart,
               onReorderEnd: onReorderEnd,
               proxyDecorator: proxyDecorator,
-              insertDuration: insertDuration,
-              removeDuration: removeDuration,
+
               scrollDirection: scrollDirection,
             ),
           ),
