@@ -25,7 +25,7 @@ class _HomePageState extends State<HomePage> {
   int addedNumber = 9;
   bool isGrid = true;
 
-  List<AnimationEffect> animations = [FlipInX(curve: Curves.easeInBack)];
+  List<AnimationEffect> animations = [];
 
   void insert() {
     addedNumber += 1;
@@ -161,15 +161,9 @@ class _HomePageState extends State<HomePage> {
                               key: Key(list[index].name),
                               index: list[index].index);
                         },
-                        insertItemBuilder: (Widget child,
-                            Animation<double> animation) {
-                          return SizeTransition(
-                              sizeFactor: animation,
-                              child: child);
-                        },
                         enterTransition: animations,
                         exitTransition: animations,
-                        insertDuration: const Duration(seconds: 3),
+                        insertDuration: const Duration(milliseconds: 300),
                         removeDuration: const Duration(milliseconds: 300),
                         onReorder: (int oldIndex, int newIndex) {
                           setState(() {
@@ -187,18 +181,6 @@ class _HomePageState extends State<HomePage> {
                           return ItemTile(
                               key: Key(list[index].name),
                               index: list[index].index);
-                        },
-                        insertItemBuilder: (Widget child,
-                            Animation<double> animation) {
-                          return ScaleTransition(
-                              scale: animation,
-                              child: child);
-                        },
-                        removeItemBuilder: (Widget child,
-                            Animation<double> animation) {
-                          return ScaleTransition(
-                              scale: animation,
-                              child: child);
                         },
                         onReorder: (int oldIndex, int newIndex) {
                           setState(() {
