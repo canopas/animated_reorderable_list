@@ -8,15 +8,20 @@ import 'package:flutter/widgets.dart';
 import '../component/drag_listener.dart';
 import '../model/motion_data.dart';
 import 'motion_list_base.dart';
+
 part '../component/drag_item.dart';
+
 part '../component/motion_animated_content.dart';
 
-typedef AnimatedWidgetBuilder<E> = Widget Function(
+// typedef AnimatedWidgetBuilder<E> = Widget Function(
+//     BuildContext context, Widget child, Animation<double> animation);
+
+typedef CustomAnimatedWidgetBuilder<E> = Widget Function(
     BuildContext context, Widget child, Animation<double> animation);
 
 class MotionBuilder<E> extends StatefulWidget {
-  final AnimatedWidgetBuilder<E> insertAnimationBuilder;
-  final AnimatedWidgetBuilder<E> removeAnimationBuilder;
+  final CustomAnimatedWidgetBuilder<E> insertAnimationBuilder;
+  final CustomAnimatedWidgetBuilder<E> removeAnimationBuilder;
   final ReorderCallback? onReorder;
   final void Function(int index)? onReorderStart;
   final void Function(int index)? onReorderEnd;
@@ -614,7 +619,8 @@ class MotionBuilderState extends State<MotionBuilder>
     }());
 
     final Key itemGlobalKey = _MotionBuilderItemGlobalKey(child.key!, this);
-    final Widget builder = _insertItemBuilder(incomingItem, child);
+    final Widget builder =
+        _insertItemBuilder(incomingItem,  child);
 
     final motionData = childrenMap[index];
     if (motionData == null) return builder;
@@ -732,17 +738,18 @@ class MotionBuilderState extends State<MotionBuilder>
     return widget.removeAnimationBuilder(
       context,
       child,
-      animation,
+      animation
     );
   }
 
-  Widget _insertItemBuilder(_ActiveItem? incomingItem, Widget child) {
+  Widget _insertItemBuilder(
+      _ActiveItem? incomingItem, Widget child) {
     final Animation<double> animation =
         incomingItem?.controller ?? kAlwaysCompleteAnimation;
     return widget.insertAnimationBuilder(
       context,
       child,
-      animation,
+      animation
     );
   }
 }

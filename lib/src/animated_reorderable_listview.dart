@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:animated_reorderable_list/animated_reorderable_list.dart';
 
+import 'builder/motion_animated_builder.dart';
 import 'builder/motion_list_base.dart';
 import 'builder/motion_list_impl.dart';
 
@@ -161,6 +162,20 @@ class AnimatedReorderableListView<E extends Object> extends StatelessWidget {
   /// See the ScrollView constructor for more details on these arguments.
   final DragStartBehavior dragStartBehavior;
 
+  /// A custom builder that is for adding items with animations.
+  ///
+  /// The child argument is the widget that is returned by [itemBuilder],
+  ///  and the `animation` is an [Animation] that should be used to animate an exit
+  /// transition for the widget that is built.
+  final AnimatedWidgetBuilder? insertItemBuilder;
+
+  /// A custom builder that is for removing items with animations.
+  ///
+  /// The child argument is the widget that is returned by [itemBuilder],
+  ///  and the `animation` is an [Animation] that should be used to animate an exit
+  /// transition for the widget that is built.
+  final AnimatedWidgetBuilder? removeItemBuilder;
+
   const AnimatedReorderableListView(
       {Key? key,
       required this.items,
@@ -183,7 +198,10 @@ class AnimatedReorderableListView<E extends Object> extends StatelessWidget {
       this.restorationId,
       this.keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.manual,
       this.dragStartBehavior = DragStartBehavior.start,
-      this.clipBehavior = Clip.hardEdge})
+      this.clipBehavior = Clip.hardEdge,
+        this.insertItemBuilder,
+        this.removeItemBuilder
+      })
       : super(key: key);
 
   @override
@@ -214,6 +232,8 @@ class AnimatedReorderableListView<E extends Object> extends StatelessWidget {
               onReorderEnd: onReorderEnd,
               proxyDecorator: proxyDecorator,
               scrollDirection: scrollDirection,
+              insertItemBuilder: insertItemBuilder,
+              removeItemBuilder: removeItemBuilder
             ),
           ),
         ]);

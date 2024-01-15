@@ -6,6 +6,7 @@ import 'motion_animated_builder.dart';
 
 typedef ItemBuilder<W extends Widget, E> = Widget Function(
     BuildContext context, int index);
+typedef AnimatedWidgetBuilder<W extends Widget, E> = Widget Function(Widget child, Animation<double> animation);
 
 typedef EqualityChecker<E> = bool Function(E, E);
 
@@ -24,8 +25,9 @@ abstract class MotionListBase<W extends Widget, E extends Object>
   final Duration? insertDuration;
   final Duration? removeDuration;
   final Axis? scrollDirection;
-  final EqualityChecker<E>? areItemsTheSame;
   final SliverGridDelegate? sliverGridDelegate;
+  final AnimatedWidgetBuilder? insertItemBuilder;
+  final AnimatedWidgetBuilder? removeItemBuilder;
 
   const MotionListBase(
       {Key? key,
@@ -41,7 +43,8 @@ abstract class MotionListBase<W extends Widget, E extends Object>
       this.removeDuration,
       this.scrollDirection,
       this.sliverGridDelegate,
-      this.areItemsTheSame})
+      this.insertItemBuilder,
+      this.removeItemBuilder})
       : super(key: key);
 }
 
@@ -192,25 +195,33 @@ abstract class MotionListBaseState<
 
   @nonVirtual
   @protected
-  Widget insertItemBuilder(
+  Widget insertAnimationBuilder(
       BuildContext context, Widget child, Animation<double> animation) {
-    Widget animatedChild = child;
-    for (EffectEntry entry in _enterAnimations) {
-      animatedChild =
-          entry.animationEffect.build(context, animatedChild, animation, entry);
+    if (widget.insertItemBuilder != null) {
+      return widget.insertItemBuilder!(child, animation);
+    } else {
+      Widget animatedChild = child;
+      for (EffectEntry entry in _enterAnimations) {
+        animatedChild = entry.animationEffect
+            .build(context, animatedChild, animation, entry);
+      }
+      return animatedChild;
     }
-    return animatedChild;
   }
 
   @nonVirtual
   @protected
-  Widget removeItemBuilder(
+  Widget removeAnimationBuilder(
       BuildContext context, Widget child, Animation<double> animation) {
-    Widget animatedChild = child;
-    for (EffectEntry entry in _exitAnimations) {
-      animatedChild =
-          entry.animationEffect.build(context, animatedChild, animation, entry);
+    if (widget.removeItemBuilder != null) {
+      return widget.removeItemBuilder!(child, animation);
+    } else {
+      Widget animatedChild = child;
+      for (EffectEntry entry in _exitAnimations) {
+        animatedChild = entry.animationEffect
+            .build(context, animatedChild, animation, entry);
+      }
+      return animatedChild;
     }
-    return animatedChild;
   }
 }

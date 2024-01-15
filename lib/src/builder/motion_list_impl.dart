@@ -18,7 +18,8 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
     void Function(int)? onReorderEnd,
     ReorderItemProxyDecorator? proxyDecorator,
     Axis? scrollDirection,
-    EqualityChecker<E>? areItemsTheSame,
+    AnimatedWidgetBuilder? insertItemBuilder,
+    AnimatedWidgetBuilder? removeItemBuilder,
   }) : super(
           key: key,
           items: items,
@@ -32,7 +33,8 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
           onReorderEnd: onReorderEnd,
           proxyDecorator: proxyDecorator,
           scrollDirection: scrollDirection,
-          areItemsTheSame: areItemsTheSame,
+          insertItemBuilder: insertItemBuilder,
+          removeItemBuilder: removeItemBuilder
         );
 
   const MotionListImpl.grid({
@@ -49,6 +51,8 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
     Duration? insertDuration,
     Duration? removeDuration,
     Axis? scrollDirection,
+    AnimatedWidgetBuilder? insertItemBuilder,
+    AnimatedWidgetBuilder? removeItemBuilder,
   }) : super(
           key: key,
           items: items,
@@ -63,6 +67,8 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
           onReorderEnd: onReorderEnd,
           proxyDecorator: proxyDecorator,
           scrollDirection: scrollDirection,
+    insertItemBuilder: insertItemBuilder,
+    removeItemBuilder: removeItemBuilder
         );
 
   @override
@@ -82,8 +88,8 @@ class MotionListImplState<E extends Object>
       onReorderStart: onReorderStart,
       onReorderEnd: onReorderEnd,
       proxyDecorator: proxyDecorator,
-      insertAnimationBuilder: insertItemBuilder,
-      removeAnimationBuilder: removeItemBuilder,
+      insertAnimationBuilder: insertAnimationBuilder,
+      removeAnimationBuilder: removeAnimationBuilder,
       itemBuilder: itemBuilder,
       scrollDirection: scrollDirection,
       delegateBuilder: sliverGridDelegate,
