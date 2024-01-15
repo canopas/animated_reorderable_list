@@ -60,6 +60,11 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
   void initState() {
     listState = MotionBuilder.of(context);
     listState.registerItem(this);
+    _offsetAnimation = AnimationController(
+      vsync: listState,
+      duration: const Duration(milliseconds: 250),
+    )
+      ..addListener(rebuild);
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       widget.updateMotionData?.call(widget.motionData);
@@ -113,7 +118,8 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
           })
           ..forward();
       } else {
-        _offsetAnimation!.forward();
+        _startOffset = offsetDiff;
+        _offsetAnimation!.forward(from: 0.0);
       }
     }
   }
@@ -173,8 +179,8 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
       maintainAnimation: true,
       maintainState: true,
       visible: visible && !_dragging,
-      child: Transform(
-          transform: Matrix4.translationValues(offset.dx, offset.dy, 0.0),
+      child: Transform.translate(
+        offset: offset,
           child:
               !_dragging ? widget.child : SizedBox.fromSize(size: _dragSize)),
     );
