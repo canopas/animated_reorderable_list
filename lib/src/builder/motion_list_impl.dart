@@ -1,7 +1,8 @@
-import 'package:flutter/cupertino.dart';
 import 'package:animated_reorderable_list/animated_reorderable_list.dart';
+import 'package:flutter/material.dart';
 
 import 'motion_animated_builder.dart';
+
 
 class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
   const MotionListImpl({
@@ -12,16 +13,24 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
     List<AnimationEffect>? exitTransition,
     Duration? insertDuration,
     Duration? removeDuration,
+    ReorderCallback? onReorder,
+    void Function(int)? onReorderStart,
+    void Function(int)? onReorderEnd,
+    ReorderItemProxyDecorator? proxyDecorator,
     Axis? scrollDirection,
     EqualityChecker<E>? areItemsTheSame,
   }) : super(
           key: key,
           items: items,
           itemBuilder: itemBuilder,
-          insertDuration: insertDuration,
-          removeDuration: removeDuration,
           enterTransition: enterTransition,
           exitTransition: exitTransition,
+          insertDuration: insertDuration,
+          removeDuration: removeDuration,
+          onReorder: onReorder,
+          onReorderStart: onReorderStart,
+          onReorderEnd: onReorderEnd,
+          proxyDecorator: proxyDecorator,
           scrollDirection: scrollDirection,
           areItemsTheSame: areItemsTheSame,
         );
@@ -33,6 +42,11 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
     required SliverGridDelegate sliverGridDelegate,
     List<AnimationEffect>? enterTransition,
     List<AnimationEffect>? exitTransition,
+    ReorderCallback? onReorder,
+    void Function(int)? onReorderStart,
+    void Function(int)? onReorderEnd,
+    ReorderItemProxyDecorator? proxyDecorator,
+
     Duration? insertDuration,
     Duration? removeDuration,
     Axis? scrollDirection,
@@ -45,6 +59,10 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
           exitTransition: exitTransition,
           insertDuration: insertDuration,
           removeDuration: removeDuration,
+          onReorder: onReorder,
+          onReorderStart: onReorderStart,
+          onReorderEnd: onReorderEnd,
+          proxyDecorator: proxyDecorator,
           scrollDirection: scrollDirection,
         );
 
@@ -54,11 +72,18 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
 
 class MotionListImplState<E extends Object>
     extends MotionListBaseState<Widget, MotionListImpl<E>, E> {
+
   @override
   Widget build(BuildContext context) {
+    assert(debugCheckHasMaterialLocalizations(context));
+    assert(debugCheckHasOverlay(context));
     return MotionBuilder(
       key: listKey,
       initialCount: oldList.length,
+      onReorder: onReorder,
+      onReorderStart: onReorderStart,
+      onReorderEnd: onReorderEnd,
+      proxyDecorator: proxyDecorator,
       insertAnimationBuilder: insertItemBuilder,
       removeAnimationBuilder: removeItemBuilder,
       itemBuilder: itemBuilder,

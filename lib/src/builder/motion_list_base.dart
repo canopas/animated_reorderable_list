@@ -7,14 +7,20 @@ import 'motion_animated_builder.dart';
 typedef ItemBuilder<W extends Widget, E> = Widget Function(
     BuildContext context, int index);
 
+
+
 typedef EqualityChecker<E> = bool Function(E, E);
 
-const Duration _kAnimationDuration = Duration(milliseconds: 300);
+const Duration kAnimationDuration = Duration(milliseconds: 300);
 
 abstract class MotionListBase<W extends Widget, E extends Object>
     extends StatefulWidget {
   final ItemBuilder<W, E> itemBuilder;
   final List<E> items;
+  final ReorderCallback? onReorder;
+  final void Function(int)? onReorderStart;
+  final void Function(int)? onReorderEnd;
+  final ReorderItemProxyDecorator? proxyDecorator;
   final List<AnimationEffect>? enterTransition;
   final List<AnimationEffect>? exitTransition;
   final Duration? insertDuration;
@@ -27,6 +33,10 @@ abstract class MotionListBase<W extends Widget, E extends Object>
       {Key? key,
       required this.items,
       required this.itemBuilder,
+       this.onReorder,
+      this.onReorderEnd,
+      this.onReorderStart,
+        this.proxyDecorator,
       this.enterTransition,
       this.exitTransition,
       this.insertDuration,
@@ -43,8 +53,8 @@ abstract class MotionListBaseState<
     E extends Object> extends State<B> with TickerProviderStateMixin {
   late List<E> oldList;
 
-  Duration _enterDuration = _kAnimationDuration;
-  Duration _exitDuration = _kAnimationDuration;
+  Duration _enterDuration = kAnimationDuration;
+  Duration _exitDuration = kAnimationDuration;
 
   List<EffectEntry> _enterAnimations = [];
   List<EffectEntry> _exitAnimations = [];
@@ -67,6 +77,23 @@ abstract class MotionListBaseState<
   @nonVirtual
   @protected
   SliverGridDelegate? get sliverGridDelegate => widget.sliverGridDelegate;
+
+  @nonVirtual
+  @protected
+  ReorderCallback? get onReorder=> widget.onReorder;
+
+  @nonVirtual
+  @protected
+  void Function(int)? get onReorderStart=> widget.onReorderStart;
+
+  @nonVirtual
+  @protected
+  void Function(int)? get onReorderEnd=> widget.onReorderEnd;
+
+  @nonVirtual
+  @protected
+  ReorderItemProxyDecorator? get proxyDecorator=> widget.proxyDecorator;
+
 
   @nonVirtual
   @protected

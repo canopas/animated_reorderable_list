@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:animated_reorderable_list/animated_reorderable_list.dart';
 
+import 'motion_list_impl.dart';
+
 ///  enterTransition: [FadeEffect(), ScaleEffect()],
 ///
 /// Effects are always run in parallel (ie. the fade and scale effects in the
@@ -25,16 +27,41 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
   ///Defaults to [FadeAnimation()]
   final List<AnimationEffect>? exitTransition;
 
-  /// The axis along which the scroll view scrolls.
-  ///
-  /// Defaults to [Axis.vertical].
-  final Axis scrollDirection;
-
   /// The duration of the animation when an item was inserted into the list.
   final Duration? insertDuration;
 
   /// The duration of the animation when an item was removed from the list.
   final Duration? removeDuration;
+
+  /// A callback used by [ReorderableList] to report that a list item has moved
+  /// to a new position in the list.
+  ///
+  /// Implementations should remove the corresponding list item at [oldIndex]
+  /// and reinsert it at [newIndex].
+  final ReorderCallback? onReorder;
+
+  /// A callback that is called when an item drag has started.
+  ///
+  /// The index parameter of the callback is the index of the selected item.
+  final void Function(int)? onReorderStart;
+
+  /// A callback that is called when the dragged item is dropped.
+  ///
+  /// The index parameter of the callback is the index where the item is
+  /// dropped. Unlike [onReorder], this is called even when the list item is
+  /// dropped in the same location.
+  final void Function(int)? onReorderEnd;
+
+  /// The axis along which the scroll view scrolls.
+  ///
+  /// Defaults to [Axis.vertical].
+  final Axis scrollDirection;
+
+  /// {@template flutter.widgets.reorderable_list.proxyDecorator}
+  /// A callback that allows the app to add an animated decoration around
+  /// an item when it is being dragged.
+  /// {@endtemplate}
+  final ReorderItemProxyDecorator? proxyDecorator;
 
   /// {@template flutter.widgets.scroll_view.reverse}
   /// Whether the scroll view scrolls in the reading direction.
@@ -70,6 +97,13 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
   ///
   /// Defaults to null.
   final bool? primary;
+
+  /// {@template flutter.widgets.reorderable_list.padding}
+  /// The amount of space by which to inset the list contents.
+  ///
+  /// It defaults to `EdgeInsets.all(0)`.
+  /// {@endtemplate}
+  final EdgeInsetsGeometry? padding;
 
   /// How the scroll view should respond to user input.
   ///
@@ -113,7 +147,12 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
       this.exitTransition,
       this.insertDuration,
       this.removeDuration,
+      this.onReorder,
+      this.onReorderStart,
+      this.onReorderEnd,
+      this.proxyDecorator,
       this.scrollDirection = Axis.vertical,
+      this.padding,
       this.reverse = false,
       this.controller,
       this.primary,
@@ -139,14 +178,22 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
         dragStartBehavior: dragStartBehavior,
         clipBehavior: clipBehavior,
         slivers: [
-          MotionListImpl(
-            items: items,
-            itemBuilder: itemBuilder,
-            enterTransition: enterTransition,
-            exitTransition: exitTransition,
-            insertDuration: insertDuration,
-            removeDuration: removeDuration,
-            scrollDirection: scrollDirection,
+          SliverPadding(
+            padding: padding ?? EdgeInsets.zero,
+            sliver: MotionListImpl(
+              items: items,
+              itemBuilder: itemBuilder,
+              enterTransition: enterTransition,
+              exitTransition: exitTransition,
+              insertDuration: insertDuration,
+              removeDuration: removeDuration,
+              onReorder: onReorder,
+              onReorderStart: onReorderStart,
+              onReorderEnd: onReorderEnd,
+              proxyDecorator: proxyDecorator,
+
+              scrollDirection: scrollDirection,
+            ),
           ),
         ]);
   }
