@@ -1,29 +1,43 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
+import 'package:animated_reorderable_list/animated_reorderable_list.dart';
 
-import '../../animated_reorderable_list.dart';
+/// A list whose items the user can interactively reorder by dragging and animates insertion and removal of the item.
+///
+///  enterTransition: [FadeEffect(), ScaleEffect()],
+///
+/// Effects are always run in parallel (ie. the fade and scale effects in the
+/// example above would be run simultaneously), but you can apply delays to
+/// offset them or run them in sequence.
+///
+/// The [onReorder] parameter is required and will be called when a child
+/// widget is dragged to a new position.
+///
+/// By default, on [TargetPlatformVariant.desktop] platforms each item will
+/// have a drag handle added on top of it that will allow the user to grab it
+/// to move the item. On [TargetPlatformVariant.mobile], no drag handle will be
+/// added, but when the user long presses anywhere on the item it will start
+/// moving the item.
+///
+/// All list items must have a key.
+///
+/// While a drag is underway, the widget returned by the [AnimatedReorderableGridView.proxyDecorator]
+/// callback serves as a "proxy" (a substitute) for the item in the list. The proxy is
+/// created with the original list item as its child.
 
-/// A Flutter AnimatedGridView that animates insertion and removal of the item.
-class MotionGridViewBuilder<E extends Object> extends StatelessWidget {
-  /// The current list of items that this[MotionGridViewBuilder] should represent.
+class AnimatedReorderableListView<E extends Object> extends StatelessWidget {
+  /// The current list of items that this[AnimatedReorderableListView] should represent.
   final List<E> items;
 
   ///Called, as needed, to build list item widget
-  final ItemBuilder<Widget, E> itemBuilder;
+  final ItemBuilder itemBuilder;
 
-  /// Controls the layout of tiles in a grid.
-  /// Given the current constraints on the grid,
-  /// a SliverGridDelegate computes the layout for the tiles in the grid.
-  /// The tiles can be placed arbitrarily,
-  /// but it is more efficient to place tiles in roughly in order by scroll offset because grids reify a contiguous sequence of children.
-  final SliverGridDelegate sliverGridDelegate;
-
-  ///List of [AnimationEffect](s) used for the appearing animation when item is added in the list.
+  ///List of [AnimationEffect](s) used for the appearing animation when an item was inserted into the list.
   ///
   ///Defaults to [FadeAnimation()]
   final List<AnimationEffect>? enterTransition;
 
-  ///List of [AnimationEffect](s) used for the disappearing animation when item is removed from list.
+  ///List of [AnimationEffect](s) used for the disappearing animation when an item was removed from the list.
   ///
   ///Defaults to [FadeAnimation()]
   final List<AnimationEffect>? exitTransition;
@@ -39,7 +53,7 @@ class MotionGridViewBuilder<E extends Object> extends StatelessWidget {
   ///
   /// Implementations should remove the corresponding list item at [oldIndex]
   /// and reinsert it at [newIndex].
-  final ReorderCallback? onReorder;
+  final ReorderCallback onReorder;
 
   /// A callback that is called when an item drag has started.
   ///
@@ -53,23 +67,16 @@ class MotionGridViewBuilder<E extends Object> extends StatelessWidget {
   /// dropped in the same location.
   final void Function(int)? onReorderEnd;
 
-  /// {@template flutter.widgets.reorderable_list.proxyDecorator}
-  /// A callback that allows the app to add an animated decoration around
-  /// an item when it is being dragged.
-  /// {@endtemplate}
-  final ReorderItemProxyDecorator? proxyDecorator;
-
   /// The axis along which the scroll view scrolls.
   ///
   /// Defaults to [Axis.vertical].
   final Axis scrollDirection;
 
-  /// {@template flutter.widgets.reorderable_list.padding}
-  /// The amount of space by which to inset the list contents.
-  ///
-  /// It defaults to `EdgeInsets.all(0)`.
+  /// {@template flutter.widgets.reorderable_list.proxyDecorator}
+  /// A callback that allows the app to add an animated decoration around
+  /// an item when it is being dragged.
   /// {@endtemplate}
-  final EdgeInsetsGeometry? padding;
+  final ReorderItemProxyDecorator? proxyDecorator;
 
   /// {@template flutter.widgets.scroll_view.reverse}
   /// Whether the scroll view scrolls in the reading direction.
@@ -106,6 +113,13 @@ class MotionGridViewBuilder<E extends Object> extends StatelessWidget {
   /// Defaults to null.
   final bool? primary;
 
+  /// {@template flutter.widgets.reorderable_list.padding}
+  /// The amount of space by which to inset the list contents.
+  ///
+  /// It defaults to `EdgeInsets.all(0)`.
+  /// {@endtemplate}
+  final EdgeInsetsGeometry? padding;
+
   /// How the scroll view should respond to user input.
   ///
   /// For example, determines how the scroll view continues to animate after the
@@ -140,30 +154,29 @@ class MotionGridViewBuilder<E extends Object> extends StatelessWidget {
   /// See the ScrollView constructor for more details on these arguments.
   final DragStartBehavior dragStartBehavior;
 
-  const MotionGridViewBuilder(
+  const AnimatedReorderableListView(
       {Key? key,
-      required this.items,
-      required this.itemBuilder,
-      required this.sliverGridDelegate,
-      this.enterTransition,
-      this.exitTransition,
-      this.insertDuration,
-      this.removeDuration,
-      this.onReorder,
-      this.onReorderStart,
-      this.onReorderEnd,
-      this.proxyDecorator,
-      this.padding,
-      this.scrollDirection = Axis.vertical,
-      this.reverse = false,
-      this.controller,
-      this.primary,
-      this.physics,
-      this.scrollBehavior,
-      this.restorationId,
-      this.keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.manual,
-      this.dragStartBehavior = DragStartBehavior.start,
-      this.clipBehavior = Clip.hardEdge})
+        required this.items,
+        required this.itemBuilder,
+        required this.onReorder,
+        this.enterTransition,
+        this.exitTransition,
+        this.insertDuration,
+        this.removeDuration,
+        this.onReorderStart,
+        this.onReorderEnd,
+        this.proxyDecorator,
+        this.scrollDirection = Axis.vertical,
+        this.padding,
+        this.reverse = false,
+        this.controller,
+        this.primary,
+        this.physics,
+        this.scrollBehavior,
+        this.restorationId,
+        this.keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.manual,
+        this.dragStartBehavior = DragStartBehavior.start,
+        this.clipBehavior = Clip.hardEdge})
       : super(key: key);
 
   @override
@@ -182,18 +195,18 @@ class MotionGridViewBuilder<E extends Object> extends StatelessWidget {
         slivers: [
           SliverPadding(
             padding: padding ?? EdgeInsets.zero,
-            sliver: MotionListImpl.grid(
+            sliver: MotionListImpl(
               items: items,
               itemBuilder: itemBuilder,
-              sliverGridDelegate: sliverGridDelegate,
-              insertDuration: insertDuration,
-              removeDuration: removeDuration,
               enterTransition: enterTransition,
               exitTransition: exitTransition,
+              insertDuration: insertDuration,
+              removeDuration: removeDuration,
               onReorder: onReorder,
               onReorderStart: onReorderStart,
               onReorderEnd: onReorderEnd,
               proxyDecorator: proxyDecorator,
+
               scrollDirection: scrollDirection,
             ),
           ),

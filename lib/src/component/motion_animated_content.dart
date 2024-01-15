@@ -1,16 +1,15 @@
-import 'package:flutter/widgets.dart';
-import 'package:animated_reorderable_list/src/model/motion_data.dart';
 
-import '../builder/motion_animated_builder.dart';
+part of '../builder/motion_animated_builder.dart';
 
-class MotionAnimatedContent extends StatefulWidget {
+
+class _MotionAnimatedContent extends StatefulWidget {
   final int index;
   final MotionData motionData;
   final Widget child;
   final Function(MotionData)? updateMotionData;
   final CapturedThemes? capturedThemes;
 
-  const MotionAnimatedContent(
+  const _MotionAnimatedContent(
       {Key? key,
       required this.index,
       required this.motionData,
@@ -20,10 +19,10 @@ class MotionAnimatedContent extends StatefulWidget {
       : super(key: key);
 
   @override
-  State<MotionAnimatedContent> createState() => MotionAnimatedContentState();
+  State<_MotionAnimatedContent> createState() => MotionAnimatedContentState();
 }
 
-class MotionAnimatedContentState extends State<MotionAnimatedContent>
+class MotionAnimatedContentState extends State<_MotionAnimatedContent>
     with SingleTickerProviderStateMixin {
   late MotionBuilderState listState;
 
@@ -69,7 +68,7 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
   }
 
   @override
-  void didUpdateWidget(covariant MotionAnimatedContent oldWidget) {
+  void didUpdateWidget(covariant _MotionAnimatedContent oldWidget) {
     if (oldWidget.index != widget.index) {
       listState.unregisterItem(oldWidget.index, this);
       listState.registerItem(this);

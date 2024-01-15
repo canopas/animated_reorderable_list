@@ -1,28 +1,36 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
-import 'package:animated_reorderable_list/animated_reorderable_list.dart';
 
-import 'motion_list_impl.dart';
+import '../../animated_reorderable_list.dart';
+
 
 ///  enterTransition: [FadeEffect(), ScaleEffect()],
 ///
 /// Effects are always run in parallel (ie. the fade and scale effects in the
 /// example above would be run simultaneously), but you can apply delays to
 /// offset them or run them in sequence.
-
-class MotionListViewBuilder<E extends Object> extends StatelessWidget {
-  /// The current list of items that this[MotionListViewBuilder] should represent.
+///
+/// A Flutter AnimatedGridView that animates insertion and removal of the item.
+class AnimatedGridView<E extends Object> extends StatelessWidget {
+  /// The current list of items that this[MotionGridViewBuilder] should represent.
   final List<E> items;
 
   ///Called, as needed, to build list item widget
-  final ItemBuilder itemBuilder;
+  final ItemBuilder<Widget, E> itemBuilder;
 
-  ///List of [AnimationEffect](s) used for the appearing animation when an item was inserted into the list.
+  /// Controls the layout of tiles in a grid.
+  /// Given the current constraints on the grid,
+  /// a SliverGridDelegate computes the layout for the tiles in the grid.
+  /// The tiles can be placed arbitrarily,
+  /// but it is more efficient to place tiles in roughly in order by scroll offset because grids reify a contiguous sequence of children.
+  final SliverGridDelegate sliverGridDelegate;
+
+  ///List of [AnimationEffect](s) used for the appearing animation when item is added in the list.
   ///
   ///Defaults to [FadeAnimation()]
   final List<AnimationEffect>? enterTransition;
 
-  ///List of [AnimationEffect](s) used for the disappearing animation when an item was removed from the list.
+  ///List of [AnimationEffect](s) used for the disappearing animation when item is removed from list.
   ///
   ///Defaults to [FadeAnimation()]
   final List<AnimationEffect>? exitTransition;
@@ -33,35 +41,17 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
   /// The duration of the animation when an item was removed from the list.
   final Duration? removeDuration;
 
-  /// A callback used by [ReorderableList] to report that a list item has moved
-  /// to a new position in the list.
-  ///
-  /// Implementations should remove the corresponding list item at [oldIndex]
-  /// and reinsert it at [newIndex].
-  final ReorderCallback? onReorder;
-
-  /// A callback that is called when an item drag has started.
-  ///
-  /// The index parameter of the callback is the index of the selected item.
-  final void Function(int)? onReorderStart;
-
-  /// A callback that is called when the dragged item is dropped.
-  ///
-  /// The index parameter of the callback is the index where the item is
-  /// dropped. Unlike [onReorder], this is called even when the list item is
-  /// dropped in the same location.
-  final void Function(int)? onReorderEnd;
-
   /// The axis along which the scroll view scrolls.
   ///
   /// Defaults to [Axis.vertical].
   final Axis scrollDirection;
 
-  /// {@template flutter.widgets.reorderable_list.proxyDecorator}
-  /// A callback that allows the app to add an animated decoration around
-  /// an item when it is being dragged.
+  /// {@template flutter.widgets.reorderable_list.padding}
+  /// The amount of space by which to inset the list contents.
+  ///
+  /// It defaults to `EdgeInsets.all(0)`.
   /// {@endtemplate}
-  final ReorderItemProxyDecorator? proxyDecorator;
+  final EdgeInsetsGeometry? padding;
 
   /// {@template flutter.widgets.scroll_view.reverse}
   /// Whether the scroll view scrolls in the reading direction.
@@ -98,13 +88,6 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
   /// Defaults to null.
   final bool? primary;
 
-  /// {@template flutter.widgets.reorderable_list.padding}
-  /// The amount of space by which to inset the list contents.
-  ///
-  /// It defaults to `EdgeInsets.all(0)`.
-  /// {@endtemplate}
-  final EdgeInsetsGeometry? padding;
-
   /// How the scroll view should respond to user input.
   ///
   /// For example, determines how the scroll view continues to animate after the
@@ -139,29 +122,26 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
   /// See the ScrollView constructor for more details on these arguments.
   final DragStartBehavior dragStartBehavior;
 
-  const MotionListViewBuilder(
+  const AnimatedGridView(
       {Key? key,
-      required this.items,
-      required this.itemBuilder,
-      this.enterTransition,
-      this.exitTransition,
-      this.insertDuration,
-      this.removeDuration,
-      this.onReorder,
-      this.onReorderStart,
-      this.onReorderEnd,
-      this.proxyDecorator,
-      this.scrollDirection = Axis.vertical,
-      this.padding,
-      this.reverse = false,
-      this.controller,
-      this.primary,
-      this.physics,
-      this.scrollBehavior,
-      this.restorationId,
-      this.keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.manual,
-      this.dragStartBehavior = DragStartBehavior.start,
-      this.clipBehavior = Clip.hardEdge})
+        required this.items,
+        required this.itemBuilder,
+        required this.sliverGridDelegate,
+        this.enterTransition,
+        this.exitTransition,
+        this.insertDuration,
+        this.removeDuration,
+        this.padding,
+        this.scrollDirection = Axis.vertical,
+        this.reverse = false,
+        this.controller,
+        this.primary,
+        this.physics,
+        this.scrollBehavior,
+        this.restorationId,
+        this.keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.manual,
+        this.dragStartBehavior = DragStartBehavior.start,
+        this.clipBehavior = Clip.hardEdge})
       : super(key: key);
 
   @override
@@ -180,18 +160,14 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
         slivers: [
           SliverPadding(
             padding: padding ?? EdgeInsets.zero,
-            sliver: MotionListImpl(
+            sliver: MotionListImpl.grid(
               items: items,
               itemBuilder: itemBuilder,
-              enterTransition: enterTransition,
-              exitTransition: exitTransition,
+              sliverGridDelegate: sliverGridDelegate,
               insertDuration: insertDuration,
               removeDuration: removeDuration,
-              onReorder: onReorder,
-              onReorderStart: onReorderStart,
-              onReorderEnd: onReorderEnd,
-              proxyDecorator: proxyDecorator,
-
+              enterTransition: enterTransition,
+              exitTransition: exitTransition,
               scrollDirection: scrollDirection,
             ),
           ),

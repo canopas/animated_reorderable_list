@@ -153,7 +153,7 @@ class _HomePageState extends State<HomePage> {
               ),
               Expanded(
                 child: isGrid
-                    ? MotionGridViewBuilder(
+                    ? AnimatedReorderableGridView(
                         items: list,
                         scrollDirection: Axis.vertical,
                         itemBuilder: (BuildContext context, int index) {
@@ -175,7 +175,7 @@ class _HomePageState extends State<HomePage> {
                             const SliverGridDelegateWithFixedCrossAxisCount(
                                 crossAxisCount: 4),
                       )
-                    : MotionListViewBuilder(
+                    : AnimatedReorderableListView(
                         items: list,
                         itemBuilder: (BuildContext context, int index) {
                           return ItemTile(

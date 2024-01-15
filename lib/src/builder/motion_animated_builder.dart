@@ -5,12 +5,12 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
-import 'package:animated_reorderable_list/src/component/motion_animated_content.dart';
 
 import '../../animated_reorderable_list.dart';
 import '../component/drag_listener.dart';
 import '../model/motion_data.dart';
 part '../component/drag_item.dart';
+part '../component/motion_animated_content.dart';
 
 typedef AnimatedWidgetBuilder<E> = Widget Function(
     BuildContext context, Widget child, Animation<double> animation);
@@ -605,7 +605,7 @@ class MotionBuilderState extends State<MotionBuilder>
     }
 
     final Widget child = widget.onReorder != null
-        ? widgetBuilder(context, _itemIndexToIndex(index))
+        ? reordreableItemBuilder(context, _itemIndexToIndex(index))
         : widget.itemBuilder(context, _itemIndexToIndex(index));
 
     assert(() {
@@ -624,7 +624,7 @@ class MotionBuilderState extends State<MotionBuilder>
     if (motionData == null) return builder;
     final OverlayState overlay = Overlay.of(context, debugRequiredFor: widget);
 
-    return MotionAnimatedContent(
+    return _MotionAnimatedContent(
       index: index,
       key: itemGlobalKey,
       motionData: motionData,
@@ -643,7 +643,7 @@ class MotionBuilderState extends State<MotionBuilder>
     return SliverChildBuilderDelegate(_itemBuilder, childCount: _itemsCount);
   }
 
-  Widget widgetBuilder(BuildContext context, int index) {
+  Widget reordreableItemBuilder(BuildContext context, int index) {
     final Widget item = widget.itemBuilder(context, index);
     assert(() {
       if (item.key == null) {
