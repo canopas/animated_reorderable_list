@@ -7,8 +7,6 @@ import 'motion_animated_builder.dart';
 typedef ItemBuilder<W extends Widget, E> = Widget Function(
     BuildContext context, int index);
 
-
-
 typedef EqualityChecker<E> = bool Function(E, E);
 
 const Duration kAnimationDuration = Duration(milliseconds: 300);
@@ -33,10 +31,10 @@ abstract class MotionListBase<W extends Widget, E extends Object>
       {Key? key,
       required this.items,
       required this.itemBuilder,
-       this.onReorder,
+      this.onReorder,
       this.onReorderEnd,
       this.onReorderStart,
-        this.proxyDecorator,
+      this.proxyDecorator,
       this.enterTransition,
       this.exitTransition,
       this.insertDuration,
@@ -80,20 +78,19 @@ abstract class MotionListBaseState<
 
   @nonVirtual
   @protected
-  ReorderCallback? get onReorder=> widget.onReorder;
+  ReorderCallback? get onReorder => widget.onReorder;
 
   @nonVirtual
   @protected
-  void Function(int)? get onReorderStart=> widget.onReorderStart;
+  void Function(int)? get onReorderStart => widget.onReorderStart;
 
   @nonVirtual
   @protected
-  void Function(int)? get onReorderEnd=> widget.onReorderEnd;
+  void Function(int)? get onReorderEnd => widget.onReorderEnd;
 
   @nonVirtual
   @protected
-  ReorderItemProxyDecorator? get proxyDecorator=> widget.proxyDecorator;
-
+  ReorderItemProxyDecorator? get proxyDecorator => widget.proxyDecorator;
 
   @nonVirtual
   @protected

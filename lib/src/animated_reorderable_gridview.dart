@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 
 import '../../animated_reorderable_list.dart';
+import 'builder/motion_list_base.dart';
+import 'builder/motion_list_impl.dart';
 
 /// A list whose items the user can interactively reorder by dragging and animates insertion and removal of the item..
 ///
@@ -50,9 +52,13 @@ class AnimatedReorderableGridView<E extends Object> extends StatelessWidget {
   final List<AnimationEffect>? exitTransition;
 
   /// The duration of the animation when an item was inserted into the list.
+  ///
+  /// If you provide a specific duration for each AnimationEffect, it will override this [insertDuration].
   final Duration? insertDuration;
 
   /// The duration of the animation when an item was removed from the list.
+  ///
+  /// If you provide a specific duration for each AnimationEffect, it will override this [removeDuration].
   final Duration? removeDuration;
 
   /// A callback used by [ReorderableList] to report that a list item has moved
@@ -163,28 +169,28 @@ class AnimatedReorderableGridView<E extends Object> extends StatelessWidget {
 
   const AnimatedReorderableGridView(
       {Key? key,
-        required this.items,
-        required this.itemBuilder,
-        required this.sliverGridDelegate,
-        required this.onReorder,
-        this.enterTransition,
-        this.exitTransition,
-        this.insertDuration,
-        this.removeDuration,
-        this.onReorderStart,
-        this.onReorderEnd,
-        this.proxyDecorator,
-        this.padding,
-        this.scrollDirection = Axis.vertical,
-        this.reverse = false,
-        this.controller,
-        this.primary,
-        this.physics,
-        this.scrollBehavior,
-        this.restorationId,
-        this.keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.manual,
-        this.dragStartBehavior = DragStartBehavior.start,
-        this.clipBehavior = Clip.hardEdge})
+      required this.items,
+      required this.itemBuilder,
+      required this.sliverGridDelegate,
+      required this.onReorder,
+      this.enterTransition,
+      this.exitTransition,
+      this.insertDuration,
+      this.removeDuration,
+      this.onReorderStart,
+      this.onReorderEnd,
+      this.proxyDecorator,
+      this.padding,
+      this.scrollDirection = Axis.vertical,
+      this.reverse = false,
+      this.controller,
+      this.primary,
+      this.physics,
+      this.scrollBehavior,
+      this.restorationId,
+      this.keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.manual,
+      this.dragStartBehavior = DragStartBehavior.start,
+      this.clipBehavior = Clip.hardEdge})
       : super(key: key);
 
   @override

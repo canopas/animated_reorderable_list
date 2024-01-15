@@ -2,7 +2,7 @@ import 'package:animated_reorderable_list/animated_reorderable_list.dart';
 import 'package:flutter/material.dart';
 
 import 'motion_animated_builder.dart';
-
+import 'motion_list_base.dart';
 
 class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
   const MotionListImpl({
@@ -46,7 +46,6 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
     void Function(int)? onReorderStart,
     void Function(int)? onReorderEnd,
     ReorderItemProxyDecorator? proxyDecorator,
-
     Duration? insertDuration,
     Duration? removeDuration,
     Axis? scrollDirection,
@@ -72,7 +71,6 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
 
 class MotionListImplState<E extends Object>
     extends MotionListBaseState<Widget, MotionListImpl<E>, E> {
-
   @override
   Widget build(BuildContext context) {
     assert(debugCheckHasMaterialLocalizations(context));

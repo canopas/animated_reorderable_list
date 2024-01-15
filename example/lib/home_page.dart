@@ -25,7 +25,7 @@ class _HomePageState extends State<HomePage> {
   int addedNumber = 9;
   bool isGrid = true;
 
-  List<AnimationEffect> animations = [FadeIn()];
+  List<AnimationEffect> animations = [FlipInX(curve: Curves.easeInBack)];
 
   void insert() {
     addedNumber += 1;

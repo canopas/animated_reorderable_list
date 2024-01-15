@@ -2,6 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:animated_reorderable_list/animated_reorderable_list.dart';
 
+import 'builder/motion_list_base.dart';
+import 'builder/motion_list_impl.dart';
+
 /// A list whose items the user can interactively reorder by dragging and animates insertion and removal of the item.
 ///
 ///  enterTransition: [FadeEffect(), ScaleEffect()],
@@ -43,9 +46,13 @@ class AnimatedReorderableListView<E extends Object> extends StatelessWidget {
   final List<AnimationEffect>? exitTransition;
 
   /// The duration of the animation when an item was inserted into the list.
+  ///
+  /// If you provide a specific duration for each AnimationEffect, it will override this [insertDuration].
   final Duration? insertDuration;
 
   /// The duration of the animation when an item was removed from the list.
+  ///
+  /// If you provide a specific duration for each AnimationEffect, it will override this [removeDuration].
   final Duration? removeDuration;
 
   /// A callback used by [ReorderableList] to report that a list item has moved
@@ -156,27 +163,27 @@ class AnimatedReorderableListView<E extends Object> extends StatelessWidget {
 
   const AnimatedReorderableListView(
       {Key? key,
-        required this.items,
-        required this.itemBuilder,
-        required this.onReorder,
-        this.enterTransition,
-        this.exitTransition,
-        this.insertDuration,
-        this.removeDuration,
-        this.onReorderStart,
-        this.onReorderEnd,
-        this.proxyDecorator,
-        this.scrollDirection = Axis.vertical,
-        this.padding,
-        this.reverse = false,
-        this.controller,
-        this.primary,
-        this.physics,
-        this.scrollBehavior,
-        this.restorationId,
-        this.keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.manual,
-        this.dragStartBehavior = DragStartBehavior.start,
-        this.clipBehavior = Clip.hardEdge})
+      required this.items,
+      required this.itemBuilder,
+      required this.onReorder,
+      this.enterTransition,
+      this.exitTransition,
+      this.insertDuration,
+      this.removeDuration,
+      this.onReorderStart,
+      this.onReorderEnd,
+      this.proxyDecorator,
+      this.scrollDirection = Axis.vertical,
+      this.padding,
+      this.reverse = false,
+      this.controller,
+      this.primary,
+      this.physics,
+      this.scrollBehavior,
+      this.restorationId,
+      this.keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.manual,
+      this.dragStartBehavior = DragStartBehavior.start,
+      this.clipBehavior = Clip.hardEdge})
       : super(key: key);
 
   @override
@@ -206,7 +213,6 @@ class AnimatedReorderableListView<E extends Object> extends StatelessWidget {
               onReorderStart: onReorderStart,
               onReorderEnd: onReorderEnd,
               proxyDecorator: proxyDecorator,
-
               scrollDirection: scrollDirection,
             ),
           ),

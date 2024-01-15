@@ -2,7 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 
 import '../../animated_reorderable_list.dart';
-
+import 'builder/motion_list_base.dart';
+import 'builder/motion_list_impl.dart';
 
 ///  enterTransition: [FadeEffect(), ScaleEffect()],
 ///
@@ -25,20 +26,24 @@ class AnimatedGridView<E extends Object> extends StatelessWidget {
   /// but it is more efficient to place tiles in roughly in order by scroll offset because grids reify a contiguous sequence of children.
   final SliverGridDelegate sliverGridDelegate;
 
-  ///List of [AnimationEffect](s) used for the appearing animation when item is added in the list.
+  ///List of [AnimationEffect] used for the appearing animation when item is added in the list.
   ///
   ///Defaults to [FadeAnimation()]
   final List<AnimationEffect>? enterTransition;
 
-  ///List of [AnimationEffect](s) used for the disappearing animation when item is removed from list.
+  ///List of [AnimationEffect] used for the disappearing animation when item is removed from list.
   ///
   ///Defaults to [FadeAnimation()]
   final List<AnimationEffect>? exitTransition;
 
   /// The duration of the animation when an item was inserted into the list.
+  ///
+  /// If you provide a specific duration for each AnimationEffect, it will override this [insertDuration].
   final Duration? insertDuration;
 
   /// The duration of the animation when an item was removed from the list.
+  ///
+  /// If you provide a specific duration for each AnimationEffect, it will override this [removeDuration].
   final Duration? removeDuration;
 
   /// The axis along which the scroll view scrolls.
@@ -124,24 +129,24 @@ class AnimatedGridView<E extends Object> extends StatelessWidget {
 
   const AnimatedGridView(
       {Key? key,
-        required this.items,
-        required this.itemBuilder,
-        required this.sliverGridDelegate,
-        this.enterTransition,
-        this.exitTransition,
-        this.insertDuration,
-        this.removeDuration,
-        this.padding,
-        this.scrollDirection = Axis.vertical,
-        this.reverse = false,
-        this.controller,
-        this.primary,
-        this.physics,
-        this.scrollBehavior,
-        this.restorationId,
-        this.keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.manual,
-        this.dragStartBehavior = DragStartBehavior.start,
-        this.clipBehavior = Clip.hardEdge})
+      required this.items,
+      required this.itemBuilder,
+      required this.sliverGridDelegate,
+      this.enterTransition,
+      this.exitTransition,
+      this.insertDuration,
+      this.removeDuration,
+      this.padding,
+      this.scrollDirection = Axis.vertical,
+      this.reverse = false,
+      this.controller,
+      this.primary,
+      this.physics,
+      this.scrollBehavior,
+      this.restorationId,
+      this.keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.manual,
+      this.dragStartBehavior = DragStartBehavior.start,
+      this.clipBehavior = Clip.hardEdge})
       : super(key: key);
 
   @override

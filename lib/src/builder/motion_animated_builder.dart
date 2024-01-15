@@ -5,10 +5,9 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
-
-import '../../animated_reorderable_list.dart';
 import '../component/drag_listener.dart';
 import '../model/motion_data.dart';
+import 'motion_list_base.dart';
 part '../component/drag_item.dart';
 part '../component/motion_animated_content.dart';
 
@@ -473,20 +472,18 @@ class MotionBuilderState extends State<MotionBuilder>
       ..sort();
 
     final motionData = MotionData(
-        endOffset: Offset.zero,
-        startOffset: Offset.zero,
-        visible: false);
+        endOffset: Offset.zero, startOffset: Offset.zero, visible: false);
 
     final updatedChildrenMap = <int, MotionData>{};
     if (childrenMap.containsKey(itemIndex)) {
       for (final entry in childrenMap.entries) {
         if (entry.key == itemIndex) {
           updatedChildrenMap[itemIndex] = motionData;
-          updatedChildrenMap[entry.key + 1] = entry.value
-              .copyWith(index: entry.key + 1);
+          updatedChildrenMap[entry.key + 1] =
+              entry.value.copyWith(index: entry.key + 1);
         } else if (entry.key > itemIndex) {
-          updatedChildrenMap[entry.key + 1] = entry.value
-              .copyWith(index: entry.key + 1);
+          updatedChildrenMap[entry.key + 1] =
+              entry.value.copyWith(index: entry.key + 1);
         } else {
           updatedChildrenMap[entry.key] = entry.value;
         }
@@ -560,13 +557,12 @@ class MotionBuilderState extends State<MotionBuilder>
     if (childrenMap.containsKey(itemIndex)) {
       for (final entry in childrenMap.entries) {
         if (entry.key < itemIndex) {
-          updatedChildrenMap[entry.key] =
-              childrenMap[entry.key]!;
+          updatedChildrenMap[entry.key] = childrenMap[entry.key]!;
         } else if (entry.key == itemIndex) {
           continue;
         } else {
-          updatedChildrenMap[entry.key - 1] = childrenMap[entry.key]!
-              .copyWith(index: entry.key - 1);
+          updatedChildrenMap[entry.key - 1] =
+              childrenMap[entry.key]!.copyWith(index: entry.key - 1);
         }
       }
     }
@@ -624,14 +620,14 @@ class MotionBuilderState extends State<MotionBuilder>
     if (motionData == null) return builder;
     final OverlayState overlay = Overlay.of(context, debugRequiredFor: widget);
 
-    return _MotionAnimatedContent(
+    return MotionAnimatedContent(
       index: index,
       key: itemGlobalKey,
       motionData: motionData,
       updateMotionData: (MotionData motionData) {
         final itemOffset = _itemOffsetAt(index);
-        childrenMap[index] = motionData.copyWith(
-            startOffset: itemOffset, endOffset: itemOffset, visible: true);
+        childrenMap[index] =
+            motionData.copyWith(startOffset: itemOffset, endOffset: itemOffset);
       },
       capturedThemes:
           InheritedTheme.capture(from: context, to: overlay.context),
@@ -751,7 +747,6 @@ class MotionBuilderState extends State<MotionBuilder>
   }
 }
 
-
 Offset _extentOffset(double extent, Axis scrollDirection) {
   switch (scrollDirection) {
     case Axis.horizontal:
@@ -760,7 +755,6 @@ Offset _extentOffset(double extent, Axis scrollDirection) {
       return Offset(0.0, extent);
   }
 }
-
 
 @optionalTypeArgs
 class _MotionBuilderItemGlobalKey extends GlobalObjectKey {

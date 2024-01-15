@@ -1,8 +1,13 @@
 import 'package:flutter/cupertino.dart';
 
 abstract class AnimationEffect<T> {
+  /// The delay for this specific [AnimationEffect].
   final Duration? delay;
+
+  /// The duration for the specific [AnimationEffect].
   final Duration? duration;
+
+  /// The curve for the specific [AnimationEffect].
   final Curve? curve;
 
   AnimationEffect({
