@@ -67,6 +67,7 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
       ..addListener(rebuild);
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _positionController.forward();
       widget.updateMotionData?.call(widget.motionData);
     });
 
@@ -166,7 +167,6 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
         _startOffset = _targetOffset;
       }
       rebuild();
-
   }
 
 

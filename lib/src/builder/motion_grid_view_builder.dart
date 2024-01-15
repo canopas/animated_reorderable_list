@@ -33,11 +33,15 @@ class MotionGridViewBuilder<E extends Object> extends StatelessWidget {
 
   /// AnimationStyle when item is added in the list.
   final AnimationType insertAnimation;
-
-  /// AnimationStyle when item is removed from the list.
+  ///List of [AnimationEffect](s) used for the appearing animation when item is added in the list.
   ///
-  /// If not specified, it is same as insertAnimation.
-  final AnimationType? removeAnimation;
+  ///Defaults to [FadeAnimation()]
+  final List<AnimationEffect>? enterTransition;
+
+  ///List of [AnimationEffect](s) used for the disappearing animation when item is removed from list.
+  ///
+  ///Defaults to [FadeAnimation()]
+  final List<AnimationEffect>? exitTransition;
 
   /// The axis along which the scroll view scrolls.
   ///
@@ -149,6 +153,9 @@ class MotionGridViewBuilder<E extends Object> extends StatelessWidget {
         this.proxyDecorator,
       this.insertAnimation = AnimationType.fadeIn,
       this.removeAnimation,
+      required this.sliverGridDelegate,
+      this.enterTransition,
+      this.exitTransition,
       this.insertDuration,
       this.removeDuration,
         this.padding,
@@ -195,6 +202,15 @@ class MotionGridViewBuilder<E extends Object> extends StatelessWidget {
               scrollDirection: scrollDirection,
               sliverGridDelegate: sliverGridDelegate,
             ),
+          MotionListImpl.grid(
+            items: items,
+            itemBuilder: itemBuilder,
+            enterTransition: enterTransition,
+            exitTransition: exitTransition,
+            insertDuration: insertDuration,
+            removeDuration: removeDuration,
+            scrollDirection: scrollDirection,
+            sliverGridDelegate: sliverGridDelegate,
           ),
         ]);
   }

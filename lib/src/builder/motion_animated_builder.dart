@@ -474,7 +474,9 @@ class MotionBuilderState extends State<MotionBuilder>
 
     final motionData = MotionData(
         endOffset: Offset.zero,
-        startOffset: Offset.zero);
+        startOffset: Offset.zero,
+        duration: insertDuration,
+        visible: false);
 
     final updatedChildrenMap = <int, MotionData>{};
     if (childrenMap.containsKey(itemIndex)) {
@@ -492,6 +494,7 @@ class MotionBuilderState extends State<MotionBuilder>
       }
       childrenMap.clear();
       childrenMap.addAll(updatedChildrenMap);
+
       Future.delayed(kInsertItemDuration).then((value) {
         controller.forward().then<void>((_) {
           _removeActiveItemAt(_incomingItems, incomingItem.itemIndex)!
@@ -627,10 +630,9 @@ class MotionBuilderState extends State<MotionBuilder>
       key: itemGlobalKey,
       motionData: motionData,
       updateMotionData: (MotionData motionData) {
+        final itemOffset = _itemOffsetAt(index);
         childrenMap[index] = motionData.copyWith(
-          startOffset: _itemOffsetAt(index),
-          endOffset: _itemOffsetAt(index),
-        );
+            startOffset: itemOffset, endOffset: itemOffset, visible: true);
       },
       capturedThemes:
           InheritedTheme.capture(from: context, to: overlay.context),

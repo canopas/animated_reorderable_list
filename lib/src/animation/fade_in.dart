@@ -1,18 +1,20 @@
+import 'package:animated_reorderable_list/src/animation/provider/animation_effect.dart';
 import 'package:flutter/cupertino.dart';
 
-class FadeInAnimation extends StatelessWidget {
-  final Widget child;
-  final Animation<double> animation;
+class FadeIn extends AnimationEffect<double> {
+  static const double beginValue = 0.0;
+  static const double endValue = 1.0;
+  final double? begin;
+  final double? end;
 
-  const FadeInAnimation(
-      {Key? key, required this.child, required this.animation})
-      : super(key: key);
+  FadeIn({super.delay, super.duration, super.curve, this.begin, this.end});
 
   @override
-  Widget build(BuildContext context) {
-    return FadeTransition(
-      opacity: animation,
-      child: child,
-    );
+  Widget build(BuildContext context, Widget child, Animation<double> animation,
+      EffectEntry entry) {
+    final Animation<double> opacity =
+        buildAnimation(entry, begin: begin ?? beginValue, end: end ?? endValue)
+            .animate(animation);
+    return FadeTransition(opacity: opacity, child: child);
   }
 }
