@@ -48,8 +48,7 @@ how simple the usage of the library actually is.
 ## Basic usage
 
 ### AnimatedReorderableGridView
-A `GridView` that enables users to interactively reorder items through dragging, with animated insertion and removal of items.
-
+A `AnimatedGridView` with built-in support for drag and drop functionality.
 ```dart
 AnimatedReorderableGridView(
    items: list, 
@@ -77,7 +76,7 @@ AnimatedReorderableGridView(
 ```
 
 ### AnimatedReorderableListView
-A `ListView` that enables users to interactively reorder items through dragging, with animated insertion and removal of items.
+A `AnimatedListView` with built-in support for drag-and-drop functionality.
 
 ```dart
  AnimatedReorderableListView(
@@ -121,7 +120,7 @@ AnimatedListView(
 ```
 
 ### AnimatedGridView
-A Flutter `AnimatedGridView` that animates insertion and removal of the item.
+A `AnimatedGridView` that animates insertion and removal of the item.
 
 ```dart
 AnimatedGridView(
@@ -145,8 +144,8 @@ Duration for animation
 ----------------------------------------
 ```dart
 //optional
-insertDuration: const Duration(milliseconds: 300),
-removeDuration: const Duration(milliseconds: 300),
+   insertDuration: const Duration(milliseconds: 300),
+   removeDuration: const Duration(milliseconds: 300),
 ```
 The duration for item insertion and removal animation. If not specified, the default duration is `Duration(milliseconds: 300)`. 
 
@@ -156,6 +155,7 @@ Enter and exit Animation
 To apply animation, while inserting or removing item, specify a list of animation:
 
 ``` dart
+//optional
     enterTransition: [FadeIn(), ScaleIn()],
     exitTransition:  [SlideIn()],
 ```
@@ -168,14 +168,15 @@ Animation have optional `delay`, `duration`, `begin`, `end` and `curve` paramete
 in parallel, but you can use a `delay` to run them sequentially:
 
 ``` dart
-                    enterTransition: [
-                       FadeIn(
-                              duration: const Duration(milliseconds: 300),
-                              delay: const Duration(milliseconds: 100)),
-                          ScaleIn(
-                              duration: const Duration(milliseconds: 500),
-                              curve: Curves.bounceInOut)
-                        ],
+//optional
+ enterTransition: [
+     FadeIn(
+        duration: const Duration(milliseconds: 300),
+        delay: const Duration(milliseconds: 100)),
+     ScaleIn(
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.bounceInOut)
+    ],
 ```
 
 If a specific duration is provided for the animation, it will run for that specified duration.
@@ -184,21 +185,24 @@ However, if `insertDuration` or `removeDuration` are specified, it will override
 Custom AnimationBuilder
 ----------------------------------------
 ``` dart
-                        insertItemBuilder: (Widget child, Animation<double> animation){
-                                 return ScaleTransition(
-                                       scale: animation,
-                                       child: child,
-                                     );
-                                    },
+//optional
+insertItemBuilder: (Widget child, Animation<double> animation){
+      return ScaleTransition(
+         scale: animation,
+         child: child,
+     );
+  }
                                     
-                        removeItemBuilder: (Widget child, Animation<double> animation){
-                                     return ScaleTransition(
-                                       scale: animation,
-                                       child: child,
-                                     );
-                                    },
+removeItemBuilder: (Widget child, Animation<double> animation){
+       return ScaleTransition(
+          scale: animation,
+          child: child,
+      );
+    }
 ```
-You have the flexibility to use custom insertItemBuilder or removeItemBuilder if you wish to implement your own customized animations instead of relying on the built-in animations provided by the library. In these custom builder functions, the child parameter represents the widget returned by the itemBuilder callback, and the animation parameter provides the animation control.
+You can use custom `insertItemBuilder` or `removeItemBuilder` if you wish to implement your own customized animations instead of relying on the built-in animations provided by the library. 
+In these custom builder functions, the child parameter represents the widget returned by the `itemBuilder` callback, and the `animation` parameter provides the animation control.
+
 If a custom `insertItemBuilder` is provided, it will override the `enterTransition`. Similarly, if `removeItemBuilder` is provided, then it will override `exitTransition`.
 
 
