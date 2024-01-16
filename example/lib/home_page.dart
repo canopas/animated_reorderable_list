@@ -197,7 +197,7 @@ class _HomePageState extends State<HomePage> {
                             const SliverGridDelegateWithFixedCrossAxisCount(
                                 crossAxisCount: 4),
                       )
-                    : AnimatedListViewBuilder(
+                    : AnimatedListView(
                         items: list,
                         itemBuilder: (BuildContext context, int index) {
                           return ItemTile(

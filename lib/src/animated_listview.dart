@@ -10,7 +10,7 @@ import 'builder/motion_list_impl.dart';
 /// example above would be run simultaneously), but you can apply delays to
 /// offset them or run them in sequence.
 /// A Flutter AnimatedGridView that animates insertion and removal of the item.
-class AnimatedListViewBuilder<E extends Object> extends StatelessWidget {
+class AnimatedListView<E extends Object> extends StatelessWidget {
   /// The current list of items that this[MotionListViewBuilder] should represent.
   final List<E> items;
 
@@ -134,7 +134,7 @@ class AnimatedListViewBuilder<E extends Object> extends StatelessWidget {
   /// transition for the widget that is built.
   final AnimatedWidgetBuilder? removeItemBuilder;
 
-  const AnimatedListViewBuilder(
+  const AnimatedListView(
       {Key? key,
       required this.items,
       required this.itemBuilder,
