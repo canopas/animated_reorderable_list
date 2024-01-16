@@ -6,8 +6,8 @@ import 'motion_animated_builder.dart';
 
 typedef ItemBuilder<W extends Widget, E> = Widget Function(
     BuildContext context, int index);
-
-
+typedef AnimatedWidgetBuilder<W extends Widget, E> = Widget Function(
+    Widget child, Animation<double> animation);
 
 typedef EqualityChecker<E> = bool Function(E, E);
 
@@ -26,24 +26,26 @@ abstract class MotionListBase<W extends Widget, E extends Object>
   final Duration? insertDuration;
   final Duration? removeDuration;
   final Axis? scrollDirection;
-  final EqualityChecker<E>? areItemsTheSame;
   final SliverGridDelegate? sliverGridDelegate;
+  final AnimatedWidgetBuilder? insertItemBuilder;
+  final AnimatedWidgetBuilder? removeItemBuilder;
 
   const MotionListBase(
       {Key? key,
       required this.items,
       required this.itemBuilder,
-       this.onReorder,
+      this.onReorder,
       this.onReorderEnd,
       this.onReorderStart,
-        this.proxyDecorator,
+      this.proxyDecorator,
       this.enterTransition,
       this.exitTransition,
       this.insertDuration,
       this.removeDuration,
       this.scrollDirection,
       this.sliverGridDelegate,
-      this.areItemsTheSame})
+      this.insertItemBuilder,
+      this.removeItemBuilder})
       : super(key: key);
 }
 
@@ -80,20 +82,19 @@ abstract class MotionListBaseState<
 
   @nonVirtual
   @protected
-  ReorderCallback? get onReorder=> widget.onReorder;
+  ReorderCallback? get onReorder => widget.onReorder;
 
   @nonVirtual
   @protected
-  void Function(int)? get onReorderStart=> widget.onReorderStart;
+  void Function(int)? get onReorderStart => widget.onReorderStart;
 
   @nonVirtual
   @protected
-  void Function(int)? get onReorderEnd=> widget.onReorderEnd;
+  void Function(int)? get onReorderEnd => widget.onReorderEnd;
 
   @nonVirtual
   @protected
-  ReorderItemProxyDecorator? get proxyDecorator=> widget.proxyDecorator;
-
+  ReorderItemProxyDecorator? get proxyDecorator => widget.proxyDecorator;
 
   @nonVirtual
   @protected
@@ -168,7 +169,6 @@ abstract class MotionListBaseState<
         assert(_exitDuration >= zero, "Duration can not be negative");
       }
     }
-
     EffectEntry entry = EffectEntry(
         animationEffect: effect,
         delay: effect.delay ?? zero,
@@ -195,25 +195,33 @@ abstract class MotionListBaseState<
 
   @nonVirtual
   @protected
-  Widget insertItemBuilder(
+  Widget insertAnimationBuilder(
       BuildContext context, Widget child, Animation<double> animation) {
-    Widget animatedChild = child;
-    for (EffectEntry entry in _enterAnimations) {
-      animatedChild =
-          entry.animationEffect.build(context, animatedChild, animation, entry);
+    if (widget.insertItemBuilder != null) {
+      return widget.insertItemBuilder!(child, animation);
+    } else {
+      Widget animatedChild = child;
+      for (EffectEntry entry in _enterAnimations) {
+        animatedChild = entry.animationEffect
+            .build(context, animatedChild, animation, entry);
+      }
+      return animatedChild;
     }
-    return animatedChild;
   }
 
   @nonVirtual
   @protected
-  Widget removeItemBuilder(
+  Widget removeAnimationBuilder(
       BuildContext context, Widget child, Animation<double> animation) {
-    Widget animatedChild = child;
-    for (EffectEntry entry in _exitAnimations) {
-      animatedChild =
-          entry.animationEffect.build(context, animatedChild, animation, entry);
+    if (widget.removeItemBuilder != null) {
+      return widget.removeItemBuilder!(child, animation);
+    } else {
+      Widget animatedChild = child;
+      for (EffectEntry entry in _exitAnimations) {
+        animatedChild = entry.animationEffect
+            .build(context, animatedChild, animation, entry);
+      }
+      return animatedChild;
     }
-    return animatedChild;
   }
 }

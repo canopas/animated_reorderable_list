@@ -25,7 +25,7 @@ class _HomePageState extends State<HomePage> {
   int addedNumber = 9;
   bool isGrid = true;
 
-  List<AnimationEffect> animations = [FadeIn()];
+  List<AnimationEffect> animations = [];
 
   void insert() {
     addedNumber += 1;
@@ -153,7 +153,7 @@ class _HomePageState extends State<HomePage> {
               ),
               Expanded(
                 child: isGrid
-                    ? MotionGridViewBuilder(
+                    ? AnimatedReorderableGridView(
                         items: list,
                         scrollDirection: Axis.vertical,
                         itemBuilder: (BuildContext context, int index) {
@@ -161,6 +161,9 @@ class _HomePageState extends State<HomePage> {
                               key: Key(list[index].name),
                               index: list[index].index);
                         },
+                        sliverGridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 4),
                         enterTransition: animations,
                         exitTransition: animations,
                         insertDuration: const Duration(milliseconds: 300),
@@ -171,27 +174,59 @@ class _HomePageState extends State<HomePage> {
                             list.insert(newIndex, user);
                           });
                         },
-                        sliverGridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 4),
+
+                        /*  A custom builder that is for inserting items with animations.
+
+                              insertItemBuilder: (Widget child, Animation<double> animation){
+                                 return ScaleTransition(
+                                       scale: animation,
+                                       child: child,
+                                     );
+                                    },
+
+
+                      */
+                        /*  A custom builder that is for removing items with animations.
+
+                                  removeItemBuilder: (Widget child, Animation<double> animation){
+                                     return ScaleTransition(
+                                       scale: animation,
+                                       child: child,
+                                     );
+                                    },
+                      */
                       )
-                    : MotionListViewBuilder(
+                    : AnimatedListView(
                         items: list,
                         itemBuilder: (BuildContext context, int index) {
                           return ItemTile(
                               key: Key(list[index].name),
                               index: list[index].index);
                         },
-                        onReorder: (int oldIndex, int newIndex) {
-                          setState(() {
-                            final User user = list.removeAt(oldIndex);
-                            list.insert(newIndex, user);
-                          });
-                        },
                         enterTransition: animations,
                         exitTransition: animations,
                         insertDuration: const Duration(milliseconds: 300),
                         removeDuration: const Duration(milliseconds: 300),
+                        /*  A custom builder that is for inserting items with animations.
+
+                              insertItemBuilder: (Widget child, Animation<double> animation){
+                                 return ScaleTransition(
+                                       scale: animation,
+                                       child: child,
+                                     );
+                                    },
+
+
+                      */
+                        /*  A custom builder that is for removing items with animations.
+
+                                  removeItemBuilder: (Widget child, Animation<double> animation){
+                                     return ScaleTransition(
+                                       scale: animation,
+                                       child: child,
+                                     );
+                                    },
+                      */
                       ),
               ),
             ],
@@ -205,6 +240,7 @@ enum AnimationType {
   flipInY,
   flipInX,
   landing,
+  size,
   scaleIn,
   scaleInTop,
   scaleInBottom,
@@ -227,6 +263,8 @@ class AnimationProvider {
         return FlipInX();
       case (AnimationType.landing):
         return Landing();
+      case (AnimationType.size):
+        return SizeAnimation();
       case (AnimationType.scaleIn):
         return ScaleIn();
       case (AnimationType.scaleInTop):

@@ -1,16 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:animated_reorderable_list/animated_reorderable_list.dart';
-
-import 'motion_list_impl.dart';
+import 'builder/motion_list_base.dart';
+import 'builder/motion_list_impl.dart';
 
 ///  enterTransition: [FadeEffect(), ScaleEffect()],
 ///
 /// Effects are always run in parallel (ie. the fade and scale effects in the
 /// example above would be run simultaneously), but you can apply delays to
 /// offset them or run them in sequence.
-
-class MotionListViewBuilder<E extends Object> extends StatelessWidget {
+/// A Flutter AnimatedGridView that animates insertion and removal of the item.
+class AnimatedListView<E extends Object> extends StatelessWidget {
   /// The current list of items that this[MotionListViewBuilder] should represent.
   final List<E> items;
 
@@ -28,40 +28,19 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
   final List<AnimationEffect>? exitTransition;
 
   /// The duration of the animation when an item was inserted into the list.
+  ///
+  /// If you provide a specific duration for each AnimationEffect, it will override this [insertDuration].
   final Duration? insertDuration;
 
   /// The duration of the animation when an item was removed from the list.
+  ///
+  /// If you provide a specific duration for each AnimationEffect, it will override this [removeDuration].
   final Duration? removeDuration;
-
-  /// A callback used by [ReorderableList] to report that a list item has moved
-  /// to a new position in the list.
-  ///
-  /// Implementations should remove the corresponding list item at [oldIndex]
-  /// and reinsert it at [newIndex].
-  final ReorderCallback? onReorder;
-
-  /// A callback that is called when an item drag has started.
-  ///
-  /// The index parameter of the callback is the index of the selected item.
-  final void Function(int)? onReorderStart;
-
-  /// A callback that is called when the dragged item is dropped.
-  ///
-  /// The index parameter of the callback is the index where the item is
-  /// dropped. Unlike [onReorder], this is called even when the list item is
-  /// dropped in the same location.
-  final void Function(int)? onReorderEnd;
 
   /// The axis along which the scroll view scrolls.
   ///
   /// Defaults to [Axis.vertical].
   final Axis scrollDirection;
-
-  /// {@template flutter.widgets.reorderable_list.proxyDecorator}
-  /// A callback that allows the app to add an animated decoration around
-  /// an item when it is being dragged.
-  /// {@endtemplate}
-  final ReorderItemProxyDecorator? proxyDecorator;
 
   /// {@template flutter.widgets.scroll_view.reverse}
   /// Whether the scroll view scrolls in the reading direction.
@@ -139,7 +118,23 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
   /// See the ScrollView constructor for more details on these arguments.
   final DragStartBehavior dragStartBehavior;
 
-  const MotionListViewBuilder(
+  /// A custom builder that is for adding items with animations.
+  ///
+  /// The `context` argument is the build context where the widget will be
+  /// created, the `index` is the index of the item to be built, and the
+  /// `animation` is an [Animation] that should be used to animate an entry
+  /// transition for the widget that is built.
+  final AnimatedWidgetBuilder? insertItemBuilder;
+
+  /// A custom builder that is for removing items with animations.
+  ///
+  /// The `context` argument is the build context where the widget will be
+  /// created, the `index` is the index of the item to be built, and the
+  /// `animation` is an [Animation] that should be used to animate an exit
+  /// transition for the widget that is built.
+  final AnimatedWidgetBuilder? removeItemBuilder;
+
+  const AnimatedListView(
       {Key? key,
       required this.items,
       required this.itemBuilder,
@@ -147,10 +142,6 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
       this.exitTransition,
       this.insertDuration,
       this.removeDuration,
-      this.onReorder,
-      this.onReorderStart,
-      this.onReorderEnd,
-      this.proxyDecorator,
       this.scrollDirection = Axis.vertical,
       this.padding,
       this.reverse = false,
@@ -161,7 +152,9 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
       this.restorationId,
       this.keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.manual,
       this.dragStartBehavior = DragStartBehavior.start,
-      this.clipBehavior = Clip.hardEdge})
+      this.clipBehavior = Clip.hardEdge,
+      this.insertItemBuilder,
+      this.removeItemBuilder})
       : super(key: key);
 
   @override
@@ -181,19 +174,15 @@ class MotionListViewBuilder<E extends Object> extends StatelessWidget {
           SliverPadding(
             padding: padding ?? EdgeInsets.zero,
             sliver: MotionListImpl(
-              items: items,
-              itemBuilder: itemBuilder,
-              enterTransition: enterTransition,
-              exitTransition: exitTransition,
-              insertDuration: insertDuration,
-              removeDuration: removeDuration,
-              onReorder: onReorder,
-              onReorderStart: onReorderStart,
-              onReorderEnd: onReorderEnd,
-              proxyDecorator: proxyDecorator,
-
-              scrollDirection: scrollDirection,
-            ),
+                items: items,
+                itemBuilder: itemBuilder,
+                enterTransition: enterTransition,
+                exitTransition: exitTransition,
+                insertDuration: insertDuration,
+                removeDuration: removeDuration,
+                scrollDirection: scrollDirection,
+                insertItemBuilder: insertItemBuilder,
+                removeItemBuilder: removeItemBuilder),
           ),
         ]);
   }

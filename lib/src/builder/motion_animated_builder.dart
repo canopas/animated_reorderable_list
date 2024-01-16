@@ -5,19 +5,23 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
-import 'package:animated_reorderable_list/src/component/motion_animated_content.dart';
-
-import '../../animated_reorderable_list.dart';
 import '../component/drag_listener.dart';
 import '../model/motion_data.dart';
+import 'motion_list_base.dart';
+
 part '../component/drag_item.dart';
 
-typedef AnimatedWidgetBuilder<E> = Widget Function(
+part '../component/motion_animated_content.dart';
+
+// typedef AnimatedWidgetBuilder<E> = Widget Function(
+//     BuildContext context, Widget child, Animation<double> animation);
+
+typedef CustomAnimatedWidgetBuilder<E> = Widget Function(
     BuildContext context, Widget child, Animation<double> animation);
 
 class MotionBuilder<E> extends StatefulWidget {
-  final AnimatedWidgetBuilder<E> insertAnimationBuilder;
-  final AnimatedWidgetBuilder<E> removeAnimationBuilder;
+  final CustomAnimatedWidgetBuilder<E> insertAnimationBuilder;
+  final CustomAnimatedWidgetBuilder<E> removeAnimationBuilder;
   final ReorderCallback? onReorder;
   final void Function(int index)? onReorderStart;
   final void Function(int index)? onReorderEnd;
@@ -473,20 +477,18 @@ class MotionBuilderState extends State<MotionBuilder>
       ..sort();
 
     final motionData = MotionData(
-        endOffset: Offset.zero,
-        startOffset: Offset.zero,
-        visible: false);
+        endOffset: Offset.zero, startOffset: Offset.zero, visible: false);
 
     final updatedChildrenMap = <int, MotionData>{};
     if (childrenMap.containsKey(itemIndex)) {
       for (final entry in childrenMap.entries) {
         if (entry.key == itemIndex) {
           updatedChildrenMap[itemIndex] = motionData;
-          updatedChildrenMap[entry.key + 1] = entry.value
-              .copyWith(index: entry.key + 1);
+          updatedChildrenMap[entry.key + 1] = entry.value.copyWith(
+              index: entry.key + 1, startOffset: _itemOffsetAt(entry.key));
         } else if (entry.key > itemIndex) {
-          updatedChildrenMap[entry.key + 1] = entry.value
-              .copyWith(index: entry.key + 1);
+          updatedChildrenMap[entry.key + 1] = entry.value.copyWith(
+              index: entry.key + 1, startOffset: _itemOffsetAt(entry.key));
         } else {
           updatedChildrenMap[entry.key] = entry.value;
         }
@@ -560,13 +562,12 @@ class MotionBuilderState extends State<MotionBuilder>
     if (childrenMap.containsKey(itemIndex)) {
       for (final entry in childrenMap.entries) {
         if (entry.key < itemIndex) {
-          updatedChildrenMap[entry.key] =
-              childrenMap[entry.key]!;
+          updatedChildrenMap[entry.key] = childrenMap[entry.key]!;
         } else if (entry.key == itemIndex) {
           continue;
         } else {
-          updatedChildrenMap[entry.key - 1] = childrenMap[entry.key]!
-              .copyWith(index: entry.key - 1);
+          updatedChildrenMap[entry.key - 1] = childrenMap[entry.key]!.copyWith(
+              index: entry.key - 1, startOffset: _itemOffsetAt(entry.key));
         }
       }
     }
@@ -605,7 +606,7 @@ class MotionBuilderState extends State<MotionBuilder>
     }
 
     final Widget child = widget.onReorder != null
-        ? widgetBuilder(context, _itemIndexToIndex(index))
+        ? reordreableItemBuilder(context, _itemIndexToIndex(index))
         : widget.itemBuilder(context, _itemIndexToIndex(index));
 
     assert(() {
@@ -621,6 +622,7 @@ class MotionBuilderState extends State<MotionBuilder>
     final Widget builder = _insertItemBuilder(incomingItem, child);
 
     final motionData = childrenMap[index];
+    //print("$index ===== StartOffset: ${motionData.startOffset}");
     if (motionData == null) return builder;
     final OverlayState overlay = Overlay.of(context, debugRequiredFor: widget);
 
@@ -630,8 +632,8 @@ class MotionBuilderState extends State<MotionBuilder>
       motionData: motionData,
       updateMotionData: (MotionData motionData) {
         final itemOffset = _itemOffsetAt(index);
-        childrenMap[index] = motionData.copyWith(
-            startOffset: itemOffset, endOffset: itemOffset, visible: true);
+        childrenMap[index] =
+            motionData.copyWith(startOffset: itemOffset, endOffset: itemOffset);
       },
       capturedThemes:
           InheritedTheme.capture(from: context, to: overlay.context),
@@ -643,7 +645,7 @@ class MotionBuilderState extends State<MotionBuilder>
     return SliverChildBuilderDelegate(_itemBuilder, childCount: _itemsCount);
   }
 
-  Widget widgetBuilder(BuildContext context, int index) {
+  Widget reordreableItemBuilder(BuildContext context, int index) {
     final Widget item = widget.itemBuilder(context, index);
     assert(() {
       if (item.key == null) {
@@ -733,24 +735,15 @@ class MotionBuilderState extends State<MotionBuilder>
   Widget _removeItemBuilder(_ActiveItem outgoingItem, Widget child) {
     final Animation<double> animation =
         outgoingItem.controller ?? kAlwaysCompleteAnimation;
-    return widget.removeAnimationBuilder(
-      context,
-      child,
-      animation,
-    );
+    return widget.removeAnimationBuilder(context, child, animation);
   }
 
   Widget _insertItemBuilder(_ActiveItem? incomingItem, Widget child) {
     final Animation<double> animation =
         incomingItem?.controller ?? kAlwaysCompleteAnimation;
-    return widget.insertAnimationBuilder(
-      context,
-      child,
-      animation,
-    );
+    return widget.insertAnimationBuilder(context, child, animation);
   }
 }
-
 
 Offset _extentOffset(double extent, Axis scrollDirection) {
   switch (scrollDirection) {
@@ -760,7 +753,6 @@ Offset _extentOffset(double extent, Axis scrollDirection) {
       return Offset(0.0, extent);
   }
 }
-
 
 @optionalTypeArgs
 class _MotionBuilderItemGlobalKey extends GlobalObjectKey {
