@@ -1,15 +1,16 @@
 # animated_reorderable_list
 
-A Flutter Reorderable Animated List with simple implementation and smooth transition with fully
-custom animations.
+This library is a powerful and easy-to-use solution for implementing animated lists and grids with drag-and-drop functionality in Flutter.
 
 ## Features
 
-- [x] Smooth transition when adding and removing items from the list with animations.
+- [x] Smooth transition during item insertion and removal from the list with animations.
 - [x] Drag and Drop support (ReorderableList) for both ListView and GridView with Animation.
 - [x] Pre-built animation like fade,scale, slide, flip etc for Flutter list.
-- [x] List and Grid support.
-- [x] Supports large lists (thousands of items) without any issues
+- [x] Provides support for both lists and grids
+- [x] Supports large lists  and creates items on demand as they come into the viewport.
+- [x] Animating items is as simple as updating the list.
+
 
 ## Demo
 
@@ -25,11 +26,10 @@ custom animations.
 
 <img src="gif/demo2.gif" width="32%"> <img src="gif/demo3.gif" width="32%">
 
-_Above: The included example app._
 
 ## How to use it?
 
-In the pubspec.yaml of your flutter project, add the following dependency:
+In the pubspec.yaml, add the dependency:
 
 ```
 dependencies:
@@ -37,11 +37,10 @@ dependencies:
 ```
 
 
-In your library add the following import:
+In your library, add the import:
 
 ```
 import 'package:animated_reorderable_list/animated_reorderable_list.dart';
-
 ```
 [Sample](https://github.com/canopas/animated_reorderable_list/tree/main/example) app demonstrates
 how simple the usage of the library actually is.
@@ -52,73 +51,72 @@ how simple the usage of the library actually is.
 A `GridView` that enables users to interactively reorder items through dragging, with animated insertion and removal of items.
 
 ```dart
-          AnimatedReorderableGridView(
-                        items: list,
-                        scrollDirection: Axis.vertical,
-                        itemBuilder: (BuildContext context, int index) {
-                          return ItemCard(
-                              key: Key(list[index].name),
-                              index: list[index].index);
-                        },
-                        sliverGridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 4),
-                        enterTransition: [FadeIn(), ScaleIn()],
-                        exitTransition:  [SlideIn()],
-                        insertDuration: const Duration(milliseconds: 300),
-                        removeDuration: const Duration(milliseconds: 300),
-                        onReorder: (int oldIndex, int newIndex) {
-                          setState(() {
-                            final User user = list.removeAt(oldIndex);
-                            list.insert(newIndex, user);
-                          });
-                        },
-                      )
+AnimatedReorderableGridView(
+   items: list, 
+   scrollDirection: Axis.vertical,
+   itemBuilder: (BuildContext context, int index) {
+      return ItemCard(
+      key: Key(list[index].name),
+      index: list[index].index);
+      },
+   sliverGridDelegate:
+      const SliverGridDelegateWithFixedCrossAxisCount(
+      crossAxisCount: 4),
+   enterTransition: [FadeIn(), ScaleIn()],
+   exitTransition:  [SlideIn()],
+   insertDuration: const Duration(milliseconds: 300),
+   removeDuration: const Duration(milliseconds: 300),
+   onReorder: (int oldIndex, int newIndex) {
+      setState(() {
+        final User user = list.removeAt(oldIndex);
+          list.insert(newIndex, user);
+        });
+      },
+  )
 
 ```
 
 ### AnimatedReorderableListView
 A `ListView` that enables users to interactively reorder items through dragging, with animated insertion and removal of items.
 
-
 ```dart
  AnimatedReorderableListView(
-                        items: list,
-                        itemBuilder: (BuildContext context, int index) {
-                          return ItemTile(
-                              key: Key(list[index].name),
-                              index: list[index].index);
-                        },
-                        enterTransition: [FlipInX(), ScaleIn()],,
-                        exitTransition: [SlideInLeft()]
-                        insertDuration: const Duration(milliseconds: 300),
-                        removeDuration: const Duration(milliseconds: 300),
-                        onReorder: (int oldIndex, int newIndex) {
-                          setState(() {
-                            final User user = list.removeAt(oldIndex);
-                            list.insert(newIndex, user);
-                          });
-                        },
-                       ),
+    items: list,
+    itemBuilder: (BuildContext context, int index) {
+        return ItemTile(
+        key: Key(list[index].name),
+        index: list[index].index);
+        },
+    enterTransition: [FlipInX(), ScaleIn()],,
+    exitTransition: [SlideInLeft()]
+    insertDuration: const Duration(milliseconds: 300),
+    removeDuration: const Duration(milliseconds: 300),
+    onReorder: (int oldIndex, int newIndex) {
+      setState(() {
+        final User user = list.removeAt(oldIndex);
+         list.insert(newIndex, user);
+       });
+      },
+  )
 
 ```
 
 ### AnimatedListView
- A Flutter `AnimatedListView` that animates insertion and removal of the item.
+ A `AnimatedListView` that animates insertion and removal of the item.
 
 ```dart
-              AnimatedListView(
-                        items: list,
-                        itemBuilder: (BuildContext context, int index) {
-                          return ItemTile(
-                              key: Key(list[index].name),
-                              index: list[index].index);
-                        },
-                        enterTransition: [FadeIn(), ScaleIn()],
-                        exitTransition:  [SlideIn()],
-                        insertDuration: const Duration(milliseconds: 300),
-                        removeDuration: const Duration(milliseconds: 300),
-                      ),
+AnimatedListView(
+    items: list,
+    itemBuilder: (BuildContext context, int index) {
+       return ItemTile(
+       key: Key(list[index].name),
+       index: list[index].index);
+       },
+    enterTransition: [FadeIn(), ScaleIn()],
+    exitTransition:  [SlideIn()],
+    insertDuration: const Duration(milliseconds: 300),
+    removeDuration: const Duration(milliseconds: 300),
+  ),
 
 ```
 
@@ -126,25 +124,33 @@ A `ListView` that enables users to interactively reorder items through dragging,
 A Flutter `AnimatedGridView` that animates insertion and removal of the item.
 
 ```dart
-                AnimatedGridView(
-                        items: list,
-                        scrollDirection: Axis.vertical,
-                        itemBuilder: (BuildContext context, int index) {
-                          return ItemCard(
-                              key: Key(list[index].name),
-                              index: list[index].index);
-                        },
-                        sliverGridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 4),
-                        enterTransition: [FadeIn(), ScaleIn()],
-                        exitTransition:  [SlideIn()],
-                        insertDuration: const Duration(milliseconds: 300),
-                        removeDuration: const Duration(milliseconds: 300),
-                      )
+AnimatedGridView(
+   items: list,
+   scrollDirection: Axis.vertical,
+   itemBuilder: (BuildContext context, int index) {
+      return ItemCard(
+      key: Key(list[index].name),
+      index: list[index].index);
+      },
+   sliverGridDelegate:
+      const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 4),
+   enterTransition: [FadeIn(), ScaleIn()],
+   exitTransition:  [SlideIn()],
+   insertDuration: const Duration(milliseconds: 300),
+   removeDuration: const Duration(milliseconds: 300),
+ )
 ```
+Duration for animation
+----------------------------------------
+```dart
+//optional
+insertDuration: const Duration(milliseconds: 300),
+removeDuration: const Duration(milliseconds: 300),
+```
+The duration for item insertion and removal animation. If not specified, the default duration is `Duration(milliseconds: 300)`. 
 
-Animation
+Enter and exit Animation
 ----------------------------------------
 
 To apply animation, while inserting or removing item, specify a list of animation:
@@ -158,7 +164,7 @@ If not specified, then default `FadeIn()` animation will be applied.
 Delay, duration, curve
 ----------------------------------------
 
-Animation have optional `delay`, `duration`, and `curve` parameters. Animations run
+Animation have optional `delay`, `duration`, `begin`, `end` and `curve` parameters. Animations run
 in parallel, but you can use a `delay` to run them sequentially:
 
 ``` dart
@@ -172,8 +178,8 @@ in parallel, but you can use a `delay` to run them sequentially:
                         ],
 ```
 
-If a specific duration is provided for the animation, it will run for that specified duration. However, if both `insertDuration` and `removeDuration` are specified, the animation will run for the specified `insertDuration` and `removeDuration`. 
-If both are not specified, the default duration for the animation will be set to `Duration(milliseconds: 300)`.
+If a specific duration is provided for the animation, it will run for that specified duration.
+However, if `insertDuration` or `removeDuration` are specified, it will override specific item duration. 
 
 Custom AnimationBuilder
 ----------------------------------------
@@ -192,8 +198,8 @@ Custom AnimationBuilder
                                      );
                                     },
 ```
-If you don't want to use built in built-in animation, then you can add custom `insertItemBuilder` and `removeItemBuilder` where child is the widget that is return by `itemBuilder` callback.
-If a custom `insertItemBuilder` is provided, it will override the `enterTransition` and if `removeItemBuilder` is provided, then it will override `exitTransition`.
+You have the flexibility to use custom insertItemBuilder or removeItemBuilder if you wish to implement your own customized animations instead of relying on the built-in animations provided by the library. In these custom builder functions, the child parameter represents the widget returned by the itemBuilder callback, and the animation parameter provides the animation control.
+If a custom `insertItemBuilder` is provided, it will override the `enterTransition`. Similarly, if `removeItemBuilder` is provided, then it will override `exitTransition`.
 
 
 ## Bugs and Feedback
