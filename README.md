@@ -29,27 +29,12 @@ _Above: The included example app._
 
 ## How to use it?
 
-[Sample](https://github.com/canopas/animated_reorderable_list/tree/main/example) app demonstrates
-how simple the usage of the library actually is.
-
-The package contains:
-
-Two **AnimatedList** -  `AnimatedListView` and `AnimatedGridView` for animations for item insertion
-and removal with fully customizations.
-
-Two **AnimatedReorderableList** - `AnimatedReorderableListView` and `AnimatedReorderableGridView`
-adds reordering support to its items in above list.
-
-----------------------------------------------------------------------
-
 In the pubspec.yaml of your flutter project, add the following dependency:
 
 ```
 dependencies:
   animated_reorderable_list: <latest_version>
 ```
-
-----------------------------------------------------------------------
 
 
 In your library add the following import:
@@ -58,13 +43,13 @@ In your library add the following import:
 import 'package:animated_reorderable_list/animated_reorderable_list.dart';
 
 ```
-----------------------------------------------------------------------
-
+[Sample](https://github.com/canopas/animated_reorderable_list/tree/main/example) app demonstrates
+how simple the usage of the library actually is.
 
 ## Basic usage
 
 ### AnimatedReorderableGridView
----------------------------------------------------------
+A `GridView` that enables users to interactively reorder items through dragging, with animated insertion and removal of items.
 
 ```dart
           AnimatedReorderableGridView(
@@ -93,7 +78,8 @@ import 'package:animated_reorderable_list/animated_reorderable_list.dart';
 ```
 
 ### AnimatedReorderableListView
----------------------------------------------------------
+A `ListView` that enables users to interactively reorder items through dragging, with animated insertion and removal of items.
+
 
 ```dart
  AnimatedReorderableListView(
@@ -118,7 +104,7 @@ import 'package:animated_reorderable_list/animated_reorderable_list.dart';
 ```
 
 ### AnimatedListView
----------------------------------------------------------
+ A Flutter `AnimatedListView` that animates insertion and removal of the item.
 
 ```dart
               AnimatedListView(
@@ -137,7 +123,7 @@ import 'package:animated_reorderable_list/animated_reorderable_list.dart';
 ```
 
 ### AnimatedGridView
----------------------------------------------------------
+A Flutter `AnimatedGridView` that animates insertion and removal of the item.
 
 ```dart
                 AnimatedGridView(
@@ -158,8 +144,9 @@ import 'package:animated_reorderable_list/animated_reorderable_list.dart';
                       )
 ```
 
-Basics
-=================================================================================================
+Animation
+----------------------------------------
+
 To apply animation, while inserting or removing item, specify a list of animation:
 
 ``` dart

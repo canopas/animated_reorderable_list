@@ -4,7 +4,7 @@ import 'package:animated_reorderable_list/animated_reorderable_list.dart';
 import 'builder/motion_list_base.dart';
 import 'builder/motion_list_impl.dart';
 
-/// A list whose items the user can interactively reorder by dragging and animates insertion and removal of the item.
+///A [ListView] that enables users to interactively reorder items through dragging, with animated insertion and removal of items.
 ///
 ///  enterTransition: [FadeEffect(), ScaleEffect()],
 ///
