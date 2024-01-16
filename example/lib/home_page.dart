@@ -161,16 +161,31 @@ class _HomePageState extends State<HomePage> {
                               key: Key(list[index].name),
                               index: list[index].index);
                         },
-                       insertItemBuilder: (Widget child, Animation<double> animation){
-                          return SizeTransition(
-                            axis: Axis.vertical,
-                            axisAlignment: 0.0,
-                            sizeFactor: animation,
-                            child: child,);
-                       },
+                        insertItemBuilder:
+                            (Widget child, Animation<double> animation) {
+                          return Align(
+                            child: SizeTransition(
+                              axis: Axis.horizontal,
+                              axisAlignment: 0.0,
+                              sizeFactor: animation,
+                              child: child,
+                            ),
+                          );
+                        },
+                        removeItemBuilder:
+                            (Widget child, Animation<double> animation) {
+                          return Align(
+                            child: SizeTransition(
+                              axis: Axis.horizontal,
+                              axisAlignment: 0.0,
+                              sizeFactor: animation,
+                              child: child,
+                            ),
+                          );
+                        },
                         enterTransition: animations,
                         exitTransition: animations,
-                        insertDuration: const Duration(seconds: 3),
+                        insertDuration: const Duration(milliseconds: 300),
                         removeDuration: const Duration(milliseconds: 300),
                         onReorder: (int oldIndex, int newIndex) {
                           setState(() {
@@ -189,27 +204,19 @@ class _HomePageState extends State<HomePage> {
                               key: Key(list[index].name),
                               index: list[index].index);
                         },
-                      // insertItemBuilder: (Widget child, Animation<double> animation){
-                      //    return SizeTransition(
-                      //      axis: Axis.vertical,
-                      //      sizeFactor: animation,
-                      //      child: child,);
-                      //   },
-                  //    removeItemBuilder: (Widget child, Animation<double> animation){
-                  //        return SizeTransition(
-                  //          axis: Axis.vertical,
-                  //         sizeFactor: animation,
-                  //         child: child,);
-                  // },
-                        // onReorder: (int oldIndex, int newIndex) {
-                        //   setState(() {
-                        //     final User user = list.removeAt(oldIndex);
-                        //     list.insert(newIndex, user);
-                        //   });
-                        // },
+
+                        // Animation builder for custom animation
+
+                        //           insertItemBuilder: (Widget child, Animation<double> animation){
+                        //              return ScaleTransition(
+                        //                scale: animation,
+                        //                child: child,
+                        //              );
+                        //             },
+
                         enterTransition: animations,
                         exitTransition: animations,
-                        insertDuration: const Duration(seconds: 3),
+                        insertDuration: const Duration(milliseconds: 300),
                         removeDuration: const Duration(milliseconds: 300),
                       ),
               ),
@@ -224,6 +231,7 @@ enum AnimationType {
   flipInY,
   flipInX,
   landing,
+  size,
   scaleIn,
   scaleInTop,
   scaleInBottom,
@@ -246,6 +254,8 @@ class AnimationProvider {
         return FlipInX();
       case (AnimationType.landing):
         return Landing();
+      case (AnimationType.size):
+        return SizeAnimation();
       case (AnimationType.scaleIn):
         return ScaleIn();
       case (AnimationType.scaleInTop):

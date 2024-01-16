@@ -3,6 +3,7 @@ enum AnimationType {
   flipInY,
   flipInX,
   landing,
+  size,
   scaleIn,
   scaleInTop,
   scaleInBottom,

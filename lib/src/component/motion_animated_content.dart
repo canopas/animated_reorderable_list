@@ -97,9 +97,6 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
     Offset endOffset = itemOffset();
     Offset offsetDiff = (widget.motionData.startOffset + offset) - endOffset;
     _startOffset = offsetDiff;
-    print("$index OFFSETDIFF: $offsetDiff");
-
-
     if (offsetDiff.dx != 0 || offsetDiff.dy != 0) {
       if (_offsetAnimation == null) {
         _offsetAnimation = AnimationController(
@@ -108,13 +105,8 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
         )
           ..addListener(rebuild)
           ..addStatusListener((AnimationStatus status) {
-            print("$index $status");
             if (status == AnimationStatus.completed) {
-              setState(() {
-                visible = true;
-              });
-              final itemOFFSET = itemOffset();
-              print("----------- $index  ---- $itemOFFSET");
+              widget.updateMotionData?.call(widget.motionData);
 
               _startOffset = _targetOffset;
               _offsetAnimation!.dispose();
