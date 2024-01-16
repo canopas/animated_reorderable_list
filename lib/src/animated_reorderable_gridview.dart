@@ -5,7 +5,7 @@ import '../../animated_reorderable_list.dart';
 import 'builder/motion_list_base.dart';
 import 'builder/motion_list_impl.dart';
 
-/// A list whose items the user can interactively reorder by dragging and animates insertion and removal of the item..
+///A GridView that enables users to interactively reorder items through dragging, with animated insertion and removal of items.
 ///
 ///  enterTransition: [FadeEffect(), ScaleEffect()],
 ///
@@ -16,11 +16,6 @@ import 'builder/motion_list_impl.dart';
 /// The [onReorder] parameter is required and will be called when a child
 /// widget is dragged to a new position.
 ///
-/// By default, on [TargetPlatformVariant.desktop] platforms each item will
-/// have a drag handle added on top of it that will allow the user to grab it
-/// to move the item. On [TargetPlatformVariant.mobile], no drag handle will be
-/// added, but when the user long presses anywhere on the item it will start
-/// moving the item.
 ///
 /// All list items must have a key.
 ///

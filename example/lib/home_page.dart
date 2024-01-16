@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:example/utils/extension.dart';
 import 'package:example/utils/item_card.dart';
 import 'package:example/utils/item_tile.dart';
@@ -174,6 +176,7 @@ class _HomePageState extends State<HomePage> {
                             list.insert(newIndex, user);
                           });
                         },
+                        proxyDecorator: proxyDecorator
 
                         /*  A custom builder that is for inserting items with animations.
 
@@ -195,8 +198,8 @@ class _HomePageState extends State<HomePage> {
                                      );
                                     },
                       */
-                      )
-                    : AnimatedListView(
+                        )
+                    : AnimatedReorderableListView(
                         items: list,
                         itemBuilder: (BuildContext context, int index) {
                           return ItemTile(
@@ -207,6 +210,14 @@ class _HomePageState extends State<HomePage> {
                         exitTransition: animations,
                         insertDuration: const Duration(milliseconds: 300),
                         removeDuration: const Duration(milliseconds: 300),
+                        onReorder: (int oldIndex, int newIndex) {
+                          setState(() {
+                            final User user = list.removeAt(oldIndex);
+                            list.insert(newIndex, user);
+                          });
+                        },
+                        proxyDecorator: proxyDecorator
+
                         /*  A custom builder that is for inserting items with animations.
 
                               insertItemBuilder: (Widget child, Animation<double> animation){
@@ -227,12 +238,29 @@ class _HomePageState extends State<HomePage> {
                                      );
                                     },
                       */
-                      ),
+                        ),
               ),
             ],
           ),
         ));
   }
+}
+
+Widget proxyDecorator(Widget child, int index, Animation<double> animation) {
+  return AnimatedBuilder(
+    animation: animation,
+    builder: (BuildContext context, Widget? child) {
+      final double animValue = Curves.easeInOut.transform(animation.value);
+      final double elevation = lerpDouble(0, 6, animValue)!;
+      return Material(
+        elevation: elevation,
+        color: Colors.grey,
+        shadowColor: Colors.black,
+        child: child,
+      );
+    },
+    child: child,
+  );
 }
 
 enum AnimationType {
