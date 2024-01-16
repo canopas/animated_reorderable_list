@@ -6,7 +6,8 @@ import 'motion_animated_builder.dart';
 
 typedef ItemBuilder<W extends Widget, E> = Widget Function(
     BuildContext context, int index);
-typedef AnimatedWidgetBuilder<W extends Widget, E> = Widget Function(Widget child, Animation<double> animation);
+typedef AnimatedWidgetBuilder<W extends Widget, E> = Widget Function(
+    Widget child, Animation<double> animation);
 
 typedef EqualityChecker<E> = bool Function(E, E);
 

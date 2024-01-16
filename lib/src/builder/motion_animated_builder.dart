@@ -484,11 +484,11 @@ class MotionBuilderState extends State<MotionBuilder>
       for (final entry in childrenMap.entries) {
         if (entry.key == itemIndex) {
           updatedChildrenMap[itemIndex] = motionData;
-          updatedChildrenMap[entry.key + 1] =
-              entry.value.copyWith(index: entry.key + 1,startOffset: _itemOffsetAt(entry.key));
+          updatedChildrenMap[entry.key + 1] = entry.value.copyWith(
+              index: entry.key + 1, startOffset: _itemOffsetAt(entry.key));
         } else if (entry.key > itemIndex) {
-          updatedChildrenMap[entry.key + 1] =
-              entry.value.copyWith(index: entry.key + 1,startOffset: _itemOffsetAt(entry.key));
+          updatedChildrenMap[entry.key + 1] = entry.value.copyWith(
+              index: entry.key + 1, startOffset: _itemOffsetAt(entry.key));
         } else {
           updatedChildrenMap[entry.key] = entry.value;
         }
@@ -566,8 +566,8 @@ class MotionBuilderState extends State<MotionBuilder>
         } else if (entry.key == itemIndex) {
           continue;
         } else {
-          updatedChildrenMap[entry.key - 1] =
-              childrenMap[entry.key]!.copyWith(index: entry.key - 1,startOffset: _itemOffsetAt(entry.key));
+          updatedChildrenMap[entry.key - 1] = childrenMap[entry.key]!.copyWith(
+              index: entry.key - 1, startOffset: _itemOffsetAt(entry.key));
         }
       }
     }
@@ -619,8 +619,7 @@ class MotionBuilderState extends State<MotionBuilder>
     }());
 
     final Key itemGlobalKey = _MotionBuilderItemGlobalKey(child.key!, this);
-    final Widget builder =
-        _insertItemBuilder(incomingItem,  child);
+    final Widget builder = _insertItemBuilder(incomingItem, child);
 
     final motionData = childrenMap[index];
     //print("$index ===== StartOffset: ${motionData.startOffset}");
@@ -633,7 +632,8 @@ class MotionBuilderState extends State<MotionBuilder>
       motionData: motionData,
       updateMotionData: (MotionData motionData) {
         final itemOffset = _itemOffsetAt(index);
-        childrenMap[index] = motionData.copyWith(startOffset: itemOffset, endOffset: itemOffset);
+        childrenMap[index] =
+            motionData.copyWith(startOffset: itemOffset, endOffset: itemOffset);
       },
       capturedThemes:
           InheritedTheme.capture(from: context, to: overlay.context),
@@ -735,22 +735,13 @@ class MotionBuilderState extends State<MotionBuilder>
   Widget _removeItemBuilder(_ActiveItem outgoingItem, Widget child) {
     final Animation<double> animation =
         outgoingItem.controller ?? kAlwaysCompleteAnimation;
-    return widget.removeAnimationBuilder(
-      context,
-      child,
-      animation
-    );
+    return widget.removeAnimationBuilder(context, child, animation);
   }
 
-  Widget _insertItemBuilder(
-      _ActiveItem? incomingItem, Widget child) {
+  Widget _insertItemBuilder(_ActiveItem? incomingItem, Widget child) {
     final Animation<double> animation =
         incomingItem?.controller ?? kAlwaysCompleteAnimation;
-    return widget.insertAnimationBuilder(
-      context,
-      child,
-      animation
-    );
+    return widget.insertAnimationBuilder(context, child, animation);
   }
 }
 

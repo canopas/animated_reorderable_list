@@ -153,9 +153,8 @@ class AnimatedListViewBuilder<E extends Object> extends StatelessWidget {
       this.keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.manual,
       this.dragStartBehavior = DragStartBehavior.start,
       this.clipBehavior = Clip.hardEdge,
-        this.insertItemBuilder,
-        this.removeItemBuilder
-      })
+      this.insertItemBuilder,
+      this.removeItemBuilder})
       : super(key: key);
 
   @override
@@ -175,16 +174,15 @@ class AnimatedListViewBuilder<E extends Object> extends StatelessWidget {
           SliverPadding(
             padding: padding ?? EdgeInsets.zero,
             sliver: MotionListImpl(
-              items: items,
-              itemBuilder: itemBuilder,
-              enterTransition: enterTransition,
-              exitTransition: exitTransition,
-              insertDuration: insertDuration,
-              removeDuration: removeDuration,
-              scrollDirection: scrollDirection,
-              insertItemBuilder: insertItemBuilder,
-              removeItemBuilder: removeItemBuilder
-            ),
+                items: items,
+                itemBuilder: itemBuilder,
+                enterTransition: enterTransition,
+                exitTransition: exitTransition,
+                insertDuration: insertDuration,
+                removeDuration: removeDuration,
+                scrollDirection: scrollDirection,
+                insertItemBuilder: insertItemBuilder,
+                removeItemBuilder: removeItemBuilder),
           ),
         ]);
   }

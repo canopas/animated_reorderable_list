@@ -21,21 +21,20 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
     AnimatedWidgetBuilder? insertItemBuilder,
     AnimatedWidgetBuilder? removeItemBuilder,
   }) : super(
-          key: key,
-          items: items,
-          itemBuilder: itemBuilder,
-          enterTransition: enterTransition,
-          exitTransition: exitTransition,
-          insertDuration: insertDuration,
-          removeDuration: removeDuration,
-          onReorder: onReorder,
-          onReorderStart: onReorderStart,
-          onReorderEnd: onReorderEnd,
-          proxyDecorator: proxyDecorator,
-          scrollDirection: scrollDirection,
-          insertItemBuilder: insertItemBuilder,
-          removeItemBuilder: removeItemBuilder
-        );
+            key: key,
+            items: items,
+            itemBuilder: itemBuilder,
+            enterTransition: enterTransition,
+            exitTransition: exitTransition,
+            insertDuration: insertDuration,
+            removeDuration: removeDuration,
+            onReorder: onReorder,
+            onReorderStart: onReorderStart,
+            onReorderEnd: onReorderEnd,
+            proxyDecorator: proxyDecorator,
+            scrollDirection: scrollDirection,
+            insertItemBuilder: insertItemBuilder,
+            removeItemBuilder: removeItemBuilder);
 
   const MotionListImpl.grid({
     Key? key,
@@ -54,22 +53,21 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
     AnimatedWidgetBuilder? insertItemBuilder,
     AnimatedWidgetBuilder? removeItemBuilder,
   }) : super(
-          key: key,
-          items: items,
-          itemBuilder: itemBuilder,
-          sliverGridDelegate: sliverGridDelegate,
-          enterTransition: enterTransition,
-          exitTransition: exitTransition,
-          insertDuration: insertDuration,
-          removeDuration: removeDuration,
-          onReorder: onReorder,
-          onReorderStart: onReorderStart,
-          onReorderEnd: onReorderEnd,
-          proxyDecorator: proxyDecorator,
-          scrollDirection: scrollDirection,
-    insertItemBuilder: insertItemBuilder,
-    removeItemBuilder: removeItemBuilder
-        );
+            key: key,
+            items: items,
+            itemBuilder: itemBuilder,
+            sliverGridDelegate: sliverGridDelegate,
+            enterTransition: enterTransition,
+            exitTransition: exitTransition,
+            insertDuration: insertDuration,
+            removeDuration: removeDuration,
+            onReorder: onReorder,
+            onReorderStart: onReorderStart,
+            onReorderEnd: onReorderEnd,
+            proxyDecorator: proxyDecorator,
+            scrollDirection: scrollDirection,
+            insertItemBuilder: insertItemBuilder,
+            removeItemBuilder: removeItemBuilder);
 
   @override
   MotionListImplState<E> createState() => MotionListImplState<E>();

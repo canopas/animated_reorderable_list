@@ -205,9 +205,8 @@ class AnimatedReorderableGridView<E extends Object> extends StatelessWidget {
       this.keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.manual,
       this.dragStartBehavior = DragStartBehavior.start,
       this.clipBehavior = Clip.hardEdge,
-        this.insertItemBuilder,
-        this.removeItemBuilder
-      })
+      this.insertItemBuilder,
+      this.removeItemBuilder})
       : super(key: key);
 
   @override

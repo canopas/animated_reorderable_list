@@ -126,7 +126,6 @@ class AnimatedGridView<E extends Object> extends StatelessWidget {
   /// See the ScrollView constructor for more details on these arguments.
   final DragStartBehavior dragStartBehavior;
 
-
   /// A custom builder that is for adding items with animations.
   ///
   /// The child argument is the widget that is returned by [itemBuilder],
@@ -161,9 +160,8 @@ class AnimatedGridView<E extends Object> extends StatelessWidget {
       this.keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.manual,
       this.dragStartBehavior = DragStartBehavior.start,
       this.clipBehavior = Clip.hardEdge,
-        this.insertItemBuilder,
-        this.removeItemBuilder
-      })
+      this.insertItemBuilder,
+      this.removeItemBuilder})
       : super(key: key);
 
   @override
@@ -183,17 +181,16 @@ class AnimatedGridView<E extends Object> extends StatelessWidget {
           SliverPadding(
             padding: padding ?? EdgeInsets.zero,
             sliver: MotionListImpl.grid(
-              items: items,
-              itemBuilder: itemBuilder,
-              sliverGridDelegate: sliverGridDelegate,
-              insertDuration: insertDuration,
-              removeDuration: removeDuration,
-              enterTransition: enterTransition,
-              exitTransition: exitTransition,
-              scrollDirection: scrollDirection,
-              insertItemBuilder: insertItemBuilder,
-              removeItemBuilder: removeItemBuilder
-            ),
+                items: items,
+                itemBuilder: itemBuilder,
+                sliverGridDelegate: sliverGridDelegate,
+                insertDuration: insertDuration,
+                removeDuration: removeDuration,
+                enterTransition: enterTransition,
+                exitTransition: exitTransition,
+                scrollDirection: scrollDirection,
+                insertItemBuilder: insertItemBuilder,
+                removeItemBuilder: removeItemBuilder),
           ),
         ]);
   }

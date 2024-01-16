@@ -88,7 +88,6 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
         _updateAnimationTranslation();
       }
       widget.updateMotionData?.call(widget.motionData);
-
     });
     super.didUpdateWidget(oldWidget);
   }
