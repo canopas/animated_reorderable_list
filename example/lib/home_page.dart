@@ -23,7 +23,7 @@ class _HomePageState extends State<HomePage> {
   List<User> list =
       List.generate(8, (index) => User(name: "User $index", index: index));
   int addedNumber = 9;
-  bool isGrid = true;
+  bool isGrid = false;
 
   List<AnimationEffect> animations = [];
 
@@ -161,9 +161,16 @@ class _HomePageState extends State<HomePage> {
                               key: Key(list[index].name),
                               index: list[index].index);
                         },
+                       insertItemBuilder: (Widget child, Animation<double> animation){
+                          return SizeTransition(
+                            axis: Axis.vertical,
+                            //axisAlignment: 0.0,
+                            sizeFactor: animation,
+                            child: child,);
+                       },
                         enterTransition: animations,
                         exitTransition: animations,
-                        insertDuration: const Duration(milliseconds: 300),
+                        insertDuration: const Duration(seconds: 3),
                         removeDuration: const Duration(milliseconds: 300),
                         onReorder: (int oldIndex, int newIndex) {
                           setState(() {
@@ -175,23 +182,35 @@ class _HomePageState extends State<HomePage> {
                             const SliverGridDelegateWithFixedCrossAxisCount(
                                 crossAxisCount: 4),
                       )
-                    : AnimatedReorderableListView(
+                    : AnimatedListViewBuilder(
                         items: list,
                         itemBuilder: (BuildContext context, int index) {
                           return ItemTile(
                               key: Key(list[index].name),
                               index: list[index].index);
                         },
-                        onReorder: (int oldIndex, int newIndex) {
-                          setState(() {
-                            final User user = list.removeAt(oldIndex);
-                            list.insert(newIndex, user);
-                          });
-                        },
+                      // insertItemBuilder: (Widget child, Animation<double> animation){
+                      //    return SizeTransition(
+                      //      axis: Axis.vertical,
+                      //      sizeFactor: animation,
+                      //      child: child,);
+                      //   },
+                  //    removeItemBuilder: (Widget child, Animation<double> animation){
+                  //        return SizeTransition(
+                  //          axis: Axis.vertical,
+                  //         sizeFactor: animation,
+                  //         child: child,);
+                  // },
+                        // onReorder: (int oldIndex, int newIndex) {
+                        //   setState(() {
+                        //     final User user = list.removeAt(oldIndex);
+                        //     list.insert(newIndex, user);
+                        //   });
+                        // },
                         enterTransition: animations,
                         exitTransition: animations,
-                        insertDuration: const Duration(milliseconds: 300),
-                        removeDuration: const Duration(milliseconds: 300),
+                        insertDuration: const Duration(seconds: 3),
+                        removeDuration: const Duration(seconds: 3),
                       ),
               ),
             ],
