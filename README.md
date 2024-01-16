@@ -63,7 +63,7 @@ import 'package:animated_reorderable_list/animated_reorderable_list.dart';
 
 ## Basic usage
 
-AnimatedReorderableGridView
+### AnimatedReorderableGridView
 ---------------------------------------------------------
 
 ```dart
@@ -92,7 +92,7 @@ AnimatedReorderableGridView
 
 ```
 
-AnimatedReorderableListView
+### AnimatedReorderableListView
 ---------------------------------------------------------
 
 ```dart
@@ -117,7 +117,7 @@ AnimatedReorderableListView
 
 ```
 
-AnimatedListView
+### AnimatedListView
 ---------------------------------------------------------
 
 ```dart
@@ -136,7 +136,7 @@ AnimatedListView
 
 ```
 
-AnimatedGridView
+### AnimatedGridView
 ---------------------------------------------------------
 
 ```dart
