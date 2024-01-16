@@ -33,10 +33,14 @@ _Above: The included example app._
 how simple the usage of the library actually is.
 
 The package contains:
+
 Two **AnimatedList** -  `AnimatedListView` and `AnimatedGridView` for animations for item insertion
 and removal with fully customizations.
+
 Two **AnimatedReorderableList** - `AnimatedReorderableListView` and `AnimatedReorderableGridView`
 adds reordering support to its items in above list.
+
+----------------------------------------------------------------------
 
 In the pubspec.yaml of your flutter project, add the following dependency:
 
@@ -45,16 +49,22 @@ dependencies:
   animated_reorderable_list: <latest_version>
 ```
 
+----------------------------------------------------------------------
+
+
 In your library add the following import:
 
 ```
 import 'package:animated_reorderable_list/animated_reorderable_list.dart';
-```
 
-### Basic usage
+```
+----------------------------------------------------------------------
+
+
+## Basic usage
 
 AnimatedReorderableGridView
-=================================================================================================
+---------------------------------------------------------
 
 ```dart
           AnimatedReorderableGridView(
@@ -83,7 +93,7 @@ AnimatedReorderableGridView
 ```
 
 AnimatedReorderableListView
-=================================================================================================
+---------------------------------------------------------
 
 ```dart
  AnimatedReorderableListView(
@@ -108,7 +118,7 @@ AnimatedReorderableListView
 ```
 
 AnimatedListView
-=================================================================================================
+---------------------------------------------------------
 
 ```dart
               AnimatedListView(
@@ -122,32 +132,12 @@ AnimatedListView
                         exitTransition:  [SlideIn()],
                         insertDuration: const Duration(milliseconds: 300),
                         removeDuration: const Duration(milliseconds: 300),
-                        /*  A custom builder that is for inserting items with animations.
-
-                              insertItemBuilder: (Widget child, Animation<double> animation){
-                                 return ScaleTransition(
-                                       scale: animation,
-                                       child: child,
-                                     );
-                                    },
-
-
-                      */
-                        /*  A custom builder that is for removing items with animations.
-
-                                  removeItemBuilder: (Widget child, Animation<double> animation){
-                                     return ScaleTransition(
-                                       scale: animation,
-                                       child: child,
-                                     );
-                                    },
-                      */
                       ),
 
 ```
 
 AnimatedGridView
-=================================================================================================
+---------------------------------------------------------
 
 ```dart
                 AnimatedGridView(
@@ -165,27 +155,6 @@ AnimatedGridView
                         exitTransition:  [SlideIn()],
                         insertDuration: const Duration(milliseconds: 300),
                         removeDuration: const Duration(milliseconds: 300),
-
-                        /*  A custom builder that is for inserting items with animations.
-
-                              insertItemBuilder: (Widget child, Animation<double> animation){
-                                 return ScaleTransition(
-                                       scale: animation,
-                                       child: child,
-                                     );
-                                    },
-
-
-                      */
-                        /*  A custom builder that is for removing items with animations.
-
-                                  removeItemBuilder: (Widget child, Animation<double> animation){
-                                     return ScaleTransition(
-                                       scale: animation,
-                                       child: child,
-                                     );
-                                    },
-                      */
                       )
 ```
 
@@ -197,6 +166,7 @@ To apply animation, while inserting or removing item, specify a list of animatio
     enterTransition: [FadeIn(), ScaleIn()],
     exitTransition:  [SlideIn()],
 ```
+If not specified, then default `FadeIn()` animation will be applied.
 
 Delay, duration, curve
 ----------------------------------------
@@ -215,8 +185,8 @@ in parallel, but you can use a `delay` to run them sequentially:
                         ],
 ```
 
-If a specific duration is provided for the animation, it will run for that specified duration. However, if both insertDuration and removeDuration are specified, the animation will run for the specified insertDuration and removeDuration. 
-If both are not specified, the default duration for the animation will be set to Duration(milliseconds: 300).
+If a specific duration is provided for the animation, it will run for that specified duration. However, if both `insertDuration` and `removeDuration` are specified, the animation will run for the specified `insertDuration` and `removeDuration`. 
+If both are not specified, the default duration for the animation will be set to `Duration(milliseconds: 300)`.
 
 Custom AnimationBuilder
 ----------------------------------------
@@ -235,8 +205,8 @@ Custom AnimationBuilder
                                      );
                                     },
 ```
-If you don't want to use built in built-in animation, then you can add custom `animationItemBuilder` where child is the widget that is return bu `itemBuilder` callback.
-If a custom insertItemBuilder is provided, it will override the enterTransition.
+If you don't want to use built in built-in animation, then you can add custom `insertItemBuilder` and `removeItemBuilder` where child is the widget that is return by `itemBuilder` callback.
+If a custom `insertItemBuilder` is provided, it will override the `enterTransition` and if `removeItemBuilder` is provided, then it will override `exitTransition`.
 
 
 ## Bugs and Feedback
