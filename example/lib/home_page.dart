@@ -23,7 +23,7 @@ class _HomePageState extends State<HomePage> {
   List<User> list =
       List.generate(8, (index) => User(name: "User $index", index: index));
   int addedNumber = 9;
-  bool isGrid = false;
+  bool isGrid = true;
 
   List<AnimationEffect> animations = [];
 
@@ -161,28 +161,9 @@ class _HomePageState extends State<HomePage> {
                               key: Key(list[index].name),
                               index: list[index].index);
                         },
-                        insertItemBuilder:
-                            (Widget child, Animation<double> animation) {
-                          return Align(
-                            child: SizeTransition(
-                              axis: Axis.horizontal,
-                              axisAlignment: 0.0,
-                              sizeFactor: animation,
-                              child: child,
-                            ),
-                          );
-                        },
-                        removeItemBuilder:
-                            (Widget child, Animation<double> animation) {
-                          return Align(
-                            child: SizeTransition(
-                              axis: Axis.horizontal,
-                              axisAlignment: 0.0,
-                              sizeFactor: animation,
-                              child: child,
-                            ),
-                          );
-                        },
+                        sliverGridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 4),
                         enterTransition: animations,
                         exitTransition: animations,
                         insertDuration: const Duration(milliseconds: 300),
@@ -193,9 +174,27 @@ class _HomePageState extends State<HomePage> {
                             list.insert(newIndex, user);
                           });
                         },
-                        sliverGridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 4),
+
+                        /*  A custom builder that is for inserting items with animations.
+
+                              insertItemBuilder: (Widget child, Animation<double> animation){
+                                 return ScaleTransition(
+                                       scale: animation,
+                                       child: child,
+                                     );
+                                    },
+
+
+                      */
+                        /*  A custom builder that is for removing items with animations.
+
+                                  removeItemBuilder: (Widget child, Animation<double> animation){
+                                     return ScaleTransition(
+                                       scale: animation,
+                                       child: child,
+                                     );
+                                    },
+                      */
                       )
                     : AnimatedListView(
                         items: list,
@@ -204,20 +203,30 @@ class _HomePageState extends State<HomePage> {
                               key: Key(list[index].name),
                               index: list[index].index);
                         },
-
-                        // Animation builder for custom animation
-
-                        //           insertItemBuilder: (Widget child, Animation<double> animation){
-                        //              return ScaleTransition(
-                        //                scale: animation,
-                        //                child: child,
-                        //              );
-                        //             },
-
                         enterTransition: animations,
                         exitTransition: animations,
                         insertDuration: const Duration(milliseconds: 300),
                         removeDuration: const Duration(milliseconds: 300),
+                        /*  A custom builder that is for inserting items with animations.
+
+                              insertItemBuilder: (Widget child, Animation<double> animation){
+                                 return ScaleTransition(
+                                       scale: animation,
+                                       child: child,
+                                     );
+                                    },
+
+
+                      */
+                        /*  A custom builder that is for removing items with animations.
+
+                                  removeItemBuilder: (Widget child, Animation<double> animation){
+                                     return ScaleTransition(
+                                       scale: animation,
+                                       child: child,
+                                     );
+                                    },
+                      */
                       ),
               ),
             ],
