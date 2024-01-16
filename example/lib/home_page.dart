@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:example/utils/extension.dart';
 import 'package:example/utils/item_card.dart';
 import 'package:example/utils/item_tile.dart';
@@ -21,7 +23,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   AnimationType appliedStyle = AnimationType.fadeIn;
   List<User> list =
-      List.generate(8, (index) => User(name: "User $index", index: index));
+  List.generate(8, (index) => User(name: "User $index", index: index));
   int addedNumber = 9;
   bool isGrid = true;
 
@@ -55,7 +57,7 @@ class _HomePageState extends State<HomePage> {
                     iconEnabledColor: Colors.black87,
                     value: appliedStyle,
                     items:
-                        AnimationType.values.map((AnimationType animationType) {
+                    AnimationType.values.map((AnimationType animationType) {
                       return DropdownMenuItem<AnimationType>(
                         value: animationType,
                         child: Text(
@@ -73,7 +75,7 @@ class _HomePageState extends State<HomePage> {
                       }
                       animations = [];
                       AnimationEffect animation =
-                          AnimationProvider.buildAnimation(animationType);
+                      AnimationProvider.buildAnimation(animationType);
                       animations.add(animation);
                       setState(() {
                         appliedStyle = animationType;
@@ -130,7 +132,7 @@ class _HomePageState extends State<HomePage> {
                       )),
                   ElevatedButton(
                     style:
-                        ElevatedButton.styleFrom(backgroundColor: Colors.teal),
+                    ElevatedButton.styleFrom(backgroundColor: Colors.teal),
                     onPressed: () {
                       setState(() {
                         if (isGrid != true) {
@@ -154,60 +156,29 @@ class _HomePageState extends State<HomePage> {
               Expanded(
                 child: isGrid
                     ? AnimatedReorderableGridView(
-                        items: list,
-                        scrollDirection: Axis.vertical,
-                        itemBuilder: (BuildContext context, int index) {
-                          return ItemCard(
-                              key: Key(list[index].name),
-                              index: list[index].index);
-                        },
-                        sliverGridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 4),
-                        enterTransition: animations,
-                        exitTransition: animations,
-                        insertDuration: const Duration(milliseconds: 300),
-                        removeDuration: const Duration(milliseconds: 300),
-                        onReorder: (int oldIndex, int newIndex) {
-                          setState(() {
-                            final User user = list.removeAt(oldIndex);
-                            list.insert(newIndex, user);
-                          });
-                        },
+                    items: list,
+                    scrollDirection: Axis.vertical,
+                    itemBuilder: (BuildContext context, int index) {
+                      return ItemCard(
+                          key: Key(list[index].name),
+                          index: list[index].index);
+                    },
+                    sliverGridDelegate:
+                    const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 4),
+                    enterTransition: animations,
+                    exitTransition: animations,
+                    insertDuration: const Duration(milliseconds: 300),
+                    removeDuration: const Duration(milliseconds: 300),
+                    onReorder: (int oldIndex, int newIndex) {
+                      setState(() {
+                        final User user = list.removeAt(oldIndex);
+                        list.insert(newIndex, user);
+                      });
+                    },
+                    proxyDecorator: proxyDecorator
 
-                        /*  A custom builder that is for inserting items with animations.
-
-                              insertItemBuilder: (Widget child, Animation<double> animation){
-                                 return ScaleTransition(
-                                       scale: animation,
-                                       child: child,
-                                     );
-                                    },
-
-
-                      */
-                        /*  A custom builder that is for removing items with animations.
-
-                                  removeItemBuilder: (Widget child, Animation<double> animation){
-                                     return ScaleTransition(
-                                       scale: animation,
-                                       child: child,
-                                     );
-                                    },
-                      */
-                      )
-                    : AnimatedListView(
-                        items: list,
-                        itemBuilder: (BuildContext context, int index) {
-                          return ItemTile(
-                              key: Key(list[index].name),
-                              index: list[index].index);
-                        },
-                        enterTransition: animations,
-                        exitTransition: animations,
-                        insertDuration: const Duration(milliseconds: 300),
-                        removeDuration: const Duration(milliseconds: 300),
-                        /*  A custom builder that is for inserting items with animations.
+                  /*  A custom builder that is for inserting items with animations.
 
                               insertItemBuilder: (Widget child, Animation<double> animation){
                                  return ScaleTransition(
@@ -218,7 +189,7 @@ class _HomePageState extends State<HomePage> {
 
 
                       */
-                        /*  A custom builder that is for removing items with animations.
+                  /*  A custom builder that is for removing items with animations.
 
                                   removeItemBuilder: (Widget child, Animation<double> animation){
                                      return ScaleTransition(
@@ -227,13 +198,73 @@ class _HomePageState extends State<HomePage> {
                                      );
                                     },
                       */
-                      ),
+                )
+                    : AnimatedReorderableListView(
+                    items: list,
+                    itemBuilder: (BuildContext context, int index) {
+                      return ItemTile(
+                          key: Key(list[index].name),
+                          index: list[index].index);
+                    },
+                    enterTransition: animations,
+                    exitTransition: animations,
+                    insertDuration: const Duration(milliseconds: 300),
+                    removeDuration: const Duration(milliseconds: 300),
+                    onReorder: (int oldIndex, int newIndex) {
+                      setState(() {
+                        final User user = list.removeAt(oldIndex);
+                        list.insert(newIndex, user);
+                      });
+                    },
+                    proxyDecorator: proxyDecorator
+
+                  /*  A custom builder that is for inserting items with animations.
+
+                              insertItemBuilder: (Widget child, Animation<double> animation){
+                                 return ScaleTransition(
+                                       scale: animation,
+                                       child: child,
+                                     );
+                                    },
+
+
+                      */
+                  /*  A custom builder that is for removing items with animations.
+
+                                  removeItemBuilder: (Widget child, Animation<double> animation){
+                                     return ScaleTransition(
+                                       scale: animation,
+                                       child: child,
+                                     );
+                                    },
+                      */
+                ),
               ),
             ],
           ),
         ));
   }
 }
+
+Widget proxyDecorator(Widget child, int index,
+    Animation<double> animation) {
+  return AnimatedBuilder(
+    animation: animation,
+    builder: (BuildContext context, Widget? child) {
+      final double animValue =
+      Curves.easeInOut.transform(animation.value);
+      final double elevation =
+      lerpDouble(0, 6, animValue)!;
+      return Material(
+        elevation: elevation,
+        color: Colors.grey,
+        shadowColor: Colors.black,
+        child: child,
+      );
+    },
+    child: child,
+  );
+},
 
 enum AnimationType {
   fadeIn,
