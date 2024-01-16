@@ -264,7 +264,7 @@ Widget proxyDecorator(Widget child, int index,
     },
     child: child,
   );
-},
+}
 
 enum AnimationType {
   fadeIn,
