@@ -164,7 +164,7 @@ class _HomePageState extends State<HomePage> {
                        insertItemBuilder: (Widget child, Animation<double> animation){
                           return SizeTransition(
                             axis: Axis.vertical,
-                            //axisAlignment: 0.0,
+                            axisAlignment: 0.0,
                             sizeFactor: animation,
                             child: child,);
                        },
@@ -210,7 +210,7 @@ class _HomePageState extends State<HomePage> {
                         enterTransition: animations,
                         exitTransition: animations,
                         insertDuration: const Duration(seconds: 3),
-                        removeDuration: const Duration(seconds: 3),
+                        removeDuration: const Duration(milliseconds: 300),
                       ),
               ),
             ],

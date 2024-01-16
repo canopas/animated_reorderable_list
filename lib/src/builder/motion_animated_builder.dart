@@ -485,10 +485,10 @@ class MotionBuilderState extends State<MotionBuilder>
         if (entry.key == itemIndex) {
           updatedChildrenMap[itemIndex] = motionData;
           updatedChildrenMap[entry.key + 1] =
-              entry.value.copyWith(index: entry.key + 1);
+              entry.value.copyWith(index: entry.key + 1,startOffset: _itemOffsetAt(entry.key));
         } else if (entry.key > itemIndex) {
           updatedChildrenMap[entry.key + 1] =
-              entry.value.copyWith(index: entry.key + 1);
+              entry.value.copyWith(index: entry.key + 1,startOffset: _itemOffsetAt(entry.key));
         } else {
           updatedChildrenMap[entry.key] = entry.value;
         }
@@ -622,7 +622,8 @@ class MotionBuilderState extends State<MotionBuilder>
     final Widget builder =
         _insertItemBuilder(incomingItem,  child);
 
-    final motionData = childrenMap[index];
+    final motionData = childrenMap[index]!;
+    //print("$index ===== StartOffset: ${motionData.startOffset}");
     if (motionData == null) return builder;
     final OverlayState overlay = Overlay.of(context, debugRequiredFor: widget);
 
@@ -632,8 +633,8 @@ class MotionBuilderState extends State<MotionBuilder>
       motionData: motionData,
       updateMotionData: (MotionData motionData) {
         final itemOffset = _itemOffsetAt(index);
-        childrenMap[index] =
-            motionData.copyWith(startOffset: itemOffset, endOffset: itemOffset);
+        final updateMotiondata= motionData.copyWith(startOffset: itemOffset, endOffset: itemOffset);
+        childrenMap[index] = updateMotiondata;
       },
       capturedThemes:
           InheritedTheme.capture(from: context, to: overlay.context),

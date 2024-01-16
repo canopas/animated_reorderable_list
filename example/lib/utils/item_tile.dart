@@ -22,7 +22,7 @@ class ItemTile extends StatelessWidget {
         child: Column(
           children: [
             Container(
-              height: 60,
+              height: index%2 ==0?60:200,
               width: MediaQuery.of(context).size.width,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),

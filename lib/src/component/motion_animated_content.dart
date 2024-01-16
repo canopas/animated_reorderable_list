@@ -78,7 +78,6 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
     if (oldWidget.index != widget.index) {
       visible = false;
     }
-
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       if (mounted) {
         setState(() {
@@ -89,6 +88,7 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
         _updateAnimationTranslation();
       }
       widget.updateMotionData?.call(widget.motionData);
+
     });
     super.didUpdateWidget(oldWidget);
   }
@@ -97,6 +97,8 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
     Offset endOffset = itemOffset();
     Offset offsetDiff = (widget.motionData.startOffset + offset) - endOffset;
     _startOffset = offsetDiff;
+    print("$index OFFSETDIFF: $offsetDiff");
+
 
     if (offsetDiff.dx != 0 || offsetDiff.dy != 0) {
       if (_offsetAnimation == null) {
@@ -106,10 +108,14 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
         )
           ..addListener(rebuild)
           ..addStatusListener((AnimationStatus status) {
+            print("$index $status");
             if (status == AnimationStatus.completed) {
               setState(() {
                 visible = true;
               });
+              final itemOFFSET = itemOffset();
+              print("----------- $index  ---- $itemOFFSET");
+
               _startOffset = _targetOffset;
               _offsetAnimation!.dispose();
               _offsetAnimation = null;

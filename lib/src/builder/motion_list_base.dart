@@ -168,7 +168,6 @@ abstract class MotionListBaseState<
         assert(_exitDuration >= zero, "Duration can not be negative");
       }
     }
-
     EffectEntry entry = EffectEntry(
         animationEffect: effect,
         delay: effect.delay ?? zero,
