@@ -1,15 +1,15 @@
 # animated_reorderable_list
 
-This library is a powerful and easy-to-use solution for implementing animated lists and grids with drag-and-drop functionality in Flutter.
+This library is a powerful and easy-to-use solution for implementing animated list and grid with drag-and-drop functionality in Flutter.
 
 ## Features
 
 - [x] Smooth transition during item insertion and removal from the list with animations.
 - [x] Drag and Drop support (ReorderableList) for both ListView and GridView with Animation.
+- [x] Animating items is as simple as updating the list.
 - [x] Pre-built animation like fade,scale, slide, flip etc for Flutter list.
 - [x] Provides support for both lists and grids
 - [x] Supports large lists  and creates items on demand as they come into the viewport.
-- [x] Animating items is as simple as updating the list.
 
 
 ## Demo
@@ -37,7 +37,7 @@ dependencies:
 ```
 
 
-In your library, add the import:
+Import the file:
 
 ```
 import 'package:animated_reorderable_list/animated_reorderable_list.dart';
@@ -208,8 +208,13 @@ If a custom `insertItemBuilder` is provided, it will override the `enterTransiti
 
 ## Bugs and Feedback
 
+We welcome and appreciate any suggestions you may have for improvement.
 For bugs, questions and discussions please use
 the [Github Issues](https://github.com/canopas/animated_reorderable_list/issues).
+
+## Acknowledgments
+This library builds upon the foundation laid by the incredible work of the Flutter team. 
+The core logic for animated list and drag-and-drop functionality are derived from Flutter's native widgets, specifically `AnimatedList` and `ReorderableListView`.
 
 ## Credits
 
