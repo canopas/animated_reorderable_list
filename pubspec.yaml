@@ -52,9 +52,10 @@ flutter:
   # For details regarding fonts in packages, see
   # https://flutter.dev/custom-fonts/#from-packages
 
-  topics:
-    - reorderablelist
-    - drag-and-drop
-    - animatedlist
-    - list
-    - grid
+topics:
+  - animated-list
+  - reorderable-list
+  - reorderable-grid
+  - drag-and-drop
+  - list
+
