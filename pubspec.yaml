@@ -1,6 +1,6 @@
 name: animated_reorderable_list
 description: A Flutter Reorderable Animated List with simple implementation and smooth transition.
-version: 0.0.4
+version: 0.0.5
 repository: https://github.com/canopas/animated_reorderable_list
 
 environment:
@@ -51,3 +51,10 @@ flutter:
   #
   # For details regarding fonts in packages, see
   # https://flutter.dev/custom-fonts/#from-packages
+
+  topics:
+    - reorderablelist
+    - drag-and-drop
+    - animatedlist
+    - list
+    - grid
