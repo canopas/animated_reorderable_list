@@ -297,12 +297,6 @@ class MotionBuilderState extends State<MotionBuilder>
   void _dropCompleted() {
     final int fromIndex = _dragIndex!;
     final int toIndex = _insertIndex!;
-    childrenMap[_insertIndex] !=
-        childrenMap[_insertIndex]!.copyWith(
-          index: _dragIndex,
-        );
-    childrenMap[_dragIndex] !=
-        childrenMap[_dragIndex]!.copyWith(index: _insertIndex);
     if (fromIndex != toIndex) {
       widget.onReorder?.call(fromIndex, toIndex);
     }
@@ -484,11 +478,11 @@ class MotionBuilderState extends State<MotionBuilder>
       for (final entry in childrenMap.entries) {
         if (entry.key == itemIndex) {
           updatedChildrenMap[itemIndex] = motionData;
-          updatedChildrenMap[entry.key + 1] = entry.value.copyWith(
-              index: entry.key + 1, startOffset: _itemOffsetAt(entry.key));
+          updatedChildrenMap[entry.key + 1] =
+              entry.value.copyWith(startOffset: _itemOffsetAt(entry.key));
         } else if (entry.key > itemIndex) {
-          updatedChildrenMap[entry.key + 1] = entry.value.copyWith(
-              index: entry.key + 1, startOffset: _itemOffsetAt(entry.key));
+          updatedChildrenMap[entry.key + 1] =
+              entry.value.copyWith(startOffset: _itemOffsetAt(entry.key));
         } else {
           updatedChildrenMap[entry.key] = entry.value;
         }
@@ -566,8 +560,8 @@ class MotionBuilderState extends State<MotionBuilder>
         } else if (entry.key == itemIndex) {
           continue;
         } else {
-          updatedChildrenMap[entry.key - 1] = childrenMap[entry.key]!.copyWith(
-              index: entry.key - 1, startOffset: _itemOffsetAt(entry.key));
+          updatedChildrenMap[entry.key - 1] = childrenMap[entry.key]!
+              .copyWith(startOffset: _itemOffsetAt(entry.key));
         }
       }
     }

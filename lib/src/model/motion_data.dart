@@ -10,8 +10,7 @@ class MotionData {
       this.endOffset = Offset.zero,
       this.visible = true});
 
-  MotionData copyWith(
-      {Offset? startOffset, Offset? endOffset, int? index, bool? visible}) {
+  MotionData copyWith({Offset? startOffset, Offset? endOffset, bool? visible}) {
     return MotionData(
         startOffset: startOffset ?? this.startOffset,
         endOffset: endOffset ?? this.endOffset,
