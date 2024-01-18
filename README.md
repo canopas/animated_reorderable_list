@@ -16,15 +16,15 @@ This library is a powerful and easy-to-use solution for implementing animated li
 
 ### Reorderable List
 
-<img src="https://github.com/canopas/animated_reorderable_list/raw/main/gif/reorderable-grid.gif" height="500"> <img src="https://github.com/canopas/animated_reorderable_list/raw/main/gif/reorderable-list.gif" height="500"> 
+<img src="https://github.com/canopas/animated_reorderable_list/raw/main/gif/reorderable-grid.gif" width="32%"> <img src="https://github.com/canopas/animated_reorderable_list/raw/main/gif/reorderable-list.gif" width="32%"> 
 
 ### List Animations
 
-<img src="https://github.com/canopas/animated_reorderable_list/raw/main/gif/demo.gif" height="500"> <img src="https://github.com/canopas/animated_reorderable_list/raw/main/gif/demo1.gif" height="500"> 
+<img src="https://github.com/canopas/animated_reorderable_list/raw/main/gif/demo.gif" width="32%"> <img src="https://github.com/canopas/animated_reorderable_list/raw/main/gif/demo1.gif" width="32%"> 
 
 ### Grid Animations
 
-<img src="https://github.com/canopas/animated_reorderable_list/raw/main/gif/demo2.gif" height="500"> <img src="https://github.com/canopas/animated_reorderable_list/raw/main/gif/demo3.gif" width="500">
+<img src="https://github.com/canopas/animated_reorderable_list/raw/main/gif/demo2.gif" width="32%"> <img src="https://github.com/canopas/animated_reorderable_list/raw/main/gif/demo3.gif" width="32%">
 
 
 ## How to use it?
