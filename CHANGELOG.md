@@ -1,4 +1,4 @@
-## 0.0.8
+## 0.0.9
 
-* Fix Animation interval for multiple animations
+* Fix Visibility issue for newly added items
 
