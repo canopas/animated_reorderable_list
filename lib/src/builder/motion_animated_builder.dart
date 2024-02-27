@@ -612,8 +612,7 @@ class MotionBuilderState extends State<MotionBuilder>
       return true;
     }());
 
-    final Key itemGlobalKey =
-        _MotionBuilderItemGlobalKey(child.key!, this);
+    final Key itemGlobalKey = _MotionBuilderItemGlobalKey(child.key!, this);
     final Widget builder = _insertItemBuilder(incomingItem, child);
 
     final motionData = childrenMap[index];
@@ -651,8 +650,7 @@ class MotionBuilderState extends State<MotionBuilder>
     }());
 
     final Widget itemWithSemantics = _wrapWithSemantics(item, index);
-    final Key itemGlobalKey =
-        _MotionBuilderItemGlobalKey(item.key!, this);
+    final Key itemGlobalKey = _MotionBuilderItemGlobalKey(item.key!, this);
     const bool enable = true;
     return ReorderableGridDelayedDragStartListener(
       key: itemGlobalKey,
@@ -751,8 +749,7 @@ Offset _extentOffset(double extent, Axis scrollDirection) {
 
 @optionalTypeArgs
 class _MotionBuilderItemGlobalKey extends GlobalObjectKey {
-  const _MotionBuilderItemGlobalKey(this.subKey, this.state)
-      : super(subKey);
+  const _MotionBuilderItemGlobalKey(this.subKey, this.state) : super(subKey);
 
   final Key subKey;
   final State state;
