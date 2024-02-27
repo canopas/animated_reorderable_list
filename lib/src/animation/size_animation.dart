@@ -21,10 +21,10 @@ class SizeAnimation extends AnimationEffect<double> {
 
   @override
   Widget build(BuildContext context, Widget child, Animation<double> animation,
-      EffectEntry entry,Duration totalDuration) {
-    final Animation<double> sizeFactor =
-        buildAnimation(entry,totalDuration, begin: begin ?? beginValue, end: end ?? endValue)
-            .animate(animation);
+      EffectEntry entry, Duration totalDuration) {
+    final Animation<double> sizeFactor = buildAnimation(entry, totalDuration,
+            begin: begin ?? beginValue, end: end ?? endValue)
+        .animate(animation);
     return Align(
       child: SizeTransition(
         sizeFactor: sizeFactor,

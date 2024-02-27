@@ -71,12 +71,11 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
 
   @override
   void didUpdateWidget(covariant MotionAnimatedContent oldWidget) {
-  if (oldWidget.index != widget.index) {
+    if (oldWidget.index != widget.index) {
       listState.unregisterItem(oldWidget.index, this);
       listState.registerItem(this);
     }
     if (oldWidget.index != widget.index) {
-
       visible = false;
     }
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {

@@ -21,9 +21,10 @@ abstract class AnimationEffect<T> {
     return child;
   }
 
-  Animatable<T> buildAnimation(EffectEntry entry,Duration totalDuration,
+  Animatable<T> buildAnimation(EffectEntry entry, Duration totalDuration,
       {required T begin, required T end}) {
-    return Tween<T>(begin: begin, end: end).chain(entry.buildAnimation(totalDuration: totalDuration));
+    return Tween<T>(begin: begin, end: end)
+        .chain(entry.buildAnimation(totalDuration: totalDuration));
   }
 }
 
@@ -35,8 +36,6 @@ class EffectEntry {
     required this.duration,
     required this.curve,
   });
-
-
 
   /// The delay for this entry.
   final Duration delay;
@@ -64,7 +63,8 @@ class EffectEntry {
     int ttlT = duration.inMicroseconds;
     int beginT = begin.inMicroseconds, endT = end.inMicroseconds;
     return CurveTween(
-      curve: Interval(beginT / ttlT, endT / totalDuration.inMicroseconds, curve: curve ?? this.curve),
+      curve: Interval(beginT / ttlT, endT / totalDuration.inMicroseconds,
+          curve: curve ?? this.curve),
     );
   }
 

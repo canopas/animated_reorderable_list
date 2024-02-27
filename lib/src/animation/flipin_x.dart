@@ -14,9 +14,9 @@ class FlipInX extends AnimationEffect<double> {
   @override
   Widget build(BuildContext context, Widget child, Animation<double> animation,
       EffectEntry entry, Duration totalDuration) {
-    final Animation<double> rotation =
-        buildAnimation(entry,totalDuration, begin: begin ?? beginValue, end: endValue)
-            .animate(animation);
+    final Animation<double> rotation = buildAnimation(entry, totalDuration,
+            begin: begin ?? beginValue, end: endValue)
+        .animate(animation);
     return AnimatedBuilder(
         animation: animation,
         builder: (BuildContext context, Widget? child) {

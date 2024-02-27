@@ -12,10 +12,10 @@ class ScaleInTop extends AnimationEffect<double> {
 
   @override
   Widget build(BuildContext context, Widget child, Animation<double> animation,
-      EffectEntry entry,Duration totalDuration) {
-    final Animation<double> scale =
-        buildAnimation(entry,totalDuration, begin: begin ?? beginValue, end: endValue)
-            .animate(animation);
+      EffectEntry entry, Duration totalDuration) {
+    final Animation<double> scale = buildAnimation(entry, totalDuration,
+            begin: begin ?? beginValue, end: endValue)
+        .animate(animation);
     return ScaleTransition(
       alignment: Alignment.topCenter,
       scale: scale,
