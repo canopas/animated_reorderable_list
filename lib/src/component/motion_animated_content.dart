@@ -85,8 +85,6 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
         });
       }
       if (oldWidget.index != widget.index && !_dragging) {
-        print("$index--------------$visible");
-
         _updateAnimationTranslation();
       }
       widget.updateMotionData?.call(widget.motionData);
