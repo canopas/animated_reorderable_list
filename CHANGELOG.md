@@ -1,4 +1,4 @@
-## 0.0.9
+## 1.0.0
 
-* Fix Visibility issue for newly added items
+* Minor fix
 
