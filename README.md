@@ -1,3 +1,5 @@
+<p align="center"> <a href="https://canopas.com/contact"><img src="./cta/cta_banner.png"></a></p>
+
 # animated_reorderable_list
 
 This library is a powerful and easy-to-use solution for implementing animated list and grid with drag-and-drop functionality in Flutter.
@@ -211,6 +213,8 @@ If a custom `insertItemBuilder` is provided, it will override the `enterTransiti
 We welcome and appreciate any suggestions you may have for improvement.
 For bugs, questions and discussions please use
 the [Github Issues](https://github.com/canopas/animated_reorderable_list/issues).
+
+<a href="https://canopas.com/contact"><img src="./cta/cta_btn.png" width=300></a>
 
 ## Acknowledgments
 This library builds upon the foundation laid by the incredible work of the Flutter team. 
