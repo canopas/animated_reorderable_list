@@ -71,11 +71,12 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
 
   @override
   void didUpdateWidget(covariant MotionAnimatedContent oldWidget) {
-    if (oldWidget.index != widget.index) {
+  if (oldWidget.index != widget.index) {
       listState.unregisterItem(oldWidget.index, this);
       listState.registerItem(this);
     }
     if (oldWidget.index != widget.index) {
+
       visible = false;
     }
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -85,6 +86,8 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
         });
       }
       if (oldWidget.index != widget.index && !_dragging) {
+        print("$index--------------$visible");
+
         _updateAnimationTranslation();
       }
       widget.updateMotionData?.call(widget.motionData);

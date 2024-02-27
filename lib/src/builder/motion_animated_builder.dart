@@ -651,7 +651,7 @@ class MotionBuilderState extends State<MotionBuilder>
     }());
 
     final Widget itemWithSemantics = _wrapWithSemantics(item, index);
-    final Key itemGlobalKey = _MotionBuilderItemGlobalKey(item.key!, this);
+    final Key itemGlobalKey = _MotionBuilderItemGlobalKey(item.key!, this,);
     const bool enable = true;
     return ReorderableGridDelayedDragStartListener(
       key: itemGlobalKey,
@@ -762,11 +762,12 @@ class _MotionBuilderItemGlobalKey extends GlobalObjectKey {
     }
     return other is _MotionBuilderItemGlobalKey &&
         other.subKey == subKey &&
-        other.state == state;
+        other.state == state
+    ;
   }
 
   @override
-  int get hashCode => Object.hash(subKey, state);
+  int get hashCode => Object.hash(subKey, state, );
 }
 
 class _ActiveItem implements Comparable<_ActiveItem> {
