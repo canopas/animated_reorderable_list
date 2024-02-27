@@ -1,4 +1,4 @@
-## 0.0.7
+## 0.0.8
 
-* Fix visual demo size
+* Fix Animation interval for multiple animations
 
