@@ -62,10 +62,6 @@ class EffectEntry {
     Curve? curve,
   }) {
     int ttlT = duration.inMicroseconds;
-
-    if(totalDuration != duration){
-      int ttlAT= totalDuration.inMicroseconds;
-    }
     int beginT = begin.inMicroseconds, endT = end.inMicroseconds;
     return CurveTween(
       curve: Interval(beginT / ttlT, endT / totalDuration.inMicroseconds, curve: curve ?? this.curve),

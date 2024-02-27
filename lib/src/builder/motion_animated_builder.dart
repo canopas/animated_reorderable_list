@@ -612,11 +612,10 @@ class MotionBuilderState extends State<MotionBuilder>
       return true;
     }());
 
-    final Key itemGlobalKey = _MotionBuilderItemGlobalKey(child.key!, this);
+    final Key itemGlobalKey = _MotionBuilderItemGlobalKey(child.key!, this,index);
     final Widget builder = _insertItemBuilder(incomingItem, child);
 
     final motionData = childrenMap[index];
-    //print("$index ===== StartOffset: ${motionData.startOffset}");
     if (motionData == null) return builder;
     final OverlayState overlay = Overlay.of(context, debugRequiredFor: widget);
 
@@ -651,7 +650,7 @@ class MotionBuilderState extends State<MotionBuilder>
     }());
 
     final Widget itemWithSemantics = _wrapWithSemantics(item, index);
-    final Key itemGlobalKey = _MotionBuilderItemGlobalKey(item.key!, this,);
+    final Key itemGlobalKey = _MotionBuilderItemGlobalKey(item.key!, this,index);
     const bool enable = true;
     return ReorderableGridDelayedDragStartListener(
       key: itemGlobalKey,
@@ -750,10 +749,11 @@ Offset _extentOffset(double extent, Axis scrollDirection) {
 
 @optionalTypeArgs
 class _MotionBuilderItemGlobalKey extends GlobalObjectKey {
-  const _MotionBuilderItemGlobalKey(this.subKey, this.state) : super(subKey);
+  const _MotionBuilderItemGlobalKey(this.subKey, this.state, this.index) : super(subKey);
 
   final Key subKey;
   final State state;
+  final int index;
 
   @override
   bool operator ==(Object other) {
@@ -762,7 +762,8 @@ class _MotionBuilderItemGlobalKey extends GlobalObjectKey {
     }
     return other is _MotionBuilderItemGlobalKey &&
         other.subKey == subKey &&
-        other.state == state
+        other.state == state &&
+    other.index == index
     ;
   }
 
