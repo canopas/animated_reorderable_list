@@ -11,10 +11,10 @@ class Landing extends AnimationEffect<double> {
 
   @override
   Widget build(BuildContext context, Widget child, Animation<double> animation,
-      EffectEntry entry) {
-    final Animation<double> scale =
-        buildAnimation(entry, begin: begin ?? beginValue, end: end ?? endValue)
-            .animate(animation);
+      EffectEntry entry, Duration totalDuration) {
+    final Animation<double> scale = buildAnimation(entry, totalDuration,
+            begin: begin ?? beginValue, end: end ?? endValue)
+        .animate(animation);
     return FadeTransition(
       opacity: animation,
       child: ScaleTransition(

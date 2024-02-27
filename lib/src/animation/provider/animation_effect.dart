@@ -17,13 +17,14 @@ abstract class AnimationEffect<T> {
   });
 
   Widget build(BuildContext context, Widget child, Animation<double> animation,
-      EffectEntry entry) {
+      EffectEntry entry, Duration totalDuration) {
     return child;
   }
 
-  Animatable<T> buildAnimation(EffectEntry entry,
+  Animatable<T> buildAnimation(EffectEntry entry, Duration totalDuration,
       {required T begin, required T end}) {
-    return Tween<T>(begin: begin, end: end).chain(entry.buildAnimation());
+    return Tween<T>(begin: begin, end: end)
+        .chain(entry.buildAnimation(totalDuration: totalDuration));
   }
 }
 
@@ -56,12 +57,14 @@ class EffectEntry {
 
   /// Builds a sub-animation based on the properties of this entry.
   CurveTween buildAnimation({
+    required Duration totalDuration,
     Curve? curve,
   }) {
     int ttlT = duration.inMicroseconds;
     int beginT = begin.inMicroseconds, endT = end.inMicroseconds;
     return CurveTween(
-      curve: Interval(beginT / ttlT, endT / ttlT, curve: curve ?? this.curve),
+      curve: Interval(beginT / ttlT, endT / totalDuration.inMicroseconds,
+          curve: curve ?? this.curve),
     );
   }
 

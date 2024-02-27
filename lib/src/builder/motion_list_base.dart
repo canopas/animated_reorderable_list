@@ -203,7 +203,7 @@ abstract class MotionListBaseState<
       Widget animatedChild = child;
       for (EffectEntry entry in _enterAnimations) {
         animatedChild = entry.animationEffect
-            .build(context, animatedChild, animation, entry);
+            .build(context, animatedChild, animation, entry, enterDuration);
       }
       return animatedChild;
     }
@@ -219,7 +219,7 @@ abstract class MotionListBaseState<
       Widget animatedChild = child;
       for (EffectEntry entry in _exitAnimations) {
         animatedChild = entry.animationEffect
-            .build(context, animatedChild, animation, entry);
+            .build(context, animatedChild, animation, entry, exitDuration);
       }
       return animatedChild;
     }

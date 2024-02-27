@@ -11,10 +11,10 @@ class ScaleIn extends AnimationEffect<double> {
 
   @override
   Widget build(BuildContext context, Widget child, Animation<double> animation,
-      EffectEntry entry) {
-    final Animation<double> scale =
-        buildAnimation(entry, begin: begin ?? beginValue, end: endValue)
-            .animate(animation);
+      EffectEntry entry, Duration totalDuration) {
+    final Animation<double> scale = buildAnimation(entry, totalDuration,
+            begin: begin ?? beginValue, end: endValue)
+        .animate(animation);
     return ScaleTransition(
       scale: scale,
       child: child,
