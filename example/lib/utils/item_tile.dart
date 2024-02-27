@@ -33,16 +33,11 @@ class _ItemTileState extends State<ItemTile> {
                 borderRadius: BorderRadius.circular(10),
                 color: Colors.primaries[widget.index % Colors.primaries.length],
               ),
-              child: Row(
-                children: [
-                  Center(
-                    child: Text(
-                      'Item ${widget.index}',
-                      style: const TextStyle(fontSize: 25),
-                    ),
-                  ),
-                  Checkbox(value: false, onChanged: (value){})
-                ],
+              child: Center(
+                child: Text(
+                  'Item ${widget.index}',
+                  style: const TextStyle(fontSize: 25),
+                ),
               ),
             ),
             const SizedBox(
