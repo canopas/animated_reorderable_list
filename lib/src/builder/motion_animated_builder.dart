@@ -472,6 +472,8 @@ class MotionBuilderState extends State<MotionBuilder>
 
     final motionData = MotionData(
         endOffset: Offset.zero, startOffset: Offset.zero, visible: false);
+    final lastKey = childrenMap.keys.last;
+    childrenMap.update(lastKey, (value) => value.copyWith(visible: false));
 
     final updatedChildrenMap = <int, MotionData>{};
     if (childrenMap.containsKey(itemIndex)) {
@@ -625,8 +627,8 @@ class MotionBuilderState extends State<MotionBuilder>
       motionData: motionData,
       updateMotionData: (MotionData motionData) {
         final itemOffset = _itemOffsetAt(index);
-        childrenMap[index] =
-            motionData.copyWith(startOffset: itemOffset, endOffset: itemOffset);
+        childrenMap[index] = motionData.copyWith(
+            startOffset: itemOffset, endOffset: itemOffset, visible: true);
       },
       capturedThemes:
           InheritedTheme.capture(from: context, to: overlay.context),
