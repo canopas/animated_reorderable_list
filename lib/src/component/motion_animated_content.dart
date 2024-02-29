@@ -76,7 +76,7 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
       listState.registerItem(this);
     }
     if (oldWidget.index != widget.index) {
-      visible= widget.motionData.visible;
+      visible = widget.motionData.visible;
     }
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       if (mounted) {
