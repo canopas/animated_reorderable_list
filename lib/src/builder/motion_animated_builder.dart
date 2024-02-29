@@ -554,6 +554,8 @@ class MotionBuilderState extends State<MotionBuilder>
   }
 
   void _onItemRemoved(int itemIndex, Duration removeDuration) {
+    childrenMap.update(
+        itemIndex + 1, (value) => value.copyWith(visible: false));
     final updatedChildrenMap = <int, MotionData>{};
     if (childrenMap.containsKey(itemIndex)) {
       for (final entry in childrenMap.entries) {
