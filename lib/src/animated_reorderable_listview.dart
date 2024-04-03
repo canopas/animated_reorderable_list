@@ -1,6 +1,7 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:animated_reorderable_list/animated_reorderable_list.dart';
+import 'package:flutter/material.dart';
+import 'builder/motion_animated_builder.dart';
 import 'builder/motion_list_base.dart';
 import 'builder/motion_list_impl.dart';
 
@@ -19,7 +20,7 @@ import 'builder/motion_list_impl.dart';
 /// have a drag handle added on top of it that will allow the user to grab it
 /// to move the item. On [TargetPlatformVariant.mobile], no drag handle will be
 /// added, but when the user long presses anywhere on the item it will start
-/// moving the item.
+/// moving the item.Displaying drag handles can be controlled with [AnimatedReorderableListView.buildDefaultDragHandles].
 ///
 /// All list items must have a key.
 ///
@@ -27,7 +28,7 @@ import 'builder/motion_list_impl.dart';
 /// callback serves as a "proxy" (a substitute) for the item in the list. The proxy is
 /// created with the original list item as its child.
 
-class AnimatedReorderableListView<E extends Object> extends StatelessWidget {
+class AnimatedReorderableListView<E extends Object> extends StatefulWidget {
   /// The current list of items that this[AnimatedReorderableListView] should represent.
   final List<E> items;
 
@@ -83,6 +84,20 @@ class AnimatedReorderableListView<E extends Object> extends StatelessWidget {
   /// an item when it is being dragged.
   /// {@endtemplate}
   final ReorderItemProxyDecorator? proxyDecorator;
+
+  /// If true, on desktop platforms, a drag handle is stacked over the center of each item's trailing edge;
+  /// on mobile platforms, a long press anywhere on the item starts a drag.
+  ///
+  /// The default desktop drag handle is just an [Icons.drag_handle] wrapped by [ReorderableDragStartListener].
+  /// On mobile platforms, the entire item is wrapped with a [ReorderableDragStartListener].
+  ///
+  /// To change the appearance or the layout of the drag handles, make this parameter false
+  /// and wrap each list item, or a widget within each list item, with [ReorderableDragStartListener]or
+  /// a subclass of [ReorderableDragStartListener].
+  ///
+  /// To get the idea [Flutter Example](https://api.flutter.dev/flutter/material/ReorderableListView/buildDefaultDragHandles.html)
+
+  final bool buildDefaultDragHandles;
 
   /// {@template flutter.widgets.scroll_view.reverse}
   /// Whether the scroll view scrolls in the reading direction.
@@ -194,6 +209,7 @@ class AnimatedReorderableListView<E extends Object> extends StatelessWidget {
       this.physics,
       this.scrollBehavior,
       this.restorationId,
+      this.buildDefaultDragHandles = true,
       this.keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.manual,
       this.dragStartBehavior = DragStartBehavior.start,
       this.clipBehavior = Clip.hardEdge,
@@ -202,35 +218,62 @@ class AnimatedReorderableListView<E extends Object> extends StatelessWidget {
       : super(key: key);
 
   @override
+  State<AnimatedReorderableListView<E>> createState() =>
+      _AnimatedReorderableListViewState<E>();
+}
+
+class _AnimatedReorderableListViewState<E extends Object>
+    extends State<AnimatedReorderableListView<E>> {
+
+  Widget _itemBuilder(BuildContext context, int index) {
+    final Widget item = widget.itemBuilder(context, index);
+    assert(() {
+      if (item.key == null) {
+        throw FlutterError(
+          "Every Item of ReorderableListView must have a key.",
+        );
+      }
+      return true;
+    }());
+    final Key itemGlobalKey = MotionBuilderItemGlobalKey(item.key!, this);
+    return KeyedSubtree(
+        key: itemGlobalKey,
+        child: item);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return CustomScrollView(
-        scrollDirection: scrollDirection,
-        reverse: reverse,
-        controller: controller,
-        primary: primary,
-        physics: physics,
-        scrollBehavior: scrollBehavior,
-        restorationId: restorationId,
-        keyboardDismissBehavior: keyboardDismissBehavior,
-        dragStartBehavior: dragStartBehavior,
-        clipBehavior: clipBehavior,
+        scrollDirection: widget.scrollDirection,
+        reverse: widget.reverse,
+        controller: widget.controller,
+        primary: widget.primary,
+        physics: widget.physics,
+        scrollBehavior: widget.scrollBehavior,
+        restorationId: widget.restorationId,
+        keyboardDismissBehavior: widget.keyboardDismissBehavior,
+        dragStartBehavior: widget.dragStartBehavior,
+        clipBehavior: widget.clipBehavior,
         slivers: [
           SliverPadding(
-            padding: padding ?? EdgeInsets.zero,
+            padding: widget.padding ?? EdgeInsets.zero,
             sliver: MotionListImpl(
-                items: items,
-                itemBuilder: itemBuilder,
-                enterTransition: enterTransition,
-                exitTransition: exitTransition,
-                insertDuration: insertDuration,
-                removeDuration: removeDuration,
-                onReorder: onReorder,
-                onReorderStart: onReorderStart,
-                onReorderEnd: onReorderEnd,
-                proxyDecorator: proxyDecorator,
-                scrollDirection: scrollDirection,
-                insertItemBuilder: insertItemBuilder,
-                removeItemBuilder: removeItemBuilder),
+                items: widget.items,
+                itemBuilder: _itemBuilder,
+                enterTransition: widget.enterTransition,
+                exitTransition: widget.exitTransition,
+                insertDuration: widget.insertDuration,
+                removeDuration: widget.removeDuration,
+                onReorder: widget.onReorder,
+                onReorderStart: widget.onReorderStart,
+                onReorderEnd: widget.onReorderEnd,
+                proxyDecorator: widget.proxyDecorator,
+                buildDefaultDragHandles: widget.buildDefaultDragHandles,
+                scrollDirection: widget.scrollDirection,
+                insertItemBuilder: widget.insertItemBuilder,
+                removeItemBuilder: widget.removeItemBuilder,
+
+            ),
           ),
         ]);
   }

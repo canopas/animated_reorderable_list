@@ -1,11 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:animated_reorderable_list/animated_reorderable_list.dart';
-
+import 'package:flutter/material.dart';
 import 'motion_animated_builder.dart';
 
 typedef ItemBuilder<W extends Widget, E> = Widget Function(
     BuildContext context, int index);
+
 typedef AnimatedWidgetBuilder<W extends Widget, E> = Widget Function(
     Widget child, Animation<double> animation);
 
@@ -25,10 +26,11 @@ abstract class MotionListBase<W extends Widget, E extends Object>
   final List<AnimationEffect>? exitTransition;
   final Duration? insertDuration;
   final Duration? removeDuration;
-  final Axis? scrollDirection;
+  final Axis scrollDirection;
   final SliverGridDelegate? sliverGridDelegate;
   final AnimatedWidgetBuilder? insertItemBuilder;
   final AnimatedWidgetBuilder? removeItemBuilder;
+  final bool? buildDefaultDragHandles;
 
   const MotionListBase(
       {Key? key,
@@ -42,10 +44,11 @@ abstract class MotionListBase<W extends Widget, E extends Object>
       this.exitTransition,
       this.insertDuration,
       this.removeDuration,
-      this.scrollDirection,
+      required this.scrollDirection,
       this.sliverGridDelegate,
       this.insertItemBuilder,
-      this.removeItemBuilder})
+      this.removeItemBuilder,
+      this.buildDefaultDragHandles})
       : super(key: key);
 }
 
@@ -106,7 +109,7 @@ abstract class MotionListBaseState<
 
   @protected
   @nonVirtual
-  Axis get scrollDirection => widget.scrollDirection ?? Axis.vertical;
+  Axis get scrollDirection => widget.scrollDirection;
 
   @nonVirtual
   @protected
@@ -116,7 +119,10 @@ abstract class MotionListBaseState<
   @protected
   List<AnimationEffect> get exitTransition => widget.exitTransition ?? [];
 
-  late final resizeAnimController = AnimationController(vsync: this);
+  @nonVirtual
+  @protected
+  bool get buildDefaultDragHandles => widget.buildDefaultDragHandles ?? false;
+
 
   @override
   void initState() {
@@ -224,4 +230,5 @@ abstract class MotionListBaseState<
       return animatedChild;
     }
   }
+
 }

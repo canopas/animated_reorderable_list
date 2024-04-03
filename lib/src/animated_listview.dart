@@ -182,7 +182,8 @@ class AnimatedListView<E extends Object> extends StatelessWidget {
                 removeDuration: removeDuration,
                 scrollDirection: scrollDirection,
                 insertItemBuilder: insertItemBuilder,
-                removeItemBuilder: removeItemBuilder),
+                removeItemBuilder: removeItemBuilder,
+            ),
           ),
         ]);
   }

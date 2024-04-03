@@ -17,9 +17,10 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
     void Function(int)? onReorderStart,
     void Function(int)? onReorderEnd,
     ReorderItemProxyDecorator? proxyDecorator,
-    Axis? scrollDirection,
+    required Axis scrollDirection,
     AnimatedWidgetBuilder? insertItemBuilder,
     AnimatedWidgetBuilder? removeItemBuilder,
+    bool? buildDefaultDragHandles
   }) : super(
             key: key,
             items: items,
@@ -34,25 +35,27 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
             proxyDecorator: proxyDecorator,
             scrollDirection: scrollDirection,
             insertItemBuilder: insertItemBuilder,
-            removeItemBuilder: removeItemBuilder);
+            removeItemBuilder: removeItemBuilder,
+            buildDefaultDragHandles: buildDefaultDragHandles);
 
-  const MotionListImpl.grid({
-    Key? key,
-    required List<E> items,
-    required ItemBuilder itemBuilder,
-    required SliverGridDelegate sliverGridDelegate,
-    List<AnimationEffect>? enterTransition,
-    List<AnimationEffect>? exitTransition,
-    ReorderCallback? onReorder,
-    void Function(int)? onReorderStart,
-    void Function(int)? onReorderEnd,
-    ReorderItemProxyDecorator? proxyDecorator,
-    Duration? insertDuration,
-    Duration? removeDuration,
-    Axis? scrollDirection,
-    AnimatedWidgetBuilder? insertItemBuilder,
-    AnimatedWidgetBuilder? removeItemBuilder,
-  }) : super(
+  const MotionListImpl.grid(
+      {Key? key,
+      required List<E> items,
+      required ItemBuilder itemBuilder,
+      required SliverGridDelegate sliverGridDelegate,
+      List<AnimationEffect>? enterTransition,
+      List<AnimationEffect>? exitTransition,
+      ReorderCallback? onReorder,
+      void Function(int)? onReorderStart,
+      void Function(int)? onReorderEnd,
+      ReorderItemProxyDecorator? proxyDecorator,
+      Duration? insertDuration,
+      Duration? removeDuration,
+      required Axis scrollDirection,
+      AnimatedWidgetBuilder? insertItemBuilder,
+      AnimatedWidgetBuilder? removeItemBuilder,
+       bool? buildDefaultDragHandles})
+      : super(
             key: key,
             items: items,
             itemBuilder: itemBuilder,
@@ -67,7 +70,8 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
             proxyDecorator: proxyDecorator,
             scrollDirection: scrollDirection,
             insertItemBuilder: insertItemBuilder,
-            removeItemBuilder: removeItemBuilder);
+            removeItemBuilder: removeItemBuilder,
+            buildDefaultDragHandles: buildDefaultDragHandles);
 
   @override
   MotionListImplState<E> createState() => MotionListImplState<E>();
@@ -91,6 +95,7 @@ class MotionListImplState<E extends Object>
       itemBuilder: itemBuilder,
       scrollDirection: scrollDirection,
       delegateBuilder: sliverGridDelegate,
+      buildDefaultDragHandles: buildDefaultDragHandles,
     );
   }
 }
