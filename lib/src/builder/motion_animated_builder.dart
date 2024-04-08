@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:animated_reorderable_list/animated_reorderable_list.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -460,10 +461,15 @@ class MotionBuilderState extends State<MotionBuilder>
       duration: insertDuration,
       vsync: this,
     );
+    final AnimationController sizeController = AnimationController(
+      duration: kAnimationDuration,
+      vsync: this,
+    );
 
     final _ActiveItem incomingItem = _ActiveItem.animation(
       controller,
       itemIndex,
+      sizeController,
     );
 
     _incomingItems
@@ -472,8 +478,6 @@ class MotionBuilderState extends State<MotionBuilder>
 
     final motionData = MotionData(
         endOffset: Offset.zero, startOffset: Offset.zero, visible: false);
-    final lastKey = childrenMap.keys.last;
-    childrenMap.update(lastKey, (value) => value.copyWith(visible: false));
 
     final updatedChildrenMap = <int, MotionData>{};
     if (childrenMap.containsKey(itemIndex)) {
@@ -491,14 +495,21 @@ class MotionBuilderState extends State<MotionBuilder>
       }
       childrenMap.clear();
       childrenMap.addAll(updatedChildrenMap);
-
-      Future.delayed(kAnimationDuration).then((value) {
+      sizeController.forward().then((value) {
         controller.forward().then<void>((_) {
           _removeActiveItemAt(_incomingItems, incomingItem.itemIndex)!
               .controller!
               .dispose();
         });
       });
+
+      // Future.delayed(kAnimationDuration).then((value) {
+      //   controller.forward().then<void>((_) {
+      //     _removeActiveItemAt(_incomingItems, incomingItem.itemIndex)!
+      //         .controller!
+      //         .dispose();
+      //   });
+      // });
     } else {
       childrenMap[itemIndex] = motionData;
       controller.forward().then<void>((_) {
@@ -525,30 +536,40 @@ class MotionBuilderState extends State<MotionBuilder>
       final _ActiveItem? incomingItem =
           _removeActiveItemAt(_incomingItems, itemIndex);
 
+    final AnimationController sizeController= incomingItem?.sizeAnimation??
+        AnimationController(vsync: this,duration: kAnimationDuration,value: 1.0);
       final AnimationController controller = incomingItem?.controller ??
           AnimationController(
-              duration: removeItemDuration, value: 1.0, vsync: this);
+              duration: removeItemDuration, value: 1.0, vsync: this)
+      ..addStatusListener((status)=>());
       final _ActiveItem outgoingItem =
-          _ActiveItem.animation(controller, itemIndex);
+          _ActiveItem.animation(controller, itemIndex,sizeController );
       _outgoingItems
         ..add(outgoingItem)
         ..sort();
 
       controller.reverse().then<void>((void value) {
-        _removeActiveItemAt(_outgoingItems, outgoingItem.itemIndex)!
-            .controller!
-            .dispose();
+        if(controller.status== AnimationStatus.dismissed){
+          if (childrenMap.containsKey(itemIndex)) {
+              childrenMap.update(itemIndex, (value) => value.copyWith(visible: false));
+          }
+           sizeController.reverse(from: 1.0).then((value) {
+           final removedItem=   _removeActiveItemAt(_outgoingItems, outgoingItem.itemIndex)!;
+                removedItem.controller!.dispose();
+                removedItem.sizeAnimation!.dispose();
 
-        // Decrement the incoming and outgoing item indices to account
-        // for the removal.
-        for (final _ActiveItem item in _incomingItems) {
-          if (item.itemIndex > outgoingItem.itemIndex) item.itemIndex -= 1;
-        }
-        for (final _ActiveItem item in _outgoingItems) {
-          if (item.itemIndex > outgoingItem.itemIndex) item.itemIndex -= 1;
-        }
 
-        _onItemRemoved(itemIndex, removeItemDuration);
+           // Decrement the incoming and outgoing item indices to account
+           // for the removal.
+           for (final _ActiveItem item in _incomingItems) {
+             if (item.itemIndex > outgoingItem.itemIndex) item.itemIndex -= 1;
+           }
+           for (final _ActiveItem item in _outgoingItems) {
+             if (item.itemIndex > outgoingItem.itemIndex) item.itemIndex -= 1;
+           }
+           _onItemRemoved(itemIndex, removeItemDuration);
+            });
+        }
       });
     }
   }
@@ -732,13 +753,21 @@ class MotionBuilderState extends State<MotionBuilder>
   Widget _removeItemBuilder(_ActiveItem outgoingItem, Widget child) {
     final Animation<double> animation =
         outgoingItem.controller ?? kAlwaysCompleteAnimation;
-    return widget.removeAnimationBuilder(context, child, animation);
+    final Animation<double> sizeAnimation =
+        outgoingItem.sizeAnimation ?? kAlwaysCompleteAnimation;
+    return SizeTransition(
+      sizeFactor: sizeAnimation,
+        child: widget.removeAnimationBuilder(context, child, animation));
   }
 
   Widget _insertItemBuilder(_ActiveItem? incomingItem, Widget child) {
     final Animation<double> animation =
         incomingItem?.controller ?? kAlwaysCompleteAnimation;
-    return widget.insertAnimationBuilder(context, child, animation);
+    final Animation<double> sizeAnimation =
+        incomingItem?.sizeAnimation ?? kAlwaysCompleteAnimation;
+    return SizeTransition(
+      sizeFactor: sizeAnimation,
+        child: widget.insertAnimationBuilder(context, child, animation));
   }
 }
 
@@ -776,11 +805,12 @@ class _MotionBuilderItemGlobalKey extends GlobalObjectKey {
 }
 
 class _ActiveItem implements Comparable<_ActiveItem> {
-  _ActiveItem.animation(this.controller, this.itemIndex);
+  _ActiveItem.animation(this.controller, this.itemIndex, this.sizeAnimation);
 
-  _ActiveItem.index(this.itemIndex) : controller = null;
+  _ActiveItem.index(this.itemIndex) : controller = null,sizeAnimation=null;
 
   final AnimationController? controller;
+  final AnimationController? sizeAnimation;
   int itemIndex;
 
   @override

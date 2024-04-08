@@ -28,6 +28,7 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
   Offset _startOffset = Offset.zero;
   AnimationController? _offsetAnimation;
 
+
   bool _dragging = false;
 
   bool get dragging => _dragging;
@@ -49,6 +50,7 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
       });
     }
   }
+
 
   int get index => widget.index;
   bool visible = true;
@@ -83,9 +85,6 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
         setState(() {
           visible = true;
         });
-      }
-      if (oldWidget.index != widget.index && !_dragging) {
-        _updateAnimationTranslation();
       }
       widget.updateMotionData?.call(widget.motionData);
     });
