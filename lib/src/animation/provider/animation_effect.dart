@@ -53,17 +53,16 @@ class EffectEntry {
   Duration get begin => delay;
 
   /// The end time for this entry.
-  Duration get end => duration;
+  Duration get end => begin+duration;
 
   /// Builds a sub-animation based on the properties of this entry.
   CurveTween buildAnimation({
     required Duration totalDuration,
     Curve? curve,
   }) {
-    int ttlT = duration.inMicroseconds;
     int beginT = begin.inMicroseconds, endT = end.inMicroseconds;
     return CurveTween(
-      curve: Interval(beginT / ttlT, endT / totalDuration.inMicroseconds,
+      curve: Interval(beginT / totalDuration.inMicroseconds, endT / totalDuration.inMicroseconds,
           curve: curve ?? this.curve),
     );
   }

@@ -115,6 +115,7 @@ class MotionBuilderState extends State<MotionBuilder>
     for (int i = 0; i < widget.initialCount; i++) {
       childrenMap[i] = MotionData();
     }
+
     super.initState();
   }
 
@@ -485,10 +486,10 @@ class MotionBuilderState extends State<MotionBuilder>
         if (entry.key == itemIndex) {
           updatedChildrenMap[itemIndex] = motionData;
           updatedChildrenMap[entry.key + 1] =
-              entry.value.copyWith(startOffset: _itemOffsetAt(entry.key));
+              entry.value.copyWith(startOffset: _itemOffsetAt(entry.key), endOffset: _itemOffsetAt(entry.key+1), visible: false);
         } else if (entry.key > itemIndex) {
           updatedChildrenMap[entry.key + 1] =
-              entry.value.copyWith(startOffset: _itemOffsetAt(entry.key));
+              entry.value.copyWith(startOffset: _itemOffsetAt(entry.key), endOffset: _itemOffsetAt(entry.key+1), visible: false);
         } else {
           updatedChildrenMap[entry.key] = entry.value;
         }
@@ -586,7 +587,7 @@ class MotionBuilderState extends State<MotionBuilder>
           continue;
         } else {
           updatedChildrenMap[entry.key - 1] = childrenMap[entry.key]!
-              .copyWith(startOffset: _itemOffsetAt(entry.key));
+              .copyWith(startOffset: _itemOffsetAt(entry.key), endOffset: _itemOffsetAt(entry.key-1), visible: false);
         }
       }
     }
@@ -600,11 +601,14 @@ class MotionBuilderState extends State<MotionBuilder>
     final itemRenderBox =
         _items[index]?.context.findRenderObject() as RenderBox?;
     if (itemRenderBox == null) return Offset.zero;
+
+
     return itemRenderBox.localToGlobal(Offset.zero);
   }
 
   @override
   Widget build(BuildContext context) {
+
     super.build(context);
     return widget.delegateBuilder != null
         ? SliverGrid(
@@ -648,6 +652,7 @@ class MotionBuilderState extends State<MotionBuilder>
       index: index,
       key: itemGlobalKey,
       motionData: motionData,
+      isGrid: isGrid,
       updateMotionData: (MotionData motionData) {
         final itemOffset = _itemOffsetAt(index);
         childrenMap[index] = motionData.copyWith(
