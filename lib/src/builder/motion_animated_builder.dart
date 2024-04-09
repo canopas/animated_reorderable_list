@@ -446,10 +446,7 @@ class MotionBuilderState extends State<MotionBuilder>
   void insertItem(int index, {required Duration insertDuration}) {
     assert(index >= 0);
     final int itemIndex = _indexToItemIndex(index);
-
-    if (itemIndex < 0 || itemIndex > _itemsCount) {
-      return;
-    }
+    assert(itemIndex >= 0 && itemIndex <= _itemsCount);
 
     for (final _ActiveItem item in _incomingItems) {
       if (item.itemIndex >= itemIndex) item.itemIndex += 1;
@@ -478,18 +475,18 @@ class MotionBuilderState extends State<MotionBuilder>
       ..sort();
 
     final motionData = MotionData(
-        endOffset: Offset.zero, startOffset: Offset.zero, visible: false);
+        endOffset: Offset.zero, startOffset: Offset.zero);
 
     final updatedChildrenMap = <int, MotionData>{};
     if (childrenMap.containsKey(itemIndex)) {
       for (final entry in childrenMap.entries) {
         if (entry.key == itemIndex) {
-          updatedChildrenMap[itemIndex] = motionData;
+          updatedChildrenMap[itemIndex] = motionData.copyWith(visible: false);
           updatedChildrenMap[entry.key + 1] =
-              entry.value.copyWith(startOffset: _itemOffsetAt(entry.key), endOffset: _itemOffsetAt(entry.key+1), visible: false);
+              entry.value.copyWith(startOffset: _itemOffsetAt(entry.key), endOffset: _itemOffsetAt(entry.key+1));
         } else if (entry.key > itemIndex) {
           updatedChildrenMap[entry.key + 1] =
-              entry.value.copyWith(startOffset: _itemOffsetAt(entry.key), endOffset: _itemOffsetAt(entry.key+1), visible: false);
+              entry.value.copyWith(startOffset: _itemOffsetAt(entry.key), endOffset: _itemOffsetAt(entry.key+1));
         } else {
           updatedChildrenMap[entry.key] = entry.value;
         }
@@ -520,16 +517,18 @@ class MotionBuilderState extends State<MotionBuilder>
       });
     }
     setState(() {
-      _itemsCount = childrenMap.length;
+      _itemsCount += 1;
     });
   }
 
   void removeItem(int index, {required Duration removeItemDuration}) {
     assert(index >= 0);
     final int itemIndex = _indexToItemIndex(index);
-    if (itemIndex < 0 || itemIndex >= _itemsCount) {
-      return;
-    }
+    // if (itemIndex < 0 || itemIndex >= _itemsCount) {
+    //   return;
+    // }
+    assert(itemIndex >= 0 && itemIndex < _itemsCount);
+
 
     assert(_activeItemAt(_outgoingItems, itemIndex) == null);
 
@@ -576,8 +575,8 @@ class MotionBuilderState extends State<MotionBuilder>
   }
 
   void _onItemRemoved(int itemIndex, Duration removeDuration) {
-    childrenMap.update(
-        itemIndex + 1, (value) => value.copyWith(visible: false));
+    // childrenMap.update(
+    //     itemIndex + 1, (value) => value.copyWith(visible: false));
     final updatedChildrenMap = <int, MotionData>{};
     if (childrenMap.containsKey(itemIndex)) {
       for (final entry in childrenMap.entries) {
@@ -587,7 +586,7 @@ class MotionBuilderState extends State<MotionBuilder>
           continue;
         } else {
           updatedChildrenMap[entry.key - 1] = childrenMap[entry.key]!
-              .copyWith(startOffset: _itemOffsetAt(entry.key), endOffset: _itemOffsetAt(entry.key-1), visible: false);
+              .copyWith(startOffset: _itemOffsetAt(entry.key), endOffset: _itemOffsetAt(entry.key-1));
         }
       }
     }
