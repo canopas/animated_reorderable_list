@@ -164,7 +164,8 @@ class _HomePageState extends State<HomePage> {
                               index: list[index].index);
                         },
                         sliverGridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
+                             SliverReorderableGridDelegateWithFixedCrossAxisCount(
+                              itemCount: list.length,
                                 crossAxisCount: 4),
                         enterTransition: animations,
                         exitTransition: animations,

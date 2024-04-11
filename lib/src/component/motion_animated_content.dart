@@ -80,8 +80,9 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
       listState.unregisterItem(oldWidget.index, this);
       listState.registerItem(this);
     }
-    if (oldWidget.index != widget.index) {
-      visible = widget.motionData.visible;
+    if(oldWidget.index!= widget.index && !_dragging && widget.isGrid){
+      _updateAnimationTranslation();
+
     }
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       if (mounted) {
@@ -89,17 +90,13 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
           visible = true;
         });
       }
-      if(oldWidget.index!= widget.index && !_dragging && widget.isGrid){
-        _updateAnimationTranslation();
-      }
       widget.updateMotionData?.call(widget.motionData);
     });
     super.didUpdateWidget(oldWidget);
   }
 
   void _updateAnimationTranslation() {
-    Offset endOffset = itemOffset();
-    Offset offsetDiff = (widget.motionData.startOffset + offset) - endOffset;
+    Offset offsetDiff = (widget.motionData.startOffset + offset) - widget.motionData.endOffset;
     _startOffset = offsetDiff;
     if (offsetDiff.dx != 0 || offsetDiff.dy != 0) {
       if (_offsetAnimation == null) {
