@@ -588,13 +588,16 @@ class MotionBuilderState extends State<MotionBuilder>
   }
 
   Offset getChildOffset(int index) {
-    final offset= _itemOffsetAt(index);
+    final currentOffset= _itemOffsetAt(index);
+    if(!isGrid){
+      return currentOffset;
+    }
     final gridDelegate= widget.delegateBuilder as SliverReorderableGridDelegateWithFixedCrossAxisCount;
     final int col= index % gridDelegate.crossAxisCount;
     if(col == gridDelegate.crossAxisCount-1){
-     return Offset(gridDelegate.childCrossAxisExtent, offset.dy+gridDelegate.childMainAxisExtent);
+     return Offset(gridDelegate.childCrossAxisExtent, currentOffset.dy+gridDelegate.childMainAxisExtent);
     }else{
-      return Offset(offset.dx+gridDelegate.childCrossAxisExtent, offset.dy);
+      return Offset(currentOffset.dx+gridDelegate.childCrossAxisExtent, currentOffset.dy);
     }
   }
 
