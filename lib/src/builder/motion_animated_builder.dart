@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import '../component/drag_listener.dart';
-import '../component/sliver_grid_with_main_axis_extent.dart';
 import '../model/motion_data.dart';
 import 'motion_list_base.dart';
 
