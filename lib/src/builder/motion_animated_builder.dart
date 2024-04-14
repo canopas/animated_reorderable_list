@@ -13,7 +13,6 @@ part '../component/drag_item.dart';
 
 part '../component/motion_animated_content.dart';
 
-
 typedef CustomAnimatedWidgetBuilder<E> = Widget Function(
     BuildContext context, Widget child, Animation<double> animation);
 
@@ -33,7 +32,7 @@ class MotionBuilder<E> extends StatefulWidget {
 
   const MotionBuilder(
       {Key? key,
-        required this.itemBuilder,
+      required this.itemBuilder,
       required this.insertAnimationBuilder,
       required this.removeAnimationBuilder,
       this.onReorder,
@@ -43,8 +42,7 @@ class MotionBuilder<E> extends StatefulWidget {
       this.initialCount = 0,
       this.delegateBuilder,
       this.scrollDirection = Axis.vertical,
-       required this.buildDefaultDragHandles
-      })
+      required this.buildDefaultDragHandles})
       : assert(initialCount >= 0),
         super(key: key);
 
@@ -604,8 +602,6 @@ class MotionBuilderState extends State<MotionBuilder>
       return SizedBox.fromSize(size: _dragInfo!.itemSize);
     }
 
-
-
     final Widget child = widget.onReorder != null
         ? reordreableItemBuilder(context, _itemIndexToIndex(index))
         : widget.itemBuilder(context, _itemIndexToIndex(index));
@@ -659,9 +655,7 @@ class MotionBuilderState extends State<MotionBuilder>
     }());
     final Key itemGlobalKey = MotionBuilderItemGlobalKey(item.key!, this);
     if (widget.buildDefaultDragHandles) {
-      switch (Theme
-          .of(context)
-          .platform) {
+      switch (Theme.of(context).platform) {
         case TargetPlatform.linux:
         case TargetPlatform.macOS:
         case TargetPlatform.windows:
@@ -709,9 +703,7 @@ class MotionBuilderState extends State<MotionBuilder>
         case TargetPlatform.fuchsia:
         case TargetPlatform.iOS:
           return ReorderableGridDelayedDragStartListener(
-              key: itemGlobalKey,
-              index: index,
-              child: item);
+              key: itemGlobalKey, index: index, child: item);
       }
     }
 

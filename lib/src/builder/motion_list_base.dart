@@ -123,7 +123,6 @@ abstract class MotionListBaseState<
   @protected
   bool get buildDefaultDragHandles => widget.buildDefaultDragHandles ?? false;
 
-
   @override
   void initState() {
     super.initState();
@@ -230,5 +229,4 @@ abstract class MotionListBaseState<
       return animatedChild;
     }
   }
-
 }

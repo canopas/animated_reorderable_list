@@ -176,34 +176,33 @@ class AnimatedReorderableGridView<E extends Object> extends StatelessWidget {
   /// transition for the widget that is built.
   final AnimatedWidgetBuilder? removeItemBuilder;
 
-  const AnimatedReorderableGridView(
-      {Key? key,
-      required this.items,
-      required this.itemBuilder,
-      required this.sliverGridDelegate,
-      required this.onReorder,
-      this.enterTransition,
-      this.exitTransition,
-      this.insertDuration,
-      this.removeDuration,
-      this.onReorderStart,
-      this.onReorderEnd,
-      this.proxyDecorator,
-      this.padding,
-      this.scrollDirection = Axis.vertical,
-      this.reverse = false,
-      this.controller,
-      this.primary,
-      this.physics,
-      this.scrollBehavior,
-      this.restorationId,
-      this.keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.manual,
-      this.dragStartBehavior = DragStartBehavior.start,
-      this.clipBehavior = Clip.hardEdge,
-      this.insertItemBuilder,
-      this.removeItemBuilder,
-      })
-      : super(key: key);
+  const AnimatedReorderableGridView({
+    Key? key,
+    required this.items,
+    required this.itemBuilder,
+    required this.sliverGridDelegate,
+    required this.onReorder,
+    this.enterTransition,
+    this.exitTransition,
+    this.insertDuration,
+    this.removeDuration,
+    this.onReorderStart,
+    this.onReorderEnd,
+    this.proxyDecorator,
+    this.padding,
+    this.scrollDirection = Axis.vertical,
+    this.reverse = false,
+    this.controller,
+    this.primary,
+    this.physics,
+    this.scrollBehavior,
+    this.restorationId,
+    this.keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.manual,
+    this.dragStartBehavior = DragStartBehavior.start,
+    this.clipBehavior = Clip.hardEdge,
+    this.insertItemBuilder,
+    this.removeItemBuilder,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

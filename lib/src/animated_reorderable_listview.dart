@@ -224,23 +224,6 @@ class AnimatedReorderableListView<E extends Object> extends StatefulWidget {
 
 class _AnimatedReorderableListViewState<E extends Object>
     extends State<AnimatedReorderableListView<E>> {
-
-  Widget _itemBuilder(BuildContext context, int index) {
-    final Widget item = widget.itemBuilder(context, index);
-    assert(() {
-      if (item.key == null) {
-        throw FlutterError(
-          "Every Item of ReorderableListView must have a key.",
-        );
-      }
-      return true;
-    }());
-    final Key itemGlobalKey = MotionBuilderItemGlobalKey(item.key!, this);
-    return KeyedSubtree(
-        key: itemGlobalKey,
-        child: item);
-  }
-
   @override
   Widget build(BuildContext context) {
     return CustomScrollView(
@@ -258,21 +241,20 @@ class _AnimatedReorderableListViewState<E extends Object>
           SliverPadding(
             padding: widget.padding ?? EdgeInsets.zero,
             sliver: MotionListImpl(
-                items: widget.items,
-                itemBuilder: _itemBuilder,
-                enterTransition: widget.enterTransition,
-                exitTransition: widget.exitTransition,
-                insertDuration: widget.insertDuration,
-                removeDuration: widget.removeDuration,
-                onReorder: widget.onReorder,
-                onReorderStart: widget.onReorderStart,
-                onReorderEnd: widget.onReorderEnd,
-                proxyDecorator: widget.proxyDecorator,
-                buildDefaultDragHandles: widget.buildDefaultDragHandles,
-                scrollDirection: widget.scrollDirection,
-                insertItemBuilder: widget.insertItemBuilder,
-                removeItemBuilder: widget.removeItemBuilder,
-
+              items: widget.items,
+              itemBuilder: widget.itemBuilder,
+              enterTransition: widget.enterTransition,
+              exitTransition: widget.exitTransition,
+              insertDuration: widget.insertDuration,
+              removeDuration: widget.removeDuration,
+              onReorder: widget.onReorder,
+              onReorderStart: widget.onReorderStart,
+              onReorderEnd: widget.onReorderEnd,
+              proxyDecorator: widget.proxyDecorator,
+              buildDefaultDragHandles: widget.buildDefaultDragHandles,
+              scrollDirection: widget.scrollDirection,
+              insertItemBuilder: widget.insertItemBuilder,
+              removeItemBuilder: widget.removeItemBuilder,
             ),
           ),
         ]);
