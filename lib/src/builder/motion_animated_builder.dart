@@ -5,7 +5,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
 import '../component/drag_listener.dart';
 import '../model/motion_data.dart';
 import 'motion_list_base.dart';
@@ -13,9 +12,6 @@ import 'motion_list_base.dart';
 part '../component/drag_item.dart';
 
 part '../component/motion_animated_content.dart';
-
-// typedef AnimatedWidgetBuilder<E> = Widget Function(
-//     BuildContext context, Widget child, Animation<double> animation);
 
 typedef CustomAnimatedWidgetBuilder<E> = Widget Function(
     BuildContext context, Widget child, Animation<double> animation);
@@ -32,9 +28,11 @@ class MotionBuilder<E> extends StatefulWidget {
   final int initialCount;
   final Axis scrollDirection;
   final SliverGridDelegate? delegateBuilder;
+  final bool buildDefaultDragHandles;
 
   const MotionBuilder(
       {Key? key,
+      required this.itemBuilder,
       required this.insertAnimationBuilder,
       required this.removeAnimationBuilder,
       this.onReorder,
@@ -44,7 +42,7 @@ class MotionBuilder<E> extends StatefulWidget {
       this.initialCount = 0,
       this.delegateBuilder,
       this.scrollDirection = Axis.vertical,
-      required this.itemBuilder})
+      required this.buildDefaultDragHandles})
       : assert(initialCount >= 0),
         super(key: key);
 
@@ -682,6 +680,8 @@ class MotionBuilderState extends State<MotionBuilder>
 
   Widget reordreableItemBuilder(BuildContext context, int index) {
     final Widget item = widget.itemBuilder(context, index);
+    final Widget itemWithSemantics = _wrapWithSemantics(item, index);
+
     assert(() {
       if (item.key == null) {
         throw FlutterError(
@@ -690,9 +690,60 @@ class MotionBuilderState extends State<MotionBuilder>
       }
       return true;
     }());
-
-    final Widget itemWithSemantics = _wrapWithSemantics(item, index);
     final Key itemGlobalKey = _MotionBuilderItemGlobalKey(item.key!, this);
+    if (widget.buildDefaultDragHandles) {
+      switch (Theme.of(context).platform) {
+        case TargetPlatform.linux:
+        case TargetPlatform.macOS:
+        case TargetPlatform.windows:
+          switch (widget.scrollDirection) {
+            case Axis.horizontal:
+              return Stack(
+                key: itemGlobalKey,
+                children: <Widget>[
+                  itemWithSemantics,
+                  Positioned.directional(
+                      textDirection: Directionality.of(context),
+                      start: 0,
+                      end: 0,
+                      bottom: 8,
+                      child: Align(
+                        alignment: Alignment.bottomCenter,
+                        child: ReorderableDragStartListener(
+                          index: index,
+                          child: const Icon(Icons.drag_handle),
+                        ),
+                      ))
+                ],
+              );
+            case Axis.vertical:
+              return Stack(
+                key: itemGlobalKey,
+                children: <Widget>[
+                  itemWithSemantics,
+                  Positioned.directional(
+                      textDirection: Directionality.of(context),
+                      top: 0,
+                      bottom: 0,
+                      end: 8,
+                      child: Align(
+                        alignment: AlignmentDirectional.centerEnd,
+                        child: ReorderableGridDragStartListener(
+                          index: index,
+                          child: const Icon(Icons.drag_handle),
+                        ),
+                      ))
+                ],
+              );
+          }
+        case TargetPlatform.android:
+        case TargetPlatform.fuchsia:
+        case TargetPlatform.iOS:
+          return ReorderableGridDelayedDragStartListener(
+              key: itemGlobalKey, index: index, child: item);
+      }
+    }
+
     const bool enable = true;
     return ReorderableGridDelayedDragStartListener(
       key: itemGlobalKey,
