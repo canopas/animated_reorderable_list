@@ -4,7 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
 import '../component/drag_listener.dart';
 import '../model/motion_data.dart';
 import 'motion_list_base.dart';
@@ -615,7 +614,7 @@ class MotionBuilderState extends State<MotionBuilder>
       return true;
     }());
 
-    final Key itemGlobalKey = MotionBuilderItemGlobalKey(child.key!, this);
+    final Key itemGlobalKey = _MotionBuilderItemGlobalKey(child.key!, this);
     final Widget builder = _insertItemBuilder(incomingItem, child);
 
     final motionData = childrenMap[index];
@@ -653,7 +652,7 @@ class MotionBuilderState extends State<MotionBuilder>
       }
       return true;
     }());
-    final Key itemGlobalKey = MotionBuilderItemGlobalKey(item.key!, this);
+    final Key itemGlobalKey = _MotionBuilderItemGlobalKey(item.key!, this);
     if (widget.buildDefaultDragHandles) {
       switch (Theme.of(context).platform) {
         case TargetPlatform.linux:
@@ -804,8 +803,8 @@ Offset _extentOffset(double extent, Axis scrollDirection) {
 }
 
 @optionalTypeArgs
-class MotionBuilderItemGlobalKey extends GlobalObjectKey {
-  const MotionBuilderItemGlobalKey(this.subKey, this.state) : super(subKey);
+class _MotionBuilderItemGlobalKey extends GlobalObjectKey {
+  const _MotionBuilderItemGlobalKey(this.subKey, this.state) : super(subKey);
 
   final Key subKey;
   final State state;
@@ -815,7 +814,7 @@ class MotionBuilderItemGlobalKey extends GlobalObjectKey {
     if (other.runtimeType != runtimeType) {
       return false;
     }
-    return other is MotionBuilderItemGlobalKey &&
+    return other is _MotionBuilderItemGlobalKey &&
         other.subKey == subKey &&
         other.state == state;
   }
