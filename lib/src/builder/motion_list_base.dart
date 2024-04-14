@@ -156,23 +156,22 @@ abstract class MotionListBaseState<
   void addEffect(AnimationEffect effect, List<EffectEntry> enteries,
       {required bool enter}) {
     Duration zero = Duration.zero;
-
-    if (effect.duration != null) {
-      if (enter) {
-        _enterDuration = effect.duration! > _enterDuration
-            ? effect.duration!
-            : _enterDuration;
-        assert(_enterDuration >= zero, "Duration can not be negative");
-      } else {
-        _exitDuration =
-            effect.duration! > _exitDuration ? effect.duration! : _exitDuration;
-        assert(_exitDuration >= zero, "Duration can not be negative");
-      }
+    final timeForAnimation =
+        (effect.delay ?? zero) + (effect.duration ?? kAnimationDuration);
+    if (enter) {
+      _enterDuration =
+          timeForAnimation > _enterDuration ? timeForAnimation : _enterDuration;
+      assert(_enterDuration >= zero, "Duration can not be negative");
+    } else {
+      _exitDuration =
+          timeForAnimation > _exitDuration ? timeForAnimation : _exitDuration;
+      assert(_exitDuration >= zero, "Duration can not be negative");
     }
+
     EffectEntry entry = EffectEntry(
         animationEffect: effect,
         delay: effect.delay ?? zero,
-        duration: effect.duration ?? removeDuration,
+        duration: effect.duration ?? kAnimationDuration,
         curve: effect.curve ?? Curves.linear);
 
     enteries.add(entry);
@@ -203,7 +202,7 @@ abstract class MotionListBaseState<
       Widget animatedChild = child;
       for (EffectEntry entry in _enterAnimations) {
         animatedChild = entry.animationEffect
-            .build(context, animatedChild, animation, entry, enterDuration);
+            .build(context, animatedChild, animation, entry, insertDuration);
       }
       return animatedChild;
     }
@@ -219,7 +218,7 @@ abstract class MotionListBaseState<
       Widget animatedChild = child;
       for (EffectEntry entry in _exitAnimations) {
         animatedChild = entry.animationEffect
-            .build(context, animatedChild, animation, entry, exitDuration);
+            .build(context, animatedChild, animation, entry, removeDuration);
       }
       return animatedChild;
     }

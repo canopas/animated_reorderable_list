@@ -6,15 +6,17 @@ class MotionAnimatedContent extends StatefulWidget {
   final Widget child;
   final Function(MotionData)? updateMotionData;
   final CapturedThemes? capturedThemes;
+  final bool isGrid;
 
-  const MotionAnimatedContent(
-      {Key? key,
-      required this.index,
-      required this.motionData,
-      required this.child,
-      this.updateMotionData,
-      required this.capturedThemes})
-      : super(key: key);
+  const MotionAnimatedContent({
+    Key? key,
+    required this.index,
+    required this.motionData,
+    required this.child,
+    this.updateMotionData,
+    required this.capturedThemes,
+    required this.isGrid,
+  }) : super(key: key);
 
   @override
   State<MotionAnimatedContent> createState() => MotionAnimatedContentState();
@@ -75,8 +77,8 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
       listState.unregisterItem(oldWidget.index, this);
       listState.registerItem(this);
     }
-    if (oldWidget.index != widget.index) {
-      visible = widget.motionData.visible;
+    if (oldWidget.index != widget.index && !_dragging && widget.isGrid) {
+      _updateAnimationTranslation();
     }
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       if (mounted) {
@@ -84,17 +86,14 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
           visible = true;
         });
       }
-      if (oldWidget.index != widget.index && !_dragging) {
-        _updateAnimationTranslation();
-      }
       widget.updateMotionData?.call(widget.motionData);
     });
     super.didUpdateWidget(oldWidget);
   }
 
   void _updateAnimationTranslation() {
-    Offset endOffset = itemOffset();
-    Offset offsetDiff = (widget.motionData.startOffset + offset) - endOffset;
+    Offset offsetDiff =
+        (widget.motionData.startOffset + offset) - widget.motionData.endOffset;
     _startOffset = offsetDiff;
     if (offsetDiff.dx != 0 || offsetDiff.dy != 0) {
       if (_offsetAnimation == null) {
