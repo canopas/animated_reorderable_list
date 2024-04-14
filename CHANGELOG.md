@@ -8,7 +8,5 @@
 ## Enhancements
 - Add support of Drag Handler for `TargetPlatformVariant.desktop`
 
-## 1.0.2
 
-* Fixed blink issue
 
