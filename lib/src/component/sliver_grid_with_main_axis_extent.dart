@@ -18,7 +18,6 @@ import 'dart:math' as math;
 
 class SliverReorderableGridWithMaxCrossAxisExtent
     extends SliverGridDelegateWithMaxCrossAxisExtent {
-
   /// The maximum extent of tiles in the cross axis.
   ///
   /// This delegate will select a cross-axis extent for the tiles that is as
@@ -46,9 +45,9 @@ class SliverReorderableGridWithMaxCrossAxisExtent
   ///
   /// If null, [childAspectRatio] is used instead.
   final double? mainAxisExtent;
-  int crossAxisCount=0;
-double childCrossAxisExtent = 0.0;
-double childMainAxisExtent= 0.0;
+  int crossAxisCount = 0;
+  double childCrossAxisExtent = 0.0;
+  double childMainAxisExtent = 0.0;
 
   /// Creates a delegate that makes grid layouts with tiles that have a maximum
   /// cross-axis extent.
@@ -81,12 +80,12 @@ double childMainAxisExtent= 0.0;
     return true;
   }
 
-
-
   @override
   SliverGridLayout getLayout(SliverConstraints constraints) {
     assert(_debugAssertIsValid(constraints.crossAxisExtent));
-    int childCrossAxisCount = (constraints.crossAxisExtent / (maxCrossAxisExtent + crossAxisSpacing)).ceil();
+    int childCrossAxisCount =
+        (constraints.crossAxisExtent / (maxCrossAxisExtent + crossAxisSpacing))
+            .ceil();
     // Ensure a minimum count of 1, can be zero and result in an infinite extent
     // below when the window size is 0.
     crossAxisCount = math.max(1, childCrossAxisCount);
@@ -94,8 +93,9 @@ double childMainAxisExtent= 0.0;
       0.0,
       constraints.crossAxisExtent - crossAxisSpacing * (crossAxisCount - 1),
     );
-     childCrossAxisExtent = usableCrossAxisExtent / crossAxisCount;
-      childMainAxisExtent = mainAxisExtent ?? childCrossAxisExtent / childAspectRatio;
+    childCrossAxisExtent = usableCrossAxisExtent / crossAxisCount;
+    childMainAxisExtent =
+        mainAxisExtent ?? childCrossAxisExtent / childAspectRatio;
     return SliverGridRegularTileLayout(
       crossAxisCount: crossAxisCount,
       mainAxisStride: childMainAxisExtent + mainAxisSpacing,
@@ -106,25 +106,23 @@ double childMainAxisExtent= 0.0;
     );
   }
 
-  Offset getOffset(int index,Offset currentOffset) {
+  Offset getOffset(int index, Offset currentOffset) {
     final int col = index % crossAxisCount;
-    final crossAxisStart =  crossAxisSpacing;
+    final crossAxisStart = crossAxisSpacing;
 
     if (col == crossAxisCount - 1) {
-      return Offset(crossAxisStart,
-          currentOffset.dy + childMainAxisExtent);
+      return Offset(crossAxisStart, currentOffset.dy + childMainAxisExtent);
     } else {
-      return Offset(currentOffset.dx + childCrossAxisExtent,
-          currentOffset.dy);
+      return Offset(currentOffset.dx + childCrossAxisExtent, currentOffset.dy);
     }
   }
 
   @override
   bool shouldRelayout(SliverGridDelegateWithMaxCrossAxisExtent oldDelegate) {
-    return oldDelegate.maxCrossAxisExtent != maxCrossAxisExtent
-        || oldDelegate.mainAxisSpacing != mainAxisSpacing
-        || oldDelegate.crossAxisSpacing != crossAxisSpacing
-        || oldDelegate.childAspectRatio != childAspectRatio
-        || oldDelegate.mainAxisExtent != mainAxisExtent;
+    return oldDelegate.maxCrossAxisExtent != maxCrossAxisExtent ||
+        oldDelegate.mainAxisSpacing != mainAxisSpacing ||
+        oldDelegate.crossAxisSpacing != crossAxisSpacing ||
+        oldDelegate.childAspectRatio != childAspectRatio ||
+        oldDelegate.mainAxisExtent != mainAxisExtent;
   }
 }

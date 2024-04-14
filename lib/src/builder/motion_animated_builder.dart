@@ -475,8 +475,8 @@ class MotionBuilderState extends State<MotionBuilder>
       ..add(incomingItem)
       ..sort();
 
-    final motionData = MotionData(
-        endOffset: Offset.zero, startOffset: Offset.zero);
+    final motionData =
+        MotionData(endOffset: Offset.zero, startOffset: Offset.zero);
 
     final updatedChildrenMap = <int, MotionData>{};
 
@@ -484,11 +484,13 @@ class MotionBuilderState extends State<MotionBuilder>
       for (final entry in childrenMap.entries) {
         if (entry.key == itemIndex) {
           updatedChildrenMap[itemIndex] = motionData.copyWith(visible: false);
-          updatedChildrenMap[entry.key + 1] =
-              entry.value.copyWith(startOffset: _itemOffsetAt(entry.key), endOffset: getChildOffset(entry.key));
+          updatedChildrenMap[entry.key + 1] = entry.value.copyWith(
+              startOffset: _itemOffsetAt(entry.key),
+              endOffset: getChildOffset(entry.key));
         } else if (entry.key > itemIndex) {
-          updatedChildrenMap[entry.key + 1] =
-              entry.value.copyWith(startOffset: _itemOffsetAt(entry.key), endOffset: getChildOffset(entry.key));
+          updatedChildrenMap[entry.key + 1] = entry.value.copyWith(
+              startOffset: _itemOffsetAt(entry.key),
+              endOffset: getChildOffset(entry.key));
         } else {
           updatedChildrenMap[entry.key] = entry.value;
         }
@@ -523,46 +525,47 @@ class MotionBuilderState extends State<MotionBuilder>
     }
     assert(itemIndex >= 0 && itemIndex < _itemsCount);
 
-
     assert(_activeItemAt(_outgoingItems, itemIndex) == null);
 
     if (childrenMap.containsKey(itemIndex)) {
       final _ActiveItem? incomingItem =
           _removeActiveItemAt(_incomingItems, itemIndex);
 
-    final AnimationController sizeController= incomingItem?.sizeAnimation??
-        AnimationController(vsync: this,duration: kAnimationDuration,value: 1.0);
+      final AnimationController sizeController = incomingItem?.sizeAnimation ??
+          AnimationController(
+              vsync: this, duration: kAnimationDuration, value: 1.0);
       final AnimationController controller = incomingItem?.controller ??
           AnimationController(
               duration: removeItemDuration, value: 1.0, vsync: this)
-      ..addStatusListener((status)=>());
+        ..addStatusListener((status) => ());
       final _ActiveItem outgoingItem =
-          _ActiveItem.animation(controller, itemIndex,sizeController );
+          _ActiveItem.animation(controller, itemIndex, sizeController);
       _outgoingItems
         ..add(outgoingItem)
         ..sort();
 
       controller.reverse().then<void>((void value) {
-        if(controller.status== AnimationStatus.dismissed){
+        if (controller.status == AnimationStatus.dismissed) {
           if (childrenMap.containsKey(itemIndex)) {
-              childrenMap.update(itemIndex, (value) => value.copyWith(visible: false));
+            childrenMap.update(
+                itemIndex, (value) => value.copyWith(visible: false));
           }
-           sizeController.reverse(from: 1.0).then((value) {
-           final removedItem=   _removeActiveItemAt(_outgoingItems, outgoingItem.itemIndex)!;
-                removedItem.controller!.dispose();
-                removedItem.sizeAnimation!.dispose();
+          sizeController.reverse(from: 1.0).then((value) {
+            final removedItem =
+                _removeActiveItemAt(_outgoingItems, outgoingItem.itemIndex)!;
+            removedItem.controller!.dispose();
+            removedItem.sizeAnimation!.dispose();
 
-
-           // Decrement the incoming and outgoing item indices to account
-           // for the removal.
-           for (final _ActiveItem item in _incomingItems) {
-             if (item.itemIndex > outgoingItem.itemIndex) item.itemIndex -= 1;
-           }
-           for (final _ActiveItem item in _outgoingItems) {
-             if (item.itemIndex > outgoingItem.itemIndex) item.itemIndex -= 1;
-           }
-           _onItemRemoved(itemIndex, removeItemDuration);
-            });
+            // Decrement the incoming and outgoing item indices to account
+            // for the removal.
+            for (final _ActiveItem item in _incomingItems) {
+              if (item.itemIndex > outgoingItem.itemIndex) item.itemIndex -= 1;
+            }
+            for (final _ActiveItem item in _outgoingItems) {
+              if (item.itemIndex > outgoingItem.itemIndex) item.itemIndex -= 1;
+            }
+            _onItemRemoved(itemIndex, removeItemDuration);
+          });
         }
       });
     }
@@ -577,8 +580,9 @@ class MotionBuilderState extends State<MotionBuilder>
         } else if (entry.key == itemIndex) {
           continue;
         } else {
-          updatedChildrenMap[entry.key - 1] = childrenMap[entry.key]!
-              .copyWith(startOffset: _itemOffsetAt(entry.key), endOffset: _itemOffsetAt(entry.key-1));
+          updatedChildrenMap[entry.key - 1] = childrenMap[entry.key]!.copyWith(
+              startOffset: _itemOffsetAt(entry.key),
+              endOffset: _itemOffsetAt(entry.key - 1));
         }
       }
     }
@@ -589,28 +593,25 @@ class MotionBuilderState extends State<MotionBuilder>
   }
 
   Offset getChildOffset(int index) {
-    final currentOffset= _itemOffsetAt(index);
-    if(!isGrid){
+    final currentOffset = _itemOffsetAt(index);
+    if (!isGrid) {
       return currentOffset;
     }
-    
-  if(widget.delegateBuilder is SliverReorderableGridDelegateWithFixedCrossAxisCount) {
-    final delegateBuilder= widget.delegateBuilder as SliverReorderableGridDelegateWithFixedCrossAxisCount;
-    return delegateBuilder.getOffset(index, currentOffset);
-  }else if(widget.delegateBuilder is SliverReorderableGridWithMaxCrossAxisExtent){
-    final delegateBuilder= widget.delegateBuilder as SliverReorderableGridWithMaxCrossAxisExtent;
-    final offset= delegateBuilder.getOffset(index, currentOffset);
-    return offset;
-  }
+
+    if (widget.delegateBuilder
+        is SliverReorderableGridDelegateWithFixedCrossAxisCount) {
+      final delegateBuilder = widget.delegateBuilder
+          as SliverReorderableGridDelegateWithFixedCrossAxisCount;
+      return delegateBuilder.getOffset(index, currentOffset);
+    } else if (widget.delegateBuilder
+        is SliverReorderableGridWithMaxCrossAxisExtent) {
+      final delegateBuilder =
+          widget.delegateBuilder as SliverReorderableGridWithMaxCrossAxisExtent;
+      final offset = delegateBuilder.getOffset(index, currentOffset);
+      return offset;
+    }
     return Offset.zero;
   }
-
-
-
-
-
-
-
 
   Offset _itemOffsetAt(int index) {
     final itemRenderBox =
@@ -627,7 +628,6 @@ class MotionBuilderState extends State<MotionBuilder>
             gridDelegate: widget.delegateBuilder!, delegate: _createDelegate())
         : SliverList(delegate: _createDelegate());
   }
-
 
   Widget _itemBuilder(BuildContext context, int index) {
     final _ActiveItem? outgoingItem = _activeItemAt(_outgoingItems, index);
@@ -680,7 +680,6 @@ class MotionBuilderState extends State<MotionBuilder>
   SliverChildDelegate _createDelegate() {
     return SliverChildBuilderDelegate(_itemBuilder, childCount: _itemsCount);
   }
-
 
   Widget reordreableItemBuilder(BuildContext context, int index) {
     final Widget item = widget.itemBuilder(context, index);
@@ -775,7 +774,7 @@ class MotionBuilderState extends State<MotionBuilder>
     final Animation<double> sizeAnimation =
         outgoingItem.sizeAnimation ?? kAlwaysCompleteAnimation;
     return SizeTransition(
-      sizeFactor: sizeAnimation,
+        sizeFactor: sizeAnimation,
         child: widget.removeAnimationBuilder(context, child, animation));
   }
 
@@ -785,7 +784,7 @@ class MotionBuilderState extends State<MotionBuilder>
     final Animation<double> sizeAnimation =
         incomingItem?.sizeAnimation ?? kAlwaysCompleteAnimation;
     return SizeTransition(
-      sizeFactor: sizeAnimation,
+        sizeFactor: sizeAnimation,
         child: widget.insertAnimationBuilder(context, child, animation));
   }
 }
@@ -826,7 +825,9 @@ class _MotionBuilderItemGlobalKey extends GlobalObjectKey {
 class _ActiveItem implements Comparable<_ActiveItem> {
   _ActiveItem.animation(this.controller, this.itemIndex, this.sizeAnimation);
 
-  _ActiveItem.index(this.itemIndex) : controller = null,sizeAnimation=null;
+  _ActiveItem.index(this.itemIndex)
+      : controller = null,
+        sizeAnimation = null;
 
   final AnimationController? controller;
   final AnimationController? sizeAnimation;

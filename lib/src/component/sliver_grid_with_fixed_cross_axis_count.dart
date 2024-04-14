@@ -42,7 +42,6 @@ class SliverGridWithCustomGeometryLayout extends SliverGridRegularTileLayout {
 
 class SliverReorderableGridDelegateWithFixedCrossAxisCount
     extends SliverGridDelegateWithFixedCrossAxisCount {
-
   /// The number of children in the cross axis.
   final int crossAxisCount;
 
@@ -55,15 +54,14 @@ class SliverReorderableGridDelegateWithFixedCrossAxisCount
   /// The ratio of the cross-axis to the main-axis extent of each child.
   final double childAspectRatio;
 
-
   /// The extent of each tile in the main axis. If provided it would define the
   /// logical pixels taken by each tile in the main-axis.
   ///
   /// If null, [childAspectRatio] is used instead.
   final double? mainAxisExtent;
 
-   double childCrossAxisExtent = 0.0;
-   double childMainAxisExtent= 0.0;
+  double childCrossAxisExtent = 0.0;
+  double childMainAxisExtent = 0.0;
 
   /// Creates a delegate that makes grid layouts with a fixed number of tiles in
   /// the cross axis.
@@ -72,13 +70,13 @@ class SliverReorderableGridDelegateWithFixedCrossAxisCount
   /// must not be negative. The `crossAxisCount` and `childAspectRatio`
   /// arguments must be greater than zero.
 
-   SliverReorderableGridDelegateWithFixedCrossAxisCount( {
+  SliverReorderableGridDelegateWithFixedCrossAxisCount({
     required this.crossAxisCount,
     this.mainAxisSpacing = 0.0,
     this.crossAxisSpacing = 0.0,
     this.childAspectRatio = 1.0,
-     this.mainAxisExtent,
-  })  :assert(crossAxisCount > 0),
+    this.mainAxisExtent,
+  })  : assert(crossAxisCount > 0),
         assert(mainAxisSpacing >= 0),
         assert(crossAxisSpacing >= 0),
         assert(childAspectRatio > 0),
@@ -97,17 +95,15 @@ class SliverReorderableGridDelegateWithFixedCrossAxisCount
     return true;
   }
 
-
-
   @override
   SliverGridLayout getLayout(SliverConstraints constraints) {
     assert(_debugAssertIsValid());
     final usableCrossAxisCount = max(0.0,
         constraints.crossAxisExtent - crossAxisSpacing * (crossAxisCount - 1));
 
-     childCrossAxisExtent = usableCrossAxisCount / crossAxisCount;
-     childMainAxisExtent = childCrossAxisExtent / childAspectRatio;
-     return  SliverGridWithCustomGeometryLayout(
+    childCrossAxisExtent = usableCrossAxisCount / crossAxisCount;
+    childMainAxisExtent = childCrossAxisExtent / childAspectRatio;
+    return SliverGridWithCustomGeometryLayout(
         geometryBuilder: (index, layout) {
           return SliverGridGeometry(
               scrollOffset: (index ~/ crossAxisCount) * layout.mainAxisStride,
@@ -126,23 +122,19 @@ class SliverReorderableGridDelegateWithFixedCrossAxisCount
 
   Offset getOffset(int index, Offset currentOffset) {
     final int col = index % crossAxisCount;
-    final crossAxisStart =  crossAxisSpacing;
+    final crossAxisStart = crossAxisSpacing;
 
     if (col == crossAxisCount - 1) {
-      return Offset(crossAxisStart,
-          currentOffset.dy + childMainAxisExtent);
+      return Offset(crossAxisStart, currentOffset.dy + childMainAxisExtent);
     } else {
-      return Offset(currentOffset.dx + childCrossAxisExtent,
-          currentOffset.dy);
+      return Offset(currentOffset.dx + childCrossAxisExtent, currentOffset.dy);
     }
   }
 
-
-
   double _getOffsetFromStartInCrossAxis(
-      int index,
-      SliverGridRegularTileLayout layout,
-      ) {
+    int index,
+    SliverGridRegularTileLayout layout,
+  ) {
     final crossAxisStart = (index % crossAxisCount) * layout.crossAxisStride;
 
     if (layout.reverseCrossAxis) {
@@ -156,13 +148,10 @@ class SliverReorderableGridDelegateWithFixedCrossAxisCount
 
   @override
   bool shouldRelayout(SliverGridDelegateWithFixedCrossAxisCount oldDelegate) {
-    return oldDelegate.crossAxisCount != crossAxisCount
-        || oldDelegate.mainAxisSpacing != mainAxisSpacing
-        || oldDelegate.crossAxisSpacing != crossAxisSpacing
-        || oldDelegate.childAspectRatio != childAspectRatio
-        || oldDelegate.mainAxisExtent != mainAxisExtent;
+    return oldDelegate.crossAxisCount != crossAxisCount ||
+        oldDelegate.mainAxisSpacing != mainAxisSpacing ||
+        oldDelegate.crossAxisSpacing != crossAxisSpacing ||
+        oldDelegate.childAspectRatio != childAspectRatio ||
+        oldDelegate.mainAxisExtent != mainAxisExtent;
   }
 }
-
-
-

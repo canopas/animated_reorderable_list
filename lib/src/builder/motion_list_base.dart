@@ -156,17 +156,17 @@ abstract class MotionListBaseState<
   void addEffect(AnimationEffect effect, List<EffectEntry> enteries,
       {required bool enter}) {
     Duration zero = Duration.zero;
-    final timeForAnimation= (effect.delay??zero) + (effect.duration??kAnimationDuration);
+    final timeForAnimation =
+        (effect.delay ?? zero) + (effect.duration ?? kAnimationDuration);
     if (enter) {
-        _enterDuration = timeForAnimation > _enterDuration
-            ? timeForAnimation
-            : _enterDuration;
-        assert(_enterDuration >= zero, "Duration can not be negative");
-      } else {
-        _exitDuration =
-            timeForAnimation > _exitDuration ? timeForAnimation : _exitDuration;
-        assert(_exitDuration >= zero, "Duration can not be negative");
-      }
+      _enterDuration =
+          timeForAnimation > _enterDuration ? timeForAnimation : _enterDuration;
+      assert(_enterDuration >= zero, "Duration can not be negative");
+    } else {
+      _exitDuration =
+          timeForAnimation > _exitDuration ? timeForAnimation : _exitDuration;
+      assert(_exitDuration >= zero, "Duration can not be negative");
+    }
 
     EffectEntry entry = EffectEntry(
         animationEffect: effect,

@@ -8,16 +8,15 @@ class MotionAnimatedContent extends StatefulWidget {
   final CapturedThemes? capturedThemes;
   final bool isGrid;
 
-  const MotionAnimatedContent(
-      {Key? key,
-      required this.index,
-      required this.motionData,
-      required this.child,
-      this.updateMotionData,
-      required this.capturedThemes,
-      required this.isGrid,
-      })
-      : super(key: key);
+  const MotionAnimatedContent({
+    Key? key,
+    required this.index,
+    required this.motionData,
+    required this.child,
+    this.updateMotionData,
+    required this.capturedThemes,
+    required this.isGrid,
+  }) : super(key: key);
 
   @override
   State<MotionAnimatedContent> createState() => MotionAnimatedContentState();
@@ -30,7 +29,6 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
   Offset _targetOffset = Offset.zero;
   Offset _startOffset = Offset.zero;
   AnimationController? _offsetAnimation;
-
 
   bool _dragging = false;
 
@@ -53,7 +51,6 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
       });
     }
   }
-
 
   int get index => widget.index;
   bool visible = true;
@@ -80,9 +77,8 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
       listState.unregisterItem(oldWidget.index, this);
       listState.registerItem(this);
     }
-    if(oldWidget.index!= widget.index && !_dragging && widget.isGrid){
+    if (oldWidget.index != widget.index && !_dragging && widget.isGrid) {
       _updateAnimationTranslation();
-
     }
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       if (mounted) {
@@ -96,7 +92,8 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
   }
 
   void _updateAnimationTranslation() {
-    Offset offsetDiff = (widget.motionData.startOffset + offset) - widget.motionData.endOffset;
+    Offset offsetDiff =
+        (widget.motionData.startOffset + offset) - widget.motionData.endOffset;
     _startOffset = offsetDiff;
     if (offsetDiff.dx != 0 || offsetDiff.dy != 0) {
       if (_offsetAnimation == null) {
