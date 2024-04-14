@@ -165,7 +165,6 @@ class _HomePageState extends State<HomePage> {
                         },
                         sliverGridDelegate:
                              SliverReorderableGridDelegateWithFixedCrossAxisCount(
-                              itemCount: list.length,
                                 crossAxisCount: 4),
                         enterTransition: animations,
                         exitTransition: animations,

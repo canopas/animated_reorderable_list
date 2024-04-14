@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import '../component/drag_listener.dart';
+import '../component/sliver_grid_with_main_axis_extent.dart';
 import '../model/motion_data.dart';
 import 'motion_list_base.dart';
 
@@ -592,14 +593,23 @@ class MotionBuilderState extends State<MotionBuilder>
     if(!isGrid){
       return currentOffset;
     }
-    final gridDelegate= widget.delegateBuilder as SliverReorderableGridDelegateWithFixedCrossAxisCount;
-    final int col= index % gridDelegate.crossAxisCount;
-    if(col == gridDelegate.crossAxisCount-1){
-     return Offset(gridDelegate.childCrossAxisExtent, currentOffset.dy+gridDelegate.childMainAxisExtent);
-    }else{
-      return Offset(currentOffset.dx+gridDelegate.childCrossAxisExtent, currentOffset.dy);
-    }
+    
+  if(widget.delegateBuilder is SliverReorderableGridDelegateWithFixedCrossAxisCount) {
+    final delegateBuilder= widget.delegateBuilder as SliverReorderableGridDelegateWithFixedCrossAxisCount;
+    return delegateBuilder.getOffset(index, currentOffset);
+  }else if(widget.delegateBuilder is SliverReorderableGridWithMaxCrossAxisExtent){
+    final delegateBuilder= widget.delegateBuilder as SliverReorderableGridWithMaxCrossAxisExtent;
+    final offset= delegateBuilder.getOffset(index, currentOffset);
+    return offset;
   }
+    return Offset.zero;
+  }
+
+
+
+
+
+
 
 
   Offset _itemOffsetAt(int index) {

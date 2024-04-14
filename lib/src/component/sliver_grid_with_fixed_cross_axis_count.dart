@@ -1,7 +1,4 @@
 import 'dart:math';
-import 'dart:ui';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/rendering.dart';
 
 class SliverGridWithCustomGeometryLayout extends SliverGridRegularTileLayout {
@@ -31,35 +28,57 @@ class SliverGridWithCustomGeometryLayout extends SliverGridRegularTileLayout {
 
   @override
   SliverGridGeometry getGeometryForChildIndex(int index) {
-   //print("$index------ ${geometryBuilder(index, this)}");
     return geometryBuilder(index, this);
-  }
-
-  Offset getChildOffset(int index) {
-    return Offset(
-      crossAxisStride * (index % crossAxisCount),
-      mainAxisStride * (index ~/ crossAxisCount),
-    );
   }
 }
 
+/// Creates grid layouts with a fixed number of tiles in the cross axis.
+///
+/// For example, if the grid is vertical, this delegate will create a layout
+/// with a fixed number of columns. If the grid is horizontal, this delegate
+/// will create a layout with a fixed number of rows.
+///
+/// This delegate creates grids with equally sized and spaced tiles.
+
 class SliverReorderableGridDelegateWithFixedCrossAxisCount
     extends SliverGridDelegateWithFixedCrossAxisCount {
-  final int itemCount;
+
+  /// The number of children in the cross axis.
+  final int crossAxisCount;
+
+  /// The number of logical pixels between each child along the main axis.
   final double mainAxisSpacing;
+
+  /// The number of logical pixels between each child along the cross axis.
   final double crossAxisSpacing;
+
+  /// The ratio of the cross-axis to the main-axis extent of each child.
   final double childAspectRatio;
+
+
+  /// The extent of each tile in the main axis. If provided it would define the
+  /// logical pixels taken by each tile in the main-axis.
+  ///
+  /// If null, [childAspectRatio] is used instead.
+  final double? mainAxisExtent;
+
    double childCrossAxisExtent = 0.0;
    double childMainAxisExtent= 0.0;
 
-   SliverReorderableGridDelegateWithFixedCrossAxisCount({
-    required this.itemCount,
-    required int crossAxisCount,
+  /// Creates a delegate that makes grid layouts with a fixed number of tiles in
+  /// the cross axis.
+  ///
+  /// The `mainAxisSpacing`, `mainAxisExtent` and `crossAxisSpacing` arguments
+  /// must not be negative. The `crossAxisCount` and `childAspectRatio`
+  /// arguments must be greater than zero.
+
+   SliverReorderableGridDelegateWithFixedCrossAxisCount( {
+    required this.crossAxisCount,
     this.mainAxisSpacing = 0.0,
     this.crossAxisSpacing = 0.0,
     this.childAspectRatio = 1.0,
-  })  : assert(itemCount >= 0),
-        assert(crossAxisCount > 0),
+     this.mainAxisExtent,
+  })  :assert(crossAxisCount > 0),
         assert(mainAxisSpacing >= 0),
         assert(crossAxisSpacing >= 0),
         assert(childAspectRatio > 0),
@@ -71,7 +90,6 @@ class SliverReorderableGridDelegateWithFixedCrossAxisCount
         );
 
   bool _debugAssertIsValid() {
-    assert(itemCount >= 0);
     assert(crossAxisCount > 0);
     assert(mainAxisSpacing >= 0);
     assert(crossAxisSpacing >= 0);
@@ -89,7 +107,7 @@ class SliverReorderableGridDelegateWithFixedCrossAxisCount
 
      childCrossAxisExtent = usableCrossAxisCount / crossAxisCount;
      childMainAxisExtent = childCrossAxisExtent / childAspectRatio;
-    return  SliverGridWithCustomGeometryLayout(
+     return  SliverGridWithCustomGeometryLayout(
         geometryBuilder: (index, layout) {
           return SliverGridGeometry(
               scrollOffset: (index ~/ crossAxisCount) * layout.mainAxisStride,
@@ -106,14 +124,17 @@ class SliverReorderableGridDelegateWithFixedCrossAxisCount
             axisDirectionIsReversed(constraints.crossAxisDirection));
   }
 
-  Offset getChildOffset(int index, SliverGridRegularTileLayout layout) {
-    final int row = index ~/ crossAxisCount;
+  Offset getOffset(int index, Offset currentOffset) {
     final int col = index % crossAxisCount;
+    final crossAxisStart =  crossAxisSpacing;
 
-    final double x = col * (layout.childCrossAxisExtent + crossAxisSpacing);
-    final double y = row * (layout.childMainAxisExtent + mainAxisSpacing);
-
-    return Offset(x, y);
+    if (col == crossAxisCount - 1) {
+      return Offset(crossAxisStart,
+          currentOffset.dy + childMainAxisExtent);
+    } else {
+      return Offset(currentOffset.dx + childCrossAxisExtent,
+          currentOffset.dy);
+    }
   }
 
 
@@ -142,3 +163,6 @@ class SliverReorderableGridDelegateWithFixedCrossAxisCount
         || oldDelegate.mainAxisExtent != mainAxisExtent;
   }
 }
+
+
+
