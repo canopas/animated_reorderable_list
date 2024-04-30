@@ -176,6 +176,12 @@ class _HomePageState extends State<HomePage> {
                             list.insert(newIndex, user);
                           });
                         },
+                        onReorderEnd: (int index) {
+                          print(" End index :  $index");
+                        },
+                        onReorderStart: (int index) {
+                          print(" Start index :  $index");
+                        },
                         proxyDecorator: proxyDecorator
 
                         /*  A custom builder that is for inserting items with animations.
