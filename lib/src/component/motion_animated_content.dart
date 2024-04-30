@@ -86,7 +86,6 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
           visible = true;
         });
         widget.updateMotionData?.call(widget.motionData);
-
       }
     });
     super.didUpdateWidget(oldWidget);
