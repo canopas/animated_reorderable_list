@@ -291,6 +291,7 @@ class MotionBuilderState extends State<MotionBuilder>
   }
 
   void _dragEnd(_DragInfo item) {
+    widget.onReorderEnd?.call(_insertIndex!);
     setState(() => _finalDropPosition = _itemOffsetAt(_insertIndex!));
   }
 

@@ -85,8 +85,8 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
         setState(() {
           visible = true;
         });
+        widget.updateMotionData?.call(widget.motionData);
       }
-      widget.updateMotionData?.call(widget.motionData);
     });
     super.didUpdateWidget(oldWidget);
   }
