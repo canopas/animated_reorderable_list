@@ -11,6 +11,26 @@ class User {
   final int index;
 
   User({required this.name, required this.index});
+
+  @override
+  String toString() {
+    return 'User{name: $name, index: $index}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is User &&
+      other.index == index;
+  }
+
+  @override
+  // TODO: implement hashCode
+  int get hashCode =>  index.hashCode ;
+
+
+
 }
 
 class HomePage extends StatefulWidget {
@@ -31,6 +51,13 @@ class _HomePageState extends State<HomePage> {
 
   void insert() {
     addedNumber += 1;
+
+   int index = list.indexWhere((element) => element.index==2);
+   User user = User(name: "User 3", index: index);
+
+    list[index] = user;
+
+
     setState(() {
       list.insert(1, User(name: "User $addedNumber", index: addedNumber));
     });
@@ -159,8 +186,9 @@ class _HomePageState extends State<HomePage> {
                         items: list,
                         scrollDirection: Axis.vertical,
                         itemBuilder: (BuildContext context, int index) {
+                          print(ValueKey(list[index].toString()));
                           return ItemCard(
-                              key: Key(list[index].name),
+                              key: ValueKey(list[index]),
                               index: list[index].index);
                         },
                         sliverGridDelegate:

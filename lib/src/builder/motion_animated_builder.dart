@@ -640,7 +640,7 @@ class MotionBuilderState extends State<MotionBuilder>
     }
 
     final Widget child = widget.onReorder != null
-        ? reordreableItemBuilder(context, _itemIndexToIndex(index))
+        ? reordrableItemBuilder(context, _itemIndexToIndex(index))
         : widget.itemBuilder(context, _itemIndexToIndex(index));
 
     assert(() {
@@ -679,7 +679,7 @@ class MotionBuilderState extends State<MotionBuilder>
     return SliverChildBuilderDelegate(_itemBuilder, childCount: _itemsCount);
   }
 
-  Widget reordreableItemBuilder(BuildContext context, int index) {
+  Widget reordrableItemBuilder(BuildContext context, int index) {
     final Widget item = widget.itemBuilder(context, index);
     final Widget itemWithSemantics = _wrapWithSemantics(item, index);
 
