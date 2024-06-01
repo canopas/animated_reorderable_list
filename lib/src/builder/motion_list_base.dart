@@ -127,13 +127,13 @@ abstract class MotionListBaseState<
   void initState() {
     super.initState();
     oldList = List.from(widget.items);
+
     addEffects(enterTransition, _enterAnimations, enter: true);
     addEffects(exitTransition, _exitAnimations, enter: false);
   }
 
   @override
   void didUpdateWidget(covariant B oldWidget) {
-    super.didUpdateWidget(oldWidget);
     final newList = widget.items;
     if (!listEquals(oldWidget.enterTransition, enterTransition)) {
       _enterAnimations = [];
@@ -145,6 +145,7 @@ abstract class MotionListBaseState<
     }
     calculateDiff(oldList, newList);
     oldList = List.from(newList);
+    super.didUpdateWidget(oldWidget);
   }
 
   void addEffects(List<AnimationEffect> effects, List<EffectEntry> enteries,

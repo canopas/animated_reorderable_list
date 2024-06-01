@@ -11,6 +11,18 @@ class User {
   final int index;
 
   User({required this.name, required this.index});
+
+  // To prevent unnecessary animations when updating items in a list, it's essential to correctly implement the == operator and hashCode for your list item class.
+  // This allows the list to recognize items with the same data as equal, even if they are different instances.
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is User && other.index == index;
+  }
+
+  @override
+  int get hashCode => index.hashCode;
 }
 
 class HomePage extends StatefulWidget {
@@ -31,6 +43,7 @@ class _HomePageState extends State<HomePage> {
 
   void insert() {
     addedNumber += 1;
+
     setState(() {
       list.insert(1, User(name: "User $addedNumber", index: addedNumber));
     });
@@ -160,7 +173,7 @@ class _HomePageState extends State<HomePage> {
                         scrollDirection: Axis.vertical,
                         itemBuilder: (BuildContext context, int index) {
                           return ItemCard(
-                              key: Key(list[index].name),
+                              key: ValueKey(list[index]),
                               index: list[index].index);
                         },
                         sliverGridDelegate:
