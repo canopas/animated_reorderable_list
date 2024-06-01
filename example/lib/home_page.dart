@@ -12,25 +12,17 @@ class User {
 
   User({required this.name, required this.index});
 
-  @override
-  String toString() {
-    return 'User{name: $name, index: $index}';
-  }
+  // To prevent unnecessary animations when updating items in a list, it's essential to correctly implement the == operator and hashCode for your list item class.
+  // This allows the list to recognize items with the same data as equal, even if they are different instances.
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-
-    return other is User &&
-      other.index == index;
+    return other is User && other.index == index;
   }
 
   @override
-  // TODO: implement hashCode
-  int get hashCode =>  index.hashCode ;
-
-
-
+  int get hashCode => index.hashCode;
 }
 
 class HomePage extends StatefulWidget {
@@ -51,12 +43,6 @@ class _HomePageState extends State<HomePage> {
 
   void insert() {
     addedNumber += 1;
-
-   int index = list.indexWhere((element) => element.index==2);
-   User user = User(name: "User 3", index: index);
-
-    list[index] = user;
-
 
     setState(() {
       list.insert(1, User(name: "User $addedNumber", index: addedNumber));
@@ -186,7 +172,6 @@ class _HomePageState extends State<HomePage> {
                         items: list,
                         scrollDirection: Axis.vertical,
                         itemBuilder: (BuildContext context, int index) {
-                          print(ValueKey(list[index].toString()));
                           return ItemCard(
                               key: ValueKey(list[index]),
                               index: list[index].index);
