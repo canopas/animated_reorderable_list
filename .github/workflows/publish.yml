@@ -28,4 +28,4 @@ jobs:
 
       - name: Publish
         run: dart pub publish --force
-#      working-directory: path/to/package/within/repository
+        working-directory: lib
