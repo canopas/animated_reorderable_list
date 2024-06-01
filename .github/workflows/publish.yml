@@ -26,7 +26,10 @@ jobs:
       - uses:  dart-lang/setup-dart@v1
         with:
           environment: 'pub.dev'
-
+          working-directory: lib
+          
       - name: Publish
-        run: dart pub publish --force
+        run: |
+          dart pub publish --dry-run
+          dart pub publish --force
        
