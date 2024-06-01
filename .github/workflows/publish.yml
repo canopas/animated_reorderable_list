@@ -11,21 +11,24 @@ jobs:
   publish:
     permissions:
       id-token: write # Required for authentication using OIDC
-        - runs-on: ubuntu-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      
       - uses: subosito/flutter-action@v2.12.0
         name: Set up Flutter SDK
         with:
           channel: 'stable'
           cache: true
       - name: Install dependencies
-        run: flutter pub get
+        run: |
+          cd lib
+          flutter pub get
 
       - uses:  dart-lang/setup-dart@v1
         with:
-        environment: 'pub.dev'
+          environment: 'pub.dev'
 
       - name: Publish
         run: dart pub publish --force
-        working-directory: lib
+       
