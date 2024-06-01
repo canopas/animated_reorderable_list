@@ -23,13 +23,10 @@ jobs:
           cd lib
           flutter pub get
 
-      - uses:  dart-lang/setup-dart@v1
+      - uses: dart-lang/setup-dart/.github/workflows/publish.yml@v1
         with:
           environment: 'pub.dev'
           working-directory: lib
           
-      - name: Publish
-        run: |
-          dart pub publish --dry-run
-          dart pub publish --force
+  
        
