@@ -11,7 +11,7 @@ jobs:
       id-token: write # Required for authentication using OIDC
     runs-on: ubuntu-latest
     steps:
-      -
+
       - uses: actions/checkout@v3
 
       - uses: subosito/flutter-action@v2.12.0
