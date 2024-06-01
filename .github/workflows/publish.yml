@@ -28,7 +28,7 @@ jobs:
 
       - name: Format
         run: dart format --set-exit-if-changed .
-        working-directory: packages/${{ matrix.package }}
+        working-directory: lib
 
       - uses: dart-lang/setup-dart@v1
         with:
