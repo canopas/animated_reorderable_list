@@ -2,8 +2,6 @@ name: Publish to pub.dev
 
 on:
   push:
-    branches:
-    - main
     tags:
     - 'v[0-9]+.[0-9]+.[0-9]+*'
 
@@ -37,7 +35,7 @@ jobs:
 
       - name: Publish
         run: |
-          dart pub publish --dry-run
+          dart pub publish
 
         working-directory: lib
 
