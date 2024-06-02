@@ -37,7 +37,7 @@ jobs:
 
       - name: Publish
         run: |
-          dart pub publish --dry-run
+          dart pub publish
 
         working-directory: lib
 
