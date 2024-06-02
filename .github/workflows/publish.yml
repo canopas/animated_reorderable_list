@@ -35,7 +35,7 @@ jobs:
 
       - name: Publish
         run: |
-          dart pub publish
+          dart pub publish --force
 
         working-directory: lib
 
