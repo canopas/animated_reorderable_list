@@ -31,6 +31,7 @@ abstract class MotionListBase<W extends Widget, E extends Object>
   final AnimatedWidgetBuilder? insertItemBuilder;
   final AnimatedWidgetBuilder? removeItemBuilder;
   final bool? buildDefaultDragHandles;
+  final bool? longPressDraggable;
 
   const MotionListBase(
       {Key? key,
@@ -48,7 +49,8 @@ abstract class MotionListBase<W extends Widget, E extends Object>
       this.sliverGridDelegate,
       this.insertItemBuilder,
       this.removeItemBuilder,
-      this.buildDefaultDragHandles})
+      this.buildDefaultDragHandles,
+      this.longPressDraggable})
       : super(key: key);
 }
 
@@ -122,6 +124,10 @@ abstract class MotionListBaseState<
   @nonVirtual
   @protected
   bool get buildDefaultDragHandles => widget.buildDefaultDragHandles ?? false;
+
+  @nonVirtual
+  @protected
+  bool get longPressDraggable => widget.longPressDraggable ?? false;
 
   @override
   void initState() {

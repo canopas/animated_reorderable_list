@@ -176,6 +176,9 @@ class AnimatedReorderableGridView<E extends Object> extends StatelessWidget {
   /// transition for the widget that is built.
   final AnimatedWidgetBuilder? removeItemBuilder;
 
+  /// Whether the items can be dragged by long pressing on them.
+  final bool longPressDraggable;
+
   const AnimatedReorderableGridView({
     Key? key,
     required this.items,
@@ -200,6 +203,7 @@ class AnimatedReorderableGridView<E extends Object> extends StatelessWidget {
     this.keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.manual,
     this.dragStartBehavior = DragStartBehavior.start,
     this.clipBehavior = Clip.hardEdge,
+    this.longPressDraggable = true,
     this.insertItemBuilder,
     this.removeItemBuilder,
   }) : super(key: key);
@@ -235,6 +239,7 @@ class AnimatedReorderableGridView<E extends Object> extends StatelessWidget {
               scrollDirection: scrollDirection,
               insertItemBuilder: insertItemBuilder,
               removeItemBuilder: removeItemBuilder,
+              longPressDraggable: longPressDraggable,
             ),
           ),
         ]);

@@ -45,7 +45,8 @@ class _HomePageState extends State<HomePage> {
     addedNumber += 1;
 
     setState(() {
-      list.insert(1, User(name: "User $addedNumber", index: addedNumber));
+      list.insert(
+          list.length, User(name: "User $addedNumber", index: addedNumber));
     });
   }
 

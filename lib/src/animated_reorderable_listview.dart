@@ -188,33 +188,36 @@ class AnimatedReorderableListView<E extends Object> extends StatefulWidget {
   /// transition for the widget that is built.
   final AnimatedWidgetBuilder? removeItemBuilder;
 
-  const AnimatedReorderableListView(
-      {Key? key,
-      required this.items,
-      required this.itemBuilder,
-      required this.onReorder,
-      this.enterTransition,
-      this.exitTransition,
-      this.insertDuration,
-      this.removeDuration,
-      this.onReorderStart,
-      this.onReorderEnd,
-      this.proxyDecorator,
-      this.scrollDirection = Axis.vertical,
-      this.padding,
-      this.reverse = false,
-      this.controller,
-      this.primary,
-      this.physics,
-      this.scrollBehavior,
-      this.restorationId,
-      this.buildDefaultDragHandles = true,
-      this.keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.manual,
-      this.dragStartBehavior = DragStartBehavior.start,
-      this.clipBehavior = Clip.hardEdge,
-      this.insertItemBuilder,
-      this.removeItemBuilder})
-      : super(key: key);
+  final bool longPressDraggable;
+
+  const AnimatedReorderableListView({
+    Key? key,
+    required this.items,
+    required this.itemBuilder,
+    required this.onReorder,
+    this.enterTransition,
+    this.exitTransition,
+    this.insertDuration,
+    this.removeDuration,
+    this.onReorderStart,
+    this.onReorderEnd,
+    this.proxyDecorator,
+    this.scrollDirection = Axis.vertical,
+    this.padding,
+    this.reverse = false,
+    this.controller,
+    this.primary,
+    this.physics,
+    this.scrollBehavior,
+    this.restorationId,
+    this.buildDefaultDragHandles = true,
+    this.keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.manual,
+    this.dragStartBehavior = DragStartBehavior.start,
+    this.clipBehavior = Clip.hardEdge,
+    this.insertItemBuilder,
+    this.removeItemBuilder,
+    this.longPressDraggable = true,
+  }) : super(key: key);
 
   @override
   State<AnimatedReorderableListView<E>> createState() =>
@@ -254,6 +257,7 @@ class _AnimatedReorderableListViewState<E extends Object>
               scrollDirection: widget.scrollDirection,
               insertItemBuilder: widget.insertItemBuilder,
               removeItemBuilder: widget.removeItemBuilder,
+              longPressDraggable: widget.longPressDraggable,
             ),
           ),
         ]);

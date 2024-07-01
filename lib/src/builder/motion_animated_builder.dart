@@ -29,6 +29,7 @@ class MotionBuilder<E> extends StatefulWidget {
   final Axis scrollDirection;
   final SliverGridDelegate? delegateBuilder;
   final bool buildDefaultDragHandles;
+  final bool longPressDraggable;
 
   const MotionBuilder(
       {Key? key,
@@ -42,7 +43,8 @@ class MotionBuilder<E> extends StatefulWidget {
       this.initialCount = 0,
       this.delegateBuilder,
       this.scrollDirection = Axis.vertical,
-      required this.buildDefaultDragHandles})
+      required this.buildDefaultDragHandles,
+      this.longPressDraggable = false})
       : assert(initialCount >= 0),
         super(key: key);
 
@@ -504,6 +506,7 @@ class MotionBuilderState extends State<MotionBuilder>
       });
     } else {
       childrenMap[itemIndex] = motionData;
+      sizeController.value = kAlwaysCompleteAnimation.value;
       controller.forward().then<void>((_) {
         _removeActiveItemAt(_incomingItems, incomingItem.itemIndex)!
             .controller!
@@ -692,6 +695,14 @@ class MotionBuilderState extends State<MotionBuilder>
       return true;
     }());
     final Key itemGlobalKey = _MotionBuilderItemGlobalKey(item.key!, this);
+
+    if (!widget.longPressDraggable) {
+      return ReorderableGridDragStartListener(
+        key: itemGlobalKey,
+        index: index,
+        child: itemWithSemantics,
+      );
+    }
     if (widget.buildDefaultDragHandles) {
       switch (Theme.of(context).platform) {
         case TargetPlatform.linux:
@@ -835,6 +846,7 @@ class MotionBuilderState extends State<MotionBuilder>
     final Animation<double> sizeAnimation =
         incomingItem?.sizeAnimation ?? kAlwaysCompleteAnimation;
     return SizeTransition(
+        axis: widget.scrollDirection,
         sizeFactor: sizeAnimation,
         child: widget.insertAnimationBuilder(context, child, animation));
   }

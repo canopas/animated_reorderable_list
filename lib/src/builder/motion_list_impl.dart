@@ -20,7 +20,8 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
       required Axis scrollDirection,
       AnimatedWidgetBuilder? insertItemBuilder,
       AnimatedWidgetBuilder? removeItemBuilder,
-      bool? buildDefaultDragHandles})
+      bool? buildDefaultDragHandles,
+      bool? longPressDraggable})
       : super(
             key: key,
             items: items,
@@ -36,7 +37,8 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
             scrollDirection: scrollDirection,
             insertItemBuilder: insertItemBuilder,
             removeItemBuilder: removeItemBuilder,
-            buildDefaultDragHandles: buildDefaultDragHandles);
+            buildDefaultDragHandles: buildDefaultDragHandles,
+            longPressDraggable: longPressDraggable);
 
   const MotionListImpl.grid(
       {Key? key,
@@ -54,7 +56,8 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
       required Axis scrollDirection,
       AnimatedWidgetBuilder? insertItemBuilder,
       AnimatedWidgetBuilder? removeItemBuilder,
-      bool? buildDefaultDragHandles})
+      bool? buildDefaultDragHandles,
+      bool? longPressDraggable})
       : super(
             key: key,
             items: items,
@@ -71,7 +74,8 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
             scrollDirection: scrollDirection,
             insertItemBuilder: insertItemBuilder,
             removeItemBuilder: removeItemBuilder,
-            buildDefaultDragHandles: buildDefaultDragHandles);
+            buildDefaultDragHandles: buildDefaultDragHandles,
+            longPressDraggable: longPressDraggable);
 
   @override
   MotionListImplState<E> createState() => MotionListImplState<E>();
@@ -96,6 +100,7 @@ class MotionListImplState<E extends Object>
       scrollDirection: scrollDirection,
       delegateBuilder: sliverGridDelegate,
       buildDefaultDragHandles: buildDefaultDragHandles,
+      longPressDraggable: longPressDraggable,
     );
   }
 }
