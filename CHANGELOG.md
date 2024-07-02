@@ -1,3 +1,13 @@
+#v1.0.7
+
+# Changelog
+
+## Bug Fixes
+- List Will Not Animate When New Item Is Added to the End of the List 
+
+## Enhancement
+- Allow Disabling Long Press to Start Reorder Gesture
+
 # v1.0.6 
 
 # Changelog
