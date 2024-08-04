@@ -140,6 +140,9 @@ class AnimatedGridView<E extends Object> extends StatelessWidget {
   /// transition for the widget that is built.
   final AnimatedWidgetBuilder? removeItemBuilder;
 
+  /// A function that compares two items to determine whether they are the same.
+  final bool Function(E a, E b)? isSameItem;
+
   const AnimatedGridView(
       {Key? key,
       required this.items,
@@ -161,7 +164,9 @@ class AnimatedGridView<E extends Object> extends StatelessWidget {
       this.dragStartBehavior = DragStartBehavior.start,
       this.clipBehavior = Clip.hardEdge,
       this.insertItemBuilder,
-      this.removeItemBuilder})
+      this.removeItemBuilder,
+      this.isSameItem
+      })
       : super(key: key);
 
   @override
@@ -190,7 +195,9 @@ class AnimatedGridView<E extends Object> extends StatelessWidget {
                 exitTransition: exitTransition,
                 scrollDirection: scrollDirection,
                 insertItemBuilder: insertItemBuilder,
-                removeItemBuilder: removeItemBuilder),
+                removeItemBuilder: removeItemBuilder,
+                isSameItem: isSameItem
+            ),
           ),
         ]);
   }

@@ -6,24 +6,7 @@ import 'package:example/utils/item_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:animated_reorderable_list/animated_reorderable_list.dart';
 
-class User {
-  final String name;
-  final int index;
-
-  User({required this.name, required this.index});
-
-  // To prevent unnecessary animations when updating items in a list, it's essential to correctly implement the == operator and hashCode for your list item class.
-  // This allows the list to recognize items with the same data as equal, even if they are different instances.
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    return other is User && other.index == index;
-  }
-
-  @override
-  int get hashCode => index.hashCode;
-}
+import 'model/user_model.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -43,10 +26,8 @@ class _HomePageState extends State<HomePage> {
 
   void insert() {
     addedNumber += 1;
-
     setState(() {
-      list.insert(
-          list.length, User(name: "User $addedNumber", index: addedNumber));
+      list.insert(2, User(name: "User $addedNumber", index: addedNumber));
     });
   }
 
@@ -174,7 +155,7 @@ class _HomePageState extends State<HomePage> {
                         scrollDirection: Axis.vertical,
                         itemBuilder: (BuildContext context, int index) {
                           return ItemCard(
-                              key: ValueKey(list[index]),
+                              key: ValueKey(list[index].index),
                               index: list[index].index);
                         },
                         sliverGridDelegate:
@@ -223,7 +204,7 @@ class _HomePageState extends State<HomePage> {
                         items: list,
                         itemBuilder: (BuildContext context, int index) {
                           return ItemTile(
-                              key: Key(list[index].name),
+                              key: ValueKey(list[index].index),
                               index: list[index].index);
                         },
                         enterTransition: animations,

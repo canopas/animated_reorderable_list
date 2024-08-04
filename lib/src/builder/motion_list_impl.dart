@@ -5,24 +5,25 @@ import 'motion_animated_builder.dart';
 import 'motion_list_base.dart';
 
 class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
-  const MotionListImpl(
-      {Key? key,
-      required List<E> items,
-      required ItemBuilder itemBuilder,
-      List<AnimationEffect>? enterTransition,
-      List<AnimationEffect>? exitTransition,
-      Duration? insertDuration,
-      Duration? removeDuration,
-      ReorderCallback? onReorder,
-      void Function(int)? onReorderStart,
-      void Function(int)? onReorderEnd,
-      ReorderItemProxyDecorator? proxyDecorator,
-      required Axis scrollDirection,
-      AnimatedWidgetBuilder? insertItemBuilder,
-      AnimatedWidgetBuilder? removeItemBuilder,
-      bool? buildDefaultDragHandles,
-      bool? longPressDraggable})
-      : super(
+  const MotionListImpl({
+    Key? key,
+    required List<E> items,
+    required ItemBuilder itemBuilder,
+    List<AnimationEffect>? enterTransition,
+    List<AnimationEffect>? exitTransition,
+    Duration? insertDuration,
+    Duration? removeDuration,
+    ReorderCallback? onReorder,
+    void Function(int)? onReorderStart,
+    void Function(int)? onReorderEnd,
+    ReorderItemProxyDecorator? proxyDecorator,
+    required Axis scrollDirection,
+    AnimatedWidgetBuilder? insertItemBuilder,
+    AnimatedWidgetBuilder? removeItemBuilder,
+    bool? buildDefaultDragHandles,
+    bool? longPressDraggable,
+    bool Function(E a, E b)? isSameItem,
+  }) : super(
             key: key,
             items: items,
             itemBuilder: itemBuilder,
@@ -38,7 +39,8 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
             insertItemBuilder: insertItemBuilder,
             removeItemBuilder: removeItemBuilder,
             buildDefaultDragHandles: buildDefaultDragHandles,
-            longPressDraggable: longPressDraggable);
+            longPressDraggable: longPressDraggable,
+            isSameItem: isSameItem);
 
   const MotionListImpl.grid(
       {Key? key,
@@ -57,7 +59,9 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
       AnimatedWidgetBuilder? insertItemBuilder,
       AnimatedWidgetBuilder? removeItemBuilder,
       bool? buildDefaultDragHandles,
-      bool? longPressDraggable})
+      bool? longPressDraggable,
+      bool Function(E a, E b)? isSameItem,
+      })
       : super(
             key: key,
             items: items,
@@ -75,7 +79,9 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
             insertItemBuilder: insertItemBuilder,
             removeItemBuilder: removeItemBuilder,
             buildDefaultDragHandles: buildDefaultDragHandles,
-            longPressDraggable: longPressDraggable);
+            longPressDraggable: longPressDraggable,
+             isSameItem: isSameItem
+  );
 
   @override
   MotionListImplState<E> createState() => MotionListImplState<E>();

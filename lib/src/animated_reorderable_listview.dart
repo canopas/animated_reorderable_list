@@ -27,7 +27,7 @@ import 'builder/motion_list_impl.dart';
 /// callback serves as a "proxy" (a substitute) for the item in the list. The proxy is
 /// created with the original list item as its child.
 
-class AnimatedReorderableListView<E extends Object> extends StatefulWidget {
+class AnimatedReorderableListView<E extends Object> extends StatelessWidget {
   /// The current list of items that this[AnimatedReorderableListView] should represent.
   final List<E> items;
 
@@ -188,7 +188,11 @@ class AnimatedReorderableListView<E extends Object> extends StatefulWidget {
   /// transition for the widget that is built.
   final AnimatedWidgetBuilder? removeItemBuilder;
 
+  /// Whether the items can be dragged by long pressing on them.
   final bool longPressDraggable;
+
+  /// A function that compares two items to determine whether they are the same.
+  final bool Function(E a, E b)? isSameItem;
 
   const AnimatedReorderableListView({
     Key? key,
@@ -217,47 +221,42 @@ class AnimatedReorderableListView<E extends Object> extends StatefulWidget {
     this.insertItemBuilder,
     this.removeItemBuilder,
     this.longPressDraggable = true,
+    this.isSameItem,
   }) : super(key: key);
 
   @override
-  State<AnimatedReorderableListView<E>> createState() =>
-      _AnimatedReorderableListViewState<E>();
-}
-
-class _AnimatedReorderableListViewState<E extends Object>
-    extends State<AnimatedReorderableListView<E>> {
-  @override
   Widget build(BuildContext context) {
     return CustomScrollView(
-        scrollDirection: widget.scrollDirection,
-        reverse: widget.reverse,
-        controller: widget.controller,
-        primary: widget.primary,
-        physics: widget.physics,
-        scrollBehavior: widget.scrollBehavior,
-        restorationId: widget.restorationId,
-        keyboardDismissBehavior: widget.keyboardDismissBehavior,
-        dragStartBehavior: widget.dragStartBehavior,
-        clipBehavior: widget.clipBehavior,
+        scrollDirection: scrollDirection,
+        reverse: reverse,
+        controller: controller,
+        primary: primary,
+        physics: physics,
+        scrollBehavior: scrollBehavior,
+        restorationId: restorationId,
+        keyboardDismissBehavior: keyboardDismissBehavior,
+        dragStartBehavior: dragStartBehavior,
+        clipBehavior: clipBehavior,
         slivers: [
           SliverPadding(
-            padding: widget.padding ?? EdgeInsets.zero,
+            padding: padding ?? EdgeInsets.zero,
             sliver: MotionListImpl(
-              items: widget.items,
-              itemBuilder: widget.itemBuilder,
-              enterTransition: widget.enterTransition,
-              exitTransition: widget.exitTransition,
-              insertDuration: widget.insertDuration,
-              removeDuration: widget.removeDuration,
-              onReorder: widget.onReorder,
-              onReorderStart: widget.onReorderStart,
-              onReorderEnd: widget.onReorderEnd,
-              proxyDecorator: widget.proxyDecorator,
-              buildDefaultDragHandles: widget.buildDefaultDragHandles,
-              scrollDirection: widget.scrollDirection,
-              insertItemBuilder: widget.insertItemBuilder,
-              removeItemBuilder: widget.removeItemBuilder,
-              longPressDraggable: widget.longPressDraggable,
+              items: items,
+              itemBuilder: itemBuilder,
+              enterTransition: enterTransition,
+              exitTransition: exitTransition,
+              insertDuration: insertDuration,
+              removeDuration: removeDuration,
+              onReorder: onReorder,
+              onReorderStart: onReorderStart,
+              onReorderEnd: onReorderEnd,
+              proxyDecorator: proxyDecorator,
+              buildDefaultDragHandles: buildDefaultDragHandles,
+              scrollDirection: scrollDirection,
+              insertItemBuilder: insertItemBuilder,
+              removeItemBuilder: removeItemBuilder,
+              longPressDraggable: longPressDraggable,
+              isSameItem: isSameItem,
             ),
           ),
         ]);

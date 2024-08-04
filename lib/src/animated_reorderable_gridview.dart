@@ -179,6 +179,9 @@ class AnimatedReorderableGridView<E extends Object> extends StatelessWidget {
   /// Whether the items can be dragged by long pressing on them.
   final bool longPressDraggable;
 
+  /// A function that compares two items to determine whether they are the same.
+  final bool Function(E a, E b)? isSameItem;
+
   const AnimatedReorderableGridView({
     Key? key,
     required this.items,
@@ -206,6 +209,7 @@ class AnimatedReorderableGridView<E extends Object> extends StatelessWidget {
     this.longPressDraggable = true,
     this.insertItemBuilder,
     this.removeItemBuilder,
+    this.isSameItem
   }) : super(key: key);
 
   @override
@@ -240,6 +244,7 @@ class AnimatedReorderableGridView<E extends Object> extends StatelessWidget {
               insertItemBuilder: insertItemBuilder,
               removeItemBuilder: removeItemBuilder,
               longPressDraggable: longPressDraggable,
+              isSameItem: isSameItem,
             ),
           ),
         ]);
