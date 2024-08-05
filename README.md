@@ -1,4 +1,5 @@
-<p align="center"> <a href="https://canopas.com/contact"><img src="./cta/cta_banner.png"></a></p>
+<p align="center"> <a href="https://canopas.com/contact"><img src=!(https://github.com/user-attachments/assets/35d53858-0b59-49dd-84ee-8ca4fb6817a9)
+""></a></p>
 
 # animated_reorderable_list
 
@@ -8,6 +9,7 @@ This library is a powerful and easy-to-use solution for implementing animated li
 
 - [x] Smooth transition during item insertion and removal from the list with animations.
 - [x] Drag and Drop support (ReorderableList) for both ListView and GridView with Animation.
+- [x] It can be both animated and reordered at the same time
 - [x] Animating items is as simple as updating the list.
 - [x] Pre-built animation like fade,scale, slide, flip etc for Flutter list.
 - [x] Provides support for both lists and grids
@@ -73,6 +75,7 @@ AnimatedReorderableGridView(
           list.insert(newIndex, user);
         });
       },
+
   )
 
 ```
@@ -96,11 +99,17 @@ A `AnimatedListView` with built-in support for drag-and-drop functionality.
       setState(() {
         final User user = list.removeAt(oldIndex);
          list.insert(newIndex, user);
+         for (int i = 0; i < list.length; i++) {
+            list[i] = list[i].copyWith(index: list[i].index);
+         }
        });
       },
+  isSameItem: (a, b) => a.index == b.index
   )
 
 ```
+- The `isSameItem` callback determines if two items are the same. It should return true if the two compared items are identical.
+
 
 ### AnimatedListView
  A `AnimatedListView` that animates insertion and removal of the item.
@@ -142,6 +151,7 @@ AnimatedGridView(
    removeDuration: const Duration(milliseconds: 300),
  )
 ```
+
 Duration for animation
 ----------------------------------------
 ```dart
@@ -214,7 +224,8 @@ We welcome and appreciate any suggestions you may have for improvement.
 For bugs, questions and discussions please use
 the [Github Issues](https://github.com/canopas/animated_reorderable_list/issues).
 
-<a href="https://canopas.com/contact"><img src="./cta/cta_btn.png" width=300></a>
+<a href="https://canopas.com/contact"><img src="https://github.com/user-attachments/assets/b2688b52-5ef8-4e93-ad4d-1ea97e1bf8c6
+" width=300></a>
 
 ## Acknowledgments
 This library builds upon the foundation laid by the incredible work of the Flutter team. 
