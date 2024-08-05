@@ -1,3 +1,11 @@
+#v1.0.8
+
+# Changelog
+
+## Enhancement
+- Add `isItemSame` callback to compare two items to determine if two items are the same. It should return true if the two compared items are identical.
+- Add `shrinkWrap` property to allow the widget to size itself to the size of its children in the main axis direction.
+
 #v1.0.7
 
 # Changelog
