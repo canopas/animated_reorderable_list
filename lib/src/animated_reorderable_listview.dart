@@ -191,8 +191,12 @@ class AnimatedReorderableListView<E extends Object> extends StatelessWidget {
   /// Whether the items can be dragged by long pressing on them.
   final bool longPressDraggable;
 
+  /// Whether the extent of the scroll view in the scrollDirection should be determined by the contents being viewed.
+  final bool shrinkWrap;
+
   /// A function that compares two items to determine whether they are the same.
   final bool Function(E a, E b)? isSameItem;
+
 
   const AnimatedReorderableListView({
     Key? key,
@@ -221,6 +225,7 @@ class AnimatedReorderableListView<E extends Object> extends StatelessWidget {
     this.insertItemBuilder,
     this.removeItemBuilder,
     this.longPressDraggable = true,
+    this.shrinkWrap = false,
     this.isSameItem,
   }) : super(key: key);
 
@@ -237,6 +242,7 @@ class AnimatedReorderableListView<E extends Object> extends StatelessWidget {
         keyboardDismissBehavior: keyboardDismissBehavior,
         dragStartBehavior: dragStartBehavior,
         clipBehavior: clipBehavior,
+        shrinkWrap: shrinkWrap,
         slivers: [
           SliverPadding(
             padding: padding ?? EdgeInsets.zero,

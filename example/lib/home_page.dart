@@ -27,7 +27,7 @@ class _HomePageState extends State<HomePage> {
   void insert() {
     addedNumber += 1;
     setState(() {
-      list.insert(2, User(name: "User $addedNumber", index: addedNumber));
+      list.insert(1, User(name: "User $addedNumber", index: addedNumber));
     });
   }
 
@@ -212,12 +212,15 @@ class _HomePageState extends State<HomePage> {
                         insertDuration: const Duration(milliseconds: 300),
                         removeDuration: const Duration(milliseconds: 300),
                         onReorder: (int oldIndex, int newIndex) {
-                          setState(() {
-                            final User user = list.removeAt(oldIndex);
-                            list.insert(newIndex, user);
-                          });
+                          final User user = list.removeAt(oldIndex);
+                          list.insert(newIndex, user);
+                          for (int i = 0; i < list.length; i++) {
+                            list[i] = list[i].copyWith(index: list[i].index);
+                          }
+                          setState(() {});
                         },
-                        proxyDecorator: proxyDecorator
+                        proxyDecorator: proxyDecorator,
+                        isSameItem: (a, b) => a.index == b.index
 
                         /*  A custom builder that is for inserting items with animations.
 

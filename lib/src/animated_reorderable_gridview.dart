@@ -179,6 +179,9 @@ class AnimatedReorderableGridView<E extends Object> extends StatelessWidget {
   /// Whether the items can be dragged by long pressing on them.
   final bool longPressDraggable;
 
+  /// Whether the extent of the scroll view in the scrollDirection should be determined by the contents being viewed.
+  final bool shrinkWrap;
+
   /// A function that compares two items to determine whether they are the same.
   final bool Function(E a, E b)? isSameItem;
 
@@ -207,6 +210,7 @@ class AnimatedReorderableGridView<E extends Object> extends StatelessWidget {
     this.dragStartBehavior = DragStartBehavior.start,
     this.clipBehavior = Clip.hardEdge,
     this.longPressDraggable = true,
+    this.shrinkWrap = false,
     this.insertItemBuilder,
     this.removeItemBuilder,
     this.isSameItem
@@ -225,6 +229,7 @@ class AnimatedReorderableGridView<E extends Object> extends StatelessWidget {
         keyboardDismissBehavior: keyboardDismissBehavior,
         dragStartBehavior: dragStartBehavior,
         clipBehavior: clipBehavior,
+        shrinkWrap: shrinkWrap,
         slivers: [
           SliverPadding(
             padding: padding ?? EdgeInsets.zero,

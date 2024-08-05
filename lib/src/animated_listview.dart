@@ -134,6 +134,8 @@ class AnimatedListView<E extends Object> extends StatelessWidget {
   /// transition for the widget that is built.
   final AnimatedWidgetBuilder? removeItemBuilder;
 
+  /// Whether the extent of the scroll view in the scrollDirection should be determined by the contents being viewed.
+  final bool shrinkWrap;
 
   /// A function that compares two items to determine whether they are the same.
   final bool Function(E a, E b)? isSameItem;
@@ -159,6 +161,7 @@ class AnimatedListView<E extends Object> extends StatelessWidget {
     this.clipBehavior = Clip.hardEdge,
     this.insertItemBuilder,
     this.removeItemBuilder,
+    this.shrinkWrap = false,
     this.isSameItem,
   }) : super(key: key);
 
@@ -175,6 +178,7 @@ class AnimatedListView<E extends Object> extends StatelessWidget {
         keyboardDismissBehavior: keyboardDismissBehavior,
         dragStartBehavior: dragStartBehavior,
         clipBehavior: clipBehavior,
+        shrinkWrap: false,
         slivers: [
           SliverPadding(
             padding: padding ?? EdgeInsets.zero,
