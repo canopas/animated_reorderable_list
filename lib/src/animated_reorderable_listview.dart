@@ -197,7 +197,6 @@ class AnimatedReorderableListView<E extends Object> extends StatelessWidget {
   /// A function that compares two items to determine whether they are the same.
   final bool Function(E a, E b)? isSameItem;
 
-
   const AnimatedReorderableListView({
     Key? key,
     required this.items,

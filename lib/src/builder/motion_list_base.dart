@@ -133,7 +133,8 @@ abstract class MotionListBaseState<
 
   @nonVirtual
   @protected
- bool  Function(E a, E b) get isSameItem => widget.isSameItem ?? (a, b) => a == b;
+  bool Function(E a, E b) get isSameItem =>
+      widget.isSameItem ?? (a, b) => a == b;
 
   @override
   void initState() {
@@ -196,20 +197,21 @@ abstract class MotionListBaseState<
   }
 
   void calculateDiff(List oldList, List newList) {
-
     // if(widget.onrReorder != null && oldList.length == newList.length) {
     //   return;
     // }
     // Detect removed and updated items
     for (int i = oldList.length - 1; i >= 0; i--) {
-      if(newList.indexWhere((element) => isSameItem(oldList[i], element)) == -1) {
+      if (newList.indexWhere((element) => isSameItem(oldList[i], element)) ==
+          -1) {
         print("item is deleted: $i");
         listKey.currentState!.removeItem(i, removeItemDuration: removeDuration);
       }
     }
     // Detect added items
     for (int i = 0; i < newList.length; i++) {
-      if(oldList.indexWhere((element) => isSameItem(newList[i], element)) == -1) {
+      if (oldList.indexWhere((element) => isSameItem(newList[i], element)) ==
+          -1) {
         print("item is added: $i");
         listKey.currentState!.insertItem(i, insertDuration: insertDuration);
       }

@@ -42,27 +42,26 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
             longPressDraggable: longPressDraggable,
             isSameItem: isSameItem);
 
-  const MotionListImpl.grid(
-      {Key? key,
-      required List<E> items,
-      required ItemBuilder itemBuilder,
-      required SliverGridDelegate sliverGridDelegate,
-      List<AnimationEffect>? enterTransition,
-      List<AnimationEffect>? exitTransition,
-      ReorderCallback? onReorder,
-      void Function(int)? onReorderStart,
-      void Function(int)? onReorderEnd,
-      ReorderItemProxyDecorator? proxyDecorator,
-      Duration? insertDuration,
-      Duration? removeDuration,
-      required Axis scrollDirection,
-      AnimatedWidgetBuilder? insertItemBuilder,
-      AnimatedWidgetBuilder? removeItemBuilder,
-      bool? buildDefaultDragHandles,
-      bool? longPressDraggable,
-      bool Function(E a, E b)? isSameItem,
-      })
-      : super(
+  const MotionListImpl.grid({
+    Key? key,
+    required List<E> items,
+    required ItemBuilder itemBuilder,
+    required SliverGridDelegate sliverGridDelegate,
+    List<AnimationEffect>? enterTransition,
+    List<AnimationEffect>? exitTransition,
+    ReorderCallback? onReorder,
+    void Function(int)? onReorderStart,
+    void Function(int)? onReorderEnd,
+    ReorderItemProxyDecorator? proxyDecorator,
+    Duration? insertDuration,
+    Duration? removeDuration,
+    required Axis scrollDirection,
+    AnimatedWidgetBuilder? insertItemBuilder,
+    AnimatedWidgetBuilder? removeItemBuilder,
+    bool? buildDefaultDragHandles,
+    bool? longPressDraggable,
+    bool Function(E a, E b)? isSameItem,
+  }) : super(
             key: key,
             items: items,
             itemBuilder: itemBuilder,
@@ -80,8 +79,7 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
             removeItemBuilder: removeItemBuilder,
             buildDefaultDragHandles: buildDefaultDragHandles,
             longPressDraggable: longPressDraggable,
-             isSameItem: isSameItem
-  );
+            isSameItem: isSameItem);
 
   @override
   MotionListImplState<E> createState() => MotionListImplState<E>();
