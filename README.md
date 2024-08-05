@@ -1,5 +1,4 @@
-<p align="center"> <a href="https://canopas.com/contact"><img src=!(https://github.com/user-attachments/assets/35d53858-0b59-49dd-84ee-8ca4fb6817a9)
-""></a></p>
+<p align="center"> <a href="https://canopas.com/contact"><img src="https://github.com/user-attachments/assets/35d53858-0b59-49dd-84ee-8ca4fb6817a9"></a></p>
 
 # animated_reorderable_list
 
@@ -224,8 +223,7 @@ We welcome and appreciate any suggestions you may have for improvement.
 For bugs, questions and discussions please use
 the [Github Issues](https://github.com/canopas/animated_reorderable_list/issues).
 
-<a href="https://canopas.com/contact"><img src="https://github.com/user-attachments/assets/b2688b52-5ef8-4e93-ad4d-1ea97e1bf8c6
-" width=300></a>
+<a href="https://canopas.com/contact"><img src="https://github.com/user-attachments/assets/b2688b52-5ef8-4e93-ad4d-1ea97e1bf8c6" width=300></a>
 
 ## Acknowledgments
 This library builds upon the foundation laid by the incredible work of the Flutter team. 
