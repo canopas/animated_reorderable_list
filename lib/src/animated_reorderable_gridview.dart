@@ -179,34 +179,42 @@ class AnimatedReorderableGridView<E extends Object> extends StatelessWidget {
   /// Whether the items can be dragged by long pressing on them.
   final bool longPressDraggable;
 
-  const AnimatedReorderableGridView({
-    Key? key,
-    required this.items,
-    required this.itemBuilder,
-    required this.sliverGridDelegate,
-    required this.onReorder,
-    this.enterTransition,
-    this.exitTransition,
-    this.insertDuration,
-    this.removeDuration,
-    this.onReorderStart,
-    this.onReorderEnd,
-    this.proxyDecorator,
-    this.padding,
-    this.scrollDirection = Axis.vertical,
-    this.reverse = false,
-    this.controller,
-    this.primary,
-    this.physics,
-    this.scrollBehavior,
-    this.restorationId,
-    this.keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.manual,
-    this.dragStartBehavior = DragStartBehavior.start,
-    this.clipBehavior = Clip.hardEdge,
-    this.longPressDraggable = true,
-    this.insertItemBuilder,
-    this.removeItemBuilder,
-  }) : super(key: key);
+  /// Whether the extent of the scroll view in the scrollDirection should be determined by the contents being viewed.
+  final bool shrinkWrap;
+
+  /// A function that compares two items to determine whether they are the same.
+  final bool Function(E a, E b)? isSameItem;
+
+  const AnimatedReorderableGridView(
+      {Key? key,
+      required this.items,
+      required this.itemBuilder,
+      required this.sliverGridDelegate,
+      required this.onReorder,
+      this.enterTransition,
+      this.exitTransition,
+      this.insertDuration,
+      this.removeDuration,
+      this.onReorderStart,
+      this.onReorderEnd,
+      this.proxyDecorator,
+      this.padding,
+      this.scrollDirection = Axis.vertical,
+      this.reverse = false,
+      this.controller,
+      this.primary,
+      this.physics,
+      this.scrollBehavior,
+      this.restorationId,
+      this.keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.manual,
+      this.dragStartBehavior = DragStartBehavior.start,
+      this.clipBehavior = Clip.hardEdge,
+      this.longPressDraggable = true,
+      this.shrinkWrap = false,
+      this.insertItemBuilder,
+      this.removeItemBuilder,
+      this.isSameItem})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -221,6 +229,7 @@ class AnimatedReorderableGridView<E extends Object> extends StatelessWidget {
         keyboardDismissBehavior: keyboardDismissBehavior,
         dragStartBehavior: dragStartBehavior,
         clipBehavior: clipBehavior,
+        shrinkWrap: shrinkWrap,
         slivers: [
           SliverPadding(
             padding: padding ?? EdgeInsets.zero,
@@ -240,6 +249,7 @@ class AnimatedReorderableGridView<E extends Object> extends StatelessWidget {
               insertItemBuilder: insertItemBuilder,
               removeItemBuilder: removeItemBuilder,
               longPressDraggable: longPressDraggable,
+              isSameItem: isSameItem,
             ),
           ),
         ]);

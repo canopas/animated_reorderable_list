@@ -134,28 +134,36 @@ class AnimatedListView<E extends Object> extends StatelessWidget {
   /// transition for the widget that is built.
   final AnimatedWidgetBuilder? removeItemBuilder;
 
-  const AnimatedListView(
-      {Key? key,
-      required this.items,
-      required this.itemBuilder,
-      this.enterTransition,
-      this.exitTransition,
-      this.insertDuration,
-      this.removeDuration,
-      this.scrollDirection = Axis.vertical,
-      this.padding,
-      this.reverse = false,
-      this.controller,
-      this.primary,
-      this.physics,
-      this.scrollBehavior,
-      this.restorationId,
-      this.keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.manual,
-      this.dragStartBehavior = DragStartBehavior.start,
-      this.clipBehavior = Clip.hardEdge,
-      this.insertItemBuilder,
-      this.removeItemBuilder})
-      : super(key: key);
+  /// Whether the extent of the scroll view in the scrollDirection should be determined by the contents being viewed.
+  final bool shrinkWrap;
+
+  /// A function that compares two items to determine whether they are the same.
+  final bool Function(E a, E b)? isSameItem;
+
+  const AnimatedListView({
+    Key? key,
+    required this.items,
+    required this.itemBuilder,
+    this.enterTransition,
+    this.exitTransition,
+    this.insertDuration,
+    this.removeDuration,
+    this.scrollDirection = Axis.vertical,
+    this.padding,
+    this.reverse = false,
+    this.controller,
+    this.primary,
+    this.physics,
+    this.scrollBehavior,
+    this.restorationId,
+    this.keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.manual,
+    this.dragStartBehavior = DragStartBehavior.start,
+    this.clipBehavior = Clip.hardEdge,
+    this.insertItemBuilder,
+    this.removeItemBuilder,
+    this.shrinkWrap = false,
+    this.isSameItem,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -170,6 +178,7 @@ class AnimatedListView<E extends Object> extends StatelessWidget {
         keyboardDismissBehavior: keyboardDismissBehavior,
         dragStartBehavior: dragStartBehavior,
         clipBehavior: clipBehavior,
+        shrinkWrap: false,
         slivers: [
           SliverPadding(
             padding: padding ?? EdgeInsets.zero,
@@ -183,6 +192,7 @@ class AnimatedListView<E extends Object> extends StatelessWidget {
               scrollDirection: scrollDirection,
               insertItemBuilder: insertItemBuilder,
               removeItemBuilder: removeItemBuilder,
+              isSameItem: isSameItem,
             ),
           ),
         ]);

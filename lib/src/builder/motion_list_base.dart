@@ -32,6 +32,7 @@ abstract class MotionListBase<W extends Widget, E extends Object>
   final AnimatedWidgetBuilder? removeItemBuilder;
   final bool? buildDefaultDragHandles;
   final bool? longPressDraggable;
+  final bool Function(E a, E b)? isSameItem;
 
   const MotionListBase(
       {Key? key,
@@ -50,7 +51,8 @@ abstract class MotionListBase<W extends Widget, E extends Object>
       this.insertItemBuilder,
       this.removeItemBuilder,
       this.buildDefaultDragHandles,
-      this.longPressDraggable})
+      this.longPressDraggable,
+      this.isSameItem})
       : super(key: key);
 }
 
@@ -129,6 +131,11 @@ abstract class MotionListBaseState<
   @protected
   bool get longPressDraggable => widget.longPressDraggable ?? false;
 
+  @nonVirtual
+  @protected
+  bool Function(E a, E b) get isSameItem =>
+      widget.isSameItem ?? (a, b) => a == b;
+
   @override
   void initState() {
     super.initState();
@@ -190,15 +197,22 @@ abstract class MotionListBaseState<
   }
 
   void calculateDiff(List oldList, List newList) {
+    // if(widget.onrReorder != null && oldList.length == newList.length) {
+    //   return;
+    // }
     // Detect removed and updated items
     for (int i = oldList.length - 1; i >= 0; i--) {
-      if (!newList.contains(oldList[i])) {
+      if (newList.indexWhere((element) => isSameItem(oldList[i], element)) ==
+          -1) {
+        print("item is deleted: $i");
         listKey.currentState!.removeItem(i, removeItemDuration: removeDuration);
       }
     }
     // Detect added items
     for (int i = 0; i < newList.length; i++) {
-      if (!oldList.contains(newList[i])) {
+      if (oldList.indexWhere((element) => isSameItem(newList[i], element)) ==
+          -1) {
+        print("item is added: $i");
         listKey.currentState!.insertItem(i, insertDuration: insertDuration);
       }
     }

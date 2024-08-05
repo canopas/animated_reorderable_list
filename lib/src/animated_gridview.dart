@@ -140,6 +140,12 @@ class AnimatedGridView<E extends Object> extends StatelessWidget {
   /// transition for the widget that is built.
   final AnimatedWidgetBuilder? removeItemBuilder;
 
+  /// Whether the extent of the scroll view in the scrollDirection should be determined by the contents being viewed.
+  final bool shrinkWrap;
+
+  /// A function that compares two items to determine whether they are the same.
+  final bool Function(E a, E b)? isSameItem;
+
   const AnimatedGridView(
       {Key? key,
       required this.items,
@@ -161,7 +167,9 @@ class AnimatedGridView<E extends Object> extends StatelessWidget {
       this.dragStartBehavior = DragStartBehavior.start,
       this.clipBehavior = Clip.hardEdge,
       this.insertItemBuilder,
-      this.removeItemBuilder})
+      this.removeItemBuilder,
+      this.shrinkWrap = false,
+      this.isSameItem})
       : super(key: key);
 
   @override
@@ -177,6 +185,7 @@ class AnimatedGridView<E extends Object> extends StatelessWidget {
         keyboardDismissBehavior: keyboardDismissBehavior,
         dragStartBehavior: dragStartBehavior,
         clipBehavior: clipBehavior,
+        shrinkWrap: shrinkWrap,
         slivers: [
           SliverPadding(
             padding: padding ?? EdgeInsets.zero,
@@ -190,7 +199,8 @@ class AnimatedGridView<E extends Object> extends StatelessWidget {
                 exitTransition: exitTransition,
                 scrollDirection: scrollDirection,
                 insertItemBuilder: insertItemBuilder,
-                removeItemBuilder: removeItemBuilder),
+                removeItemBuilder: removeItemBuilder,
+                isSameItem: isSameItem),
           ),
         ]);
   }
