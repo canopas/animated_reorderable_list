@@ -1,6 +1,5 @@
 import 'package:animated_reorderable_list/animated_reorderable_list.dart';
 
-
 class AnimationProvider {
   static AnimationEffect buildAnimation(AnimationType animationType) {
     switch (animationType) {
