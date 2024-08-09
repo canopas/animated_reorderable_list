@@ -1,3 +1,7 @@
+#v1.1.0
+
+- Fix shrinkwrap support
+
 #v1.0.9
 
 - Minor changes
