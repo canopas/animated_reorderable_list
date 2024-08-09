@@ -178,7 +178,7 @@ class AnimatedListView<E extends Object> extends StatelessWidget {
         keyboardDismissBehavior: keyboardDismissBehavior,
         dragStartBehavior: dragStartBehavior,
         clipBehavior: clipBehavior,
-        shrinkWrap: false,
+        shrinkWrap: shrinkWrap,
         slivers: [
           SliverPadding(
             padding: padding ?? EdgeInsets.zero,
