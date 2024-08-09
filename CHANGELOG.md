@@ -1,52 +1,48 @@
-#v1.1.0
+## 1.1.1
 
+### Enhancement
+- Improve example app
+
+## 1.1.0
+
+### Enhancement
 - Fix shrinkwrap support
 
-#v1.0.9
+## 1.0.9
 
+### Enhancement
 - Minor changes
 
-#v1.0.8
+## 1.0.8
 
-# Changelog
-
-## Enhancement
+### Enhancements
 - Add `isItemSame` callback to compare two items to determine if two items are the same. It should return true if the two compared items are identical.
 - Add `shrinkWrap` property to allow the widget to size itself to the size of its children in the main axis direction.
 
-#v1.0.7
+## 1.0.7
 
-# Changelog
-
-## Bug Fixes
+### Bug Fixes
 - List Will Not Animate When New Item Is Added to the End of the List 
 
-## Enhancement
+### Enhancement
 - Allow Disabling Long Press to Start Reorder Gesture
 
-# v1.0.6 
+## 1.0.6 
 
-# Changelog
-
-## Bug Fixes
+### Bug Fixes
 - Add equality check in example app to prevent animation on update of item in list.
 
+## 1.0.5 
 
-# v1.0.5 
-
-# Changelog
-
-## Bug Fixes
+### Bug Fixes
 - Fix `onReorderEnd` callback not being called after reordering is completed.
 
-# v1.0.4 
+## 1.0.4 
 
-# Changelog
-
-## Bug Fixes
+### Bug Fixes
 - Fix blink issue
 
-## Enhancements
+### Enhancements
 - Add support of Drag Handler for `TargetPlatformVariant.desktop`
 
 
