@@ -232,7 +232,7 @@ The core logic for animated list and drag-and-drop functionality are derived fro
 ## Credits
 
 **animated_reorderable_list** is owned and maintained by the [Canopas team](https://canopas.com/).
-You can follow them on Twitter at [@canopassoftware](https://twitter.com/canopassoftware) for
+You can follow them on Twitter at [@canopas_eng](https://x.com/canopas_eng) for
 project updates and releases.
 
 Inspired by [recyclerview-animators](https://github.com/wasabeef/recyclerview-animators) in Android.
