@@ -635,6 +635,8 @@ class MotionBuilderState extends State<MotionBuilder>
     final _ActiveItem? incomingItem = _activeItemAt(_incomingItems, index);
 
     if (outgoingItem != null) {
+      if (_items[index] == null) return const SizedBox.shrink();
+      
       final child = _items[index]!.widget;
       return _removeItemBuilder(outgoingItem, child);
     }
