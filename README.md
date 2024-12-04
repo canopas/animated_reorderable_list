@@ -1,5 +1,6 @@
 <p align="center"> <a href="https://canopas.com/contact"><img src="https://github.com/user-attachments/assets/35d53858-0b59-49dd-84ee-8ca4fb6817a9"></a></p>
 
+
 # animated_reorderable_list
 
 This library is a powerful and easy-to-use solution for implementing animated list and grid with drag-and-drop functionality in Flutter.
@@ -19,16 +20,18 @@ This library is a powerful and easy-to-use solution for implementing animated li
 
 ### Reorderable List
 
-<img src="https://github.com/canopas/animated_reorderable_list/raw/main/gif/reorderable-grid.gif" width="32%"> <img src="https://github.com/canopas/animated_reorderable_list/raw/main/gif/reorderable-list.gif" width="32%"> 
+<img src="https://github.com/user-attachments/assets/5b57dbf3-ca95-47a0-8c70-1e35a670f93f?raw=true" width="32%"> <img 
+src="https://github.com/user-attachments/assets/c908916c-3a1c-4bba-a278-c340a455faeb?raw=true" width="32%"> 
 
 ### List Animations
 
-<img src="https://github.com/canopas/animated_reorderable_list/raw/main/gif/demo.gif" width="32%"> <img src="https://github.com/canopas/animated_reorderable_list/raw/main/gif/demo1.gif" width="32%"> 
+<img src="https://github.com/user-attachments/assets/b404f3f4-a525-4e1c-a3a2-550a77def211?raw=true" width="32%"> <img 
+src="https://github.com/user-attachments/assets/bf3d81bf-241a-4d29-be94-4c3f10337c31?raw=true" width="32%"> 
 
 ### Grid Animations
 
-<img src="https://github.com/canopas/animated_reorderable_list/raw/main/gif/demo2.gif" width="32%"> <img src="https://github.com/canopas/animated_reorderable_list/raw/main/gif/demo3.gif" width="32%">
-
+<img src="https://github.com/user-attachments/assets/69c53449-6547-4bf6-b045-75724510d061?raw=true" width="32%"> <img 
+src="https://github.com/user-attachments/assets/d7482946-5a1b-47b6-bfa4-064b14355526?raw=true" width="32%">
 
 ## How to use it?
 
