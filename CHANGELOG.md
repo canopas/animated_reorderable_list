@@ -1,3 +1,8 @@
+## 1.1.2
+
+### Enhancement
+- Update readme
+
 ## 1.1.1
 
 ### Enhancement
