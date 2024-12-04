@@ -225,7 +225,7 @@ class _HomePageState extends State<HomePage> {
                           setState(() {});
                         },
                         proxyDecorator: proxyDecorator,
-                        isSameItem: (a, b) => a.index == b.index
+                        // isSameItem: (a, b) => a.index == b.index
 
                         /*  A custom builder that is for inserting items with animations.
 
@@ -247,7 +247,7 @@ class _HomePageState extends State<HomePage> {
                                      );
                                     },
                       */
-                        ),
+                      ),
               ),
             ],
           ),
