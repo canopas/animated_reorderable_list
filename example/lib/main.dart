@@ -157,7 +157,6 @@ class _HomePageState extends State<HomePage> {
                 child: isGrid
                     ? AnimatedReorderableGridView(
                         items: list,
-                        scrollDirection: Axis.vertical,
                         itemBuilder: (BuildContext context, int index) {
                           return ItemCard(
                               key: ValueKey(list[index].index),
@@ -177,10 +176,10 @@ class _HomePageState extends State<HomePage> {
                           });
                         },
                         onReorderEnd: (int index) {
-                          print(" End index :  $index");
+                          //  print(" End index :  $index");
                         },
                         onReorderStart: (int index) {
-                          print(" Start index :  $index");
+                          // print(" Start index :  $index");
                         },
                         proxyDecorator: proxyDecorator
 
@@ -219,13 +218,16 @@ class _HomePageState extends State<HomePage> {
                         onReorder: (int oldIndex, int newIndex) {
                           final User user = list.removeAt(oldIndex);
                           list.insert(newIndex, user);
+
+                          // Add isSameItem to compare objects when creating new
+
                           for (int i = 0; i < list.length; i++) {
                             list[i] = list[i].copyWith(index: list[i].index);
                           }
                           setState(() {});
                         },
                         proxyDecorator: proxyDecorator,
-                        // isSameItem: (a, b) => a.index == b.index
+                        isSameItem: (a, b) => a.index == b.index
 
                         /*  A custom builder that is for inserting items with animations.
 
@@ -247,7 +249,7 @@ class _HomePageState extends State<HomePage> {
                                      );
                                     },
                       */
-                      ),
+                        ),
               ),
             ],
           ),

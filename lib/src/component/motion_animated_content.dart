@@ -200,6 +200,13 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
     return itemPosition & itemRenderBox.size;
   }
 
+  Rect targetGeometry() {
+    final RenderBox itemRenderBox = context.findRenderObject()! as RenderBox;
+    final Offset itemPosition =
+        itemRenderBox.localToGlobal(Offset.zero) + _targetOffset;
+    return itemPosition & itemRenderBox.size;
+  }
+
   void rebuild() {
     if (mounted) {
       setState(() {});

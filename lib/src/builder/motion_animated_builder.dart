@@ -293,8 +293,30 @@ class MotionBuilderState extends State<MotionBuilder>
   }
 
   void _dragEnd(_DragInfo item) {
+    setState(() {
+      if (_insertIndex == item.index || isGrid) {
+        _finalDropPosition = _itemOffsetAt(_insertIndex!);
+      } else if (_reverse) {
+        if (_insertIndex! >= _items.length) {
+          _finalDropPosition = _itemStartOffsetAt(_items.length - 1) -
+              _extentOffset(item.itemExtent, scrollDirection);
+        } else {
+          _finalDropPosition = _itemStartOffsetAt(_insertIndex!) +
+              _extentOffset(_itemExtent(_insertIndex!), scrollDirection);
+        }
+      } else {
+        if (_insertIndex! == 0) {
+          _finalDropPosition = _itemStartOffsetAt(0) -
+              _extentOffset(item.itemExtent, scrollDirection);
+        } else {
+          final int atIndex =
+              _dragIndex! < _insertIndex! ? _insertIndex! : _insertIndex! - 1;
+          _finalDropPosition = _itemStartOffsetAt(atIndex) +
+              _extentOffset(_itemExtent(atIndex), scrollDirection);
+        }
+      }
+    });
     widget.onReorderEnd?.call(_insertIndex!);
-    setState(() => _finalDropPosition = _itemOffsetAt(_insertIndex!));
   }
 
   void _dropCompleted() {
@@ -372,6 +394,8 @@ class MotionBuilderState extends State<MotionBuilder>
   Offset calculateNextDragOffset(int index) {
     int minPos = min(_dragIndex!, _insertIndex!);
     int maxPos = max(_dragIndex!, _insertIndex!);
+    if (_dragIndex == null || _insertIndex == null) return Offset.zero;
+
     if (index < minPos || index > maxPos) return Offset.zero;
 
     final int direction = _insertIndex! > _dragIndex! ? -1 : 1;
@@ -619,6 +643,14 @@ class MotionBuilderState extends State<MotionBuilder>
         _items[index]?.context.findRenderObject() as RenderBox?;
     if (itemRenderBox == null) return Offset.zero;
     return itemRenderBox.localToGlobal(Offset.zero);
+  }
+
+  Offset _itemStartOffsetAt(int index) {
+    return _items[index]!.targetGeometry().topLeft;
+  }
+
+  double _itemExtent(int index) {
+    return _sizeExtent(_items[index]!.targetGeometry().size, scrollDirection);
   }
 
   @override
