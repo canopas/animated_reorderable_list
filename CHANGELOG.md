@@ -1,3 +1,8 @@
+## 1.1.3
+
+### Bug fixes
+- Fix flicker/jump issue while reordering different sized items in the list
+
 ## 1.1.2
 
 ### Enhancement
