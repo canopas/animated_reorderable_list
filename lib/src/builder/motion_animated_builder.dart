@@ -301,8 +301,10 @@ class MotionBuilderState extends State<MotionBuilder>
           _finalDropPosition = _itemStartOffsetAt(_items.length - 1) -
               _extentOffset(item.itemExtent, scrollDirection);
         } else {
-          _finalDropPosition = _itemStartOffsetAt(_insertIndex!) +
-              _extentOffset(_itemExtent(_insertIndex!), scrollDirection);
+          final int atIndex =
+              _dragIndex! < _insertIndex! ? _insertIndex! + 1 : _insertIndex!;
+          _finalDropPosition = _itemStartOffsetAt(atIndex) +
+              _extentOffset(_itemExtent(atIndex), scrollDirection);
         }
       } else {
         if (_insertIndex! == 0) {
@@ -404,7 +406,10 @@ class MotionBuilderState extends State<MotionBuilder>
     } else {
       final Offset offset =
           _extentOffset(_dragInfo!.itemExtent, scrollDirection);
-      return _insertIndex! > _dragIndex! ? -offset : offset;
+      if (_insertIndex! > _dragIndex!) {
+        return _reverse ? offset : -offset;
+      }
+      return _reverse ? -offset : offset;
     }
   }
 
