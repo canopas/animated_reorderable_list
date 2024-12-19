@@ -13,6 +13,7 @@ typedef AnimatedWidgetBuilder<W extends Widget, E> = Widget Function(
 typedef EqualityChecker<E> = bool Function(E, E);
 
 const Duration kAnimationDuration = Duration(milliseconds: 300);
+const Duration kDefaultDragStartDelay = Duration(milliseconds: 500);
 
 abstract class MotionListBase<W extends Widget, E extends Object>
     extends StatefulWidget {
@@ -33,6 +34,7 @@ abstract class MotionListBase<W extends Widget, E extends Object>
   final bool? buildDefaultDragHandles;
   final bool? longPressDraggable;
   final bool Function(E a, E b)? isSameItem;
+  final Duration? dragStartDelay;
 
   const MotionListBase(
       {Key? key,
@@ -52,7 +54,9 @@ abstract class MotionListBase<W extends Widget, E extends Object>
       this.removeItemBuilder,
       this.buildDefaultDragHandles,
       this.longPressDraggable,
-      this.isSameItem})
+      this.isSameItem,
+      this.dragStartDelay
+      })
       : super(key: key);
 }
 
@@ -135,6 +139,11 @@ abstract class MotionListBaseState<
   @protected
   bool Function(E a, E b) get isSameItem =>
       widget.isSameItem ?? (a, b) => a == b;
+
+  @nonVirtual
+  @protected
+  Duration get dragStartDelay =>
+      widget.dragStartDelay ?? kDefaultDragStartDelay;
 
   @override
   void initState() {

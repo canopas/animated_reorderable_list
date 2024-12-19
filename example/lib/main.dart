@@ -175,6 +175,7 @@ class _HomePageState extends State<HomePage> {
                             list.insert(newIndex, user);
                           });
                         },
+                        dragStartDelay: const Duration(milliseconds: 330),
                         onReorderEnd: (int index) {
                           //  print(" End index :  $index");
                         },

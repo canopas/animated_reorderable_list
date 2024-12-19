@@ -30,6 +30,7 @@ class MotionBuilder<E> extends StatefulWidget {
   final SliverGridDelegate? delegateBuilder;
   final bool buildDefaultDragHandles;
   final bool longPressDraggable;
+  final Duration dragStartDelay;
 
   const MotionBuilder(
       {Key? key,
@@ -44,7 +45,8 @@ class MotionBuilder<E> extends StatefulWidget {
       this.delegateBuilder,
       this.scrollDirection = Axis.vertical,
       required this.buildDefaultDragHandles,
-      this.longPressDraggable = false})
+      this.longPressDraggable = false,
+      required this.dragStartDelay})
       : assert(initialCount >= 0),
         super(key: key);
 
@@ -735,7 +737,7 @@ class MotionBuilderState extends State<MotionBuilder>
     }());
     final Key itemGlobalKey = _MotionBuilderItemGlobalKey(item.key!, this);
 
-    if (!widget.longPressDraggable) {
+    if (widget.dragStartDelay.inMilliseconds == 0) {
       return ReorderableGridDragStartListener(
         key: itemGlobalKey,
         index: index,
@@ -791,12 +793,16 @@ class MotionBuilderState extends State<MotionBuilder>
         case TargetPlatform.fuchsia:
         case TargetPlatform.iOS:
           return ReorderableGridDelayedDragStartListener(
-              key: itemGlobalKey, index: index, child: item);
+              dragStartDelay: widget.dragStartDelay,
+              key: itemGlobalKey,
+              index: index,
+              child: item);
       }
     }
 
     const bool enable = true;
     return ReorderableGridDelayedDragStartListener(
+      dragStartDelay: widget.dragStartDelay,
       key: itemGlobalKey,
       index: index,
       enabled: enable,

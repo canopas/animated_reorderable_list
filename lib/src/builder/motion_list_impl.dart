@@ -23,6 +23,7 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
     bool? buildDefaultDragHandles,
     bool? longPressDraggable,
     bool Function(E a, E b)? isSameItem,
+    Duration? dragStartDelay,
   }) : super(
             key: key,
             items: items,
@@ -40,7 +41,8 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
             removeItemBuilder: removeItemBuilder,
             buildDefaultDragHandles: buildDefaultDragHandles,
             longPressDraggable: longPressDraggable,
-            isSameItem: isSameItem);
+            isSameItem: isSameItem,
+            dragStartDelay: dragStartDelay);
 
   const MotionListImpl.grid({
     Key? key,
@@ -61,6 +63,7 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
     bool? buildDefaultDragHandles,
     bool? longPressDraggable,
     bool Function(E a, E b)? isSameItem,
+    Duration? dragStartDelay,
   }) : super(
             key: key,
             items: items,
@@ -79,7 +82,8 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
             removeItemBuilder: removeItemBuilder,
             buildDefaultDragHandles: buildDefaultDragHandles,
             longPressDraggable: longPressDraggable,
-            isSameItem: isSameItem);
+            isSameItem: isSameItem,
+            dragStartDelay: dragStartDelay);
 
   @override
   MotionListImplState<E> createState() => MotionListImplState<E>();
@@ -105,6 +109,7 @@ class MotionListImplState<E extends Object>
       delegateBuilder: sliverGridDelegate,
       buildDefaultDragHandles: buildDefaultDragHandles,
       longPressDraggable: longPressDraggable,
+      dragStartDelay: dragStartDelay,
     );
   }
 }

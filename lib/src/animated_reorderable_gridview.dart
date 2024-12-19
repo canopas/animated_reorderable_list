@@ -176,7 +176,7 @@ class AnimatedReorderableGridView<E extends Object> extends StatelessWidget {
   /// transition for the widget that is built.
   final AnimatedWidgetBuilder? removeItemBuilder;
 
-  /// Whether the items can be dragged by long pressing on them.
+  @Deprecated("Use [dragStartDelay] instead.")
   final bool longPressDraggable;
 
   /// Whether the extent of the scroll view in the scrollDirection should be determined by the contents being viewed.
@@ -184,6 +184,9 @@ class AnimatedReorderableGridView<E extends Object> extends StatelessWidget {
 
   /// A function that compares two items to determine whether they are the same.
   final bool Function(E a, E b)? isSameItem;
+
+  /// The amount of time to wait before starting the drag operation.
+  final Duration dragStartDelay;
 
   const AnimatedReorderableGridView(
       {Key? key,
@@ -213,7 +216,8 @@ class AnimatedReorderableGridView<E extends Object> extends StatelessWidget {
       this.shrinkWrap = false,
       this.insertItemBuilder,
       this.removeItemBuilder,
-      this.isSameItem})
+      this.isSameItem,
+      this.dragStartDelay = const Duration(milliseconds: 500)})
       : super(key: key);
 
   @override
@@ -250,6 +254,7 @@ class AnimatedReorderableGridView<E extends Object> extends StatelessWidget {
               removeItemBuilder: removeItemBuilder,
               longPressDraggable: longPressDraggable,
               isSameItem: isSameItem,
+              dragStartDelay: dragStartDelay,
             ),
           ),
         ]);
