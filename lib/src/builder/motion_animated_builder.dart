@@ -163,7 +163,6 @@ class MotionBuilderState extends State<MotionBuilder>
   }
 
   Drag? _dragStart(Offset position) {
-    print("Drag start called");
     assert(_dragInfo == null);
     final MotionAnimatedContentState item = _items[_dragIndex]!;
     item.dragging = true;
@@ -378,14 +377,12 @@ class MotionBuilderState extends State<MotionBuilder>
 
     final dragCenter = _dragInfo!.itemSize
         .center(_dragInfo!.dragPosition - _dragInfo!.dragOffset);
-    print("Items: ${_items.values}");
 
     for (final MotionAnimatedContentState item in _items.values) {
       if (!item.mounted) continue;
       final Rect geometry = item.targetGeometryNonOffset();
 
       if (geometry.contains(dragCenter)) {
-        print("Geometry contains drag center: ${item.index}");
         newIndex = item.index;
         break;
       }
@@ -413,7 +410,6 @@ class MotionBuilderState extends State<MotionBuilder>
     } else {
       final Offset offset =
           _extentOffset(_dragInfo!.itemExtent, scrollDirection);
-      print("Index: $index Offset: $offset");
       if (_insertIndex! > _dragIndex!) {
         return _reverse ? offset : -offset;
       }
@@ -422,7 +418,9 @@ class MotionBuilderState extends State<MotionBuilder>
   }
 
   void registerItem(MotionAnimatedContentState item) {
-    print("Register item: ${item.index}");
+    if (_dragInfo != null && _items[item.index] != item) {
+      item.updateForGap(false);
+    }
     _items[item.index] = item;
     if (item.index == _dragInfo?.index) {
       item.dragging = true;
@@ -434,7 +432,6 @@ class MotionBuilderState extends State<MotionBuilder>
   void unregisterItem(int index, MotionAnimatedContentState item) {
     final MotionAnimatedContentState? currentItem = _items[index];
     if (currentItem == item) {
-      print("Unregister item: $index");
       _items.remove(index);
     }
   }
@@ -567,7 +564,7 @@ class MotionBuilderState extends State<MotionBuilder>
 
     assert(_activeItemAt(_outgoingItems, itemIndex) == null);
 
-    if (childrenMap.containsKey(itemIndex)) {
+    if (childrenMap.containsKey(index)) {
       final _ActiveItem? incomingItem =
           _removeActiveItemAt(_incomingItems, itemIndex);
 
@@ -580,15 +577,16 @@ class MotionBuilderState extends State<MotionBuilder>
         ..addStatusListener((status) => ());
       final _ActiveItem outgoingItem =
           _ActiveItem.animation(controller, itemIndex, sizeController);
+
       _outgoingItems
         ..add(outgoingItem)
         ..sort();
 
       controller.reverse().then<void>((void value) {
         if (controller.status == AnimationStatus.dismissed) {
-          if (childrenMap.containsKey(itemIndex)) {
+          if (childrenMap.containsKey(index)) {
             childrenMap.update(
-                itemIndex, (value) => value.copyWith(visible: false));
+                index, (value) => value.copyWith(visible: false));
           }
           sizeController.reverse(from: 1.0).then((value) {
             final removedItem =
@@ -604,7 +602,7 @@ class MotionBuilderState extends State<MotionBuilder>
             for (final _ActiveItem item in _outgoingItems) {
               if (item.itemIndex > outgoingItem.itemIndex) item.itemIndex -= 1;
             }
-            _onItemRemoved(itemIndex, removeItemDuration);
+            _onItemRemoved(index, removeItemDuration);
           });
         }
       });
@@ -687,6 +685,7 @@ class MotionBuilderState extends State<MotionBuilder>
     if (outgoingItem != null) {
       final item = _items[index];
       if (item == null) return const SizedBox();
+
       final child = item.widget;
       return _removeItemBuilder(outgoingItem, child);
     }

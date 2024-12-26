@@ -129,7 +129,6 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
   }
 
   void updateForGap(bool animate) {
-    print("Update for gap $index");
     if (!mounted) return;
     final Offset newTargetOffset = listState.calculateNextDragOffset(index);
     if (newTargetOffset == _targetOffset) return;

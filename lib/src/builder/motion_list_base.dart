@@ -148,7 +148,9 @@ abstract class MotionListBaseState<
 
   @nonVirtual
   @protected
-  List<int> get nonDraggableItems => widget.items.asMap().entries
+  List<int> get nonDraggableItems => widget.items
+      .asMap()
+      .entries
       .where((entry) => widget.nonDraggableItems.contains(entry.value))
       .map((entry) => entry.key)
       .toList();
