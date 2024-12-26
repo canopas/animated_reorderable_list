@@ -188,6 +188,11 @@ class AnimatedReorderableGridView<E extends Object> extends StatelessWidget {
   /// The amount of time to wait before starting the drag operation.
   final Duration dragStartDelay;
 
+  /// A list of items that are not draggable.
+  ///
+  /// The item can't be draggable, but it can be reordered.
+  final List<E> nonDraggableItems;
+
   const AnimatedReorderableGridView(
       {Key? key,
       required this.items,
@@ -217,7 +222,8 @@ class AnimatedReorderableGridView<E extends Object> extends StatelessWidget {
       this.insertItemBuilder,
       this.removeItemBuilder,
       this.isSameItem,
-      this.dragStartDelay = const Duration(milliseconds: 500)})
+      this.dragStartDelay = const Duration(milliseconds: 500),
+      this.nonDraggableItems = const []})
       : super(key: key);
 
   @override
@@ -252,9 +258,11 @@ class AnimatedReorderableGridView<E extends Object> extends StatelessWidget {
               scrollDirection: scrollDirection,
               insertItemBuilder: insertItemBuilder,
               removeItemBuilder: removeItemBuilder,
+              //ignore: deprecated_member_use_from_same_package
               longPressDraggable: longPressDraggable,
               isSameItem: isSameItem,
               dragStartDelay: dragStartDelay,
+              nonDraggableItems: nonDraggableItems,
             ),
           ),
         ]);

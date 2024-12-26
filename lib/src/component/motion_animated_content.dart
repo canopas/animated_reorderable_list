@@ -129,6 +129,7 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
   }
 
   void updateForGap(bool animate) {
+    print("Update for gap $index");
     if (!mounted) return;
     final Offset newTargetOffset = listState.calculateNextDragOffset(index);
     if (newTargetOffset == _targetOffset) return;
@@ -178,12 +179,6 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
     );
   }
 
-  Offset itemOffset() {
-    final box = context.findRenderObject() as RenderBox?;
-    if (box == null) return Offset.zero;
-    return box.localToGlobal(Offset.zero);
-  }
-
   void resetGap() {
     if (_offsetAnimation != null) {
       _offsetAnimation!.dispose();
@@ -215,7 +210,7 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
 
   @override
   void dispose() {
-    listState.unregisterItem(widget.index, this);
+    listState.unregisterItem(index, this);
     _offsetAnimation?.dispose();
     super.dispose();
   }

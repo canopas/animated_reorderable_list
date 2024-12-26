@@ -31,6 +31,7 @@ class MotionBuilder<E> extends StatefulWidget {
   final bool buildDefaultDragHandles;
   final bool longPressDraggable;
   final Duration dragStartDelay;
+  final List<int> nonDraggableIndices;
 
   const MotionBuilder(
       {Key? key,
@@ -46,7 +47,8 @@ class MotionBuilder<E> extends StatefulWidget {
       this.scrollDirection = Axis.vertical,
       required this.buildDefaultDragHandles,
       this.longPressDraggable = false,
-      required this.dragStartDelay})
+      required this.dragStartDelay,
+      required this.nonDraggableIndices})
       : assert(initialCount >= 0),
         super(key: key);
 
@@ -161,6 +163,7 @@ class MotionBuilderState extends State<MotionBuilder>
   }
 
   Drag? _dragStart(Offset position) {
+    print("Drag start called");
     assert(_dragInfo == null);
     final MotionAnimatedContentState item = _items[_dragIndex]!;
     item.dragging = true;
@@ -375,12 +378,14 @@ class MotionBuilderState extends State<MotionBuilder>
 
     final dragCenter = _dragInfo!.itemSize
         .center(_dragInfo!.dragPosition - _dragInfo!.dragOffset);
+    print("Items: ${_items.values}");
 
     for (final MotionAnimatedContentState item in _items.values) {
       if (!item.mounted) continue;
       final Rect geometry = item.targetGeometryNonOffset();
 
       if (geometry.contains(dragCenter)) {
+        print("Geometry contains drag center: ${item.index}");
         newIndex = item.index;
         break;
       }
@@ -408,6 +413,7 @@ class MotionBuilderState extends State<MotionBuilder>
     } else {
       final Offset offset =
           _extentOffset(_dragInfo!.itemExtent, scrollDirection);
+      print("Index: $index Offset: $offset");
       if (_insertIndex! > _dragIndex!) {
         return _reverse ? offset : -offset;
       }
@@ -416,6 +422,7 @@ class MotionBuilderState extends State<MotionBuilder>
   }
 
   void registerItem(MotionAnimatedContentState item) {
+    print("Register item: ${item.index}");
     _items[item.index] = item;
     if (item.index == _dragInfo?.index) {
       item.dragging = true;
@@ -427,6 +434,7 @@ class MotionBuilderState extends State<MotionBuilder>
   void unregisterItem(int index, MotionAnimatedContentState item) {
     final MotionAnimatedContentState? currentItem = _items[index];
     if (currentItem == item) {
+      print("Unregister item: $index");
       _items.remove(index);
     }
   }
@@ -660,6 +668,9 @@ class MotionBuilderState extends State<MotionBuilder>
     return _sizeExtent(_items[index]!.targetGeometry().size, scrollDirection);
   }
 
+  bool _dragEnabled(int index) =>
+      widget.onReorder != null && !widget.nonDraggableIndices.contains(index);
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -683,9 +694,11 @@ class MotionBuilderState extends State<MotionBuilder>
       return SizedBox.fromSize(size: _dragInfo!.itemSize);
     }
 
-    final Widget child = widget.onReorder != null
-        ? reorderableItemBuilder(context, _itemIndexToIndex(index))
-        : widget.itemBuilder(context, _itemIndexToIndex(index));
+    final itemIndex = _itemIndexToIndex(index);
+
+    final Widget child = _dragEnabled(itemIndex)
+        ? reorderableItemBuilder(context, itemIndex)
+        : widget.itemBuilder(context, itemIndex);
 
     assert(() {
       if (child.key == null) {

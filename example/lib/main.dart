@@ -22,17 +22,26 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   AnimationType appliedStyle = AnimationType.fadeIn;
-  List<User> list =
-      List.generate(8, (index) => User(name: "User $index", index: index));
+  List<User> list = [];
+
   int addedNumber = 9;
   bool isGrid = true;
 
+  List<User> nonDraggableItems = [];
+
   List<AnimationEffect> animations = [];
+
+  @override
+  void initState() {
+    super.initState();
+    list = List.generate(8, (index) => User(name: "User $index", id: index));
+    nonDraggableItems = list.where((user) => user.id == 0).toList();
+  }
 
   void insert() {
     addedNumber += 1;
     setState(() {
-      list.insert(1, User(name: "User $addedNumber", index: addedNumber));
+      list.insert(1, User(name: "User $addedNumber", id: addedNumber));
     });
   }
 
@@ -158,9 +167,11 @@ class _HomePageState extends State<HomePage> {
                     ? AnimatedReorderableGridView(
                         items: list,
                         itemBuilder: (BuildContext context, int index) {
+                          final user = list[index];
                           return ItemCard(
-                              key: ValueKey(list[index].index),
-                              index: list[index].index);
+                              key: ValueKey(user.id),
+                              id: user.id,
+                              dragEnabled: !nonDraggableItems.contains(user));
                         },
                         sliverGridDelegate:
                             SliverReorderableGridDelegateWithFixedCrossAxisCount(
@@ -175,6 +186,7 @@ class _HomePageState extends State<HomePage> {
                             list.insert(newIndex, user);
                           });
                         },
+                        nonDraggableItems: nonDraggableItems,
                         dragStartDelay: const Duration(milliseconds: 330),
                         onReorderEnd: (int index) {
                           //  print(" End index :  $index");
@@ -208,9 +220,13 @@ class _HomePageState extends State<HomePage> {
                     : AnimatedReorderableListView(
                         items: list,
                         itemBuilder: (BuildContext context, int index) {
+                          final user = list[index];
+
                           return ItemTile(
-                              key: ValueKey(list[index].index),
-                              index: list[index].index);
+                            key: ValueKey(user.id),
+                            id: user.id,
+                            dragEnabled: !nonDraggableItems.contains(user),
+                          );
                         },
                         enterTransition: animations,
                         exitTransition: animations,
@@ -223,12 +239,13 @@ class _HomePageState extends State<HomePage> {
                           // Add isSameItem to compare objects when creating new
 
                           for (int i = 0; i < list.length; i++) {
-                            list[i] = list[i].copyWith(index: list[i].index);
+                            list[i] = list[i].copyWith(id: list[i].id);
                           }
                           setState(() {});
                         },
+                        nonDraggableItems: nonDraggableItems,
                         proxyDecorator: proxyDecorator,
-                        isSameItem: (a, b) => a.index == b.index
+                        isSameItem: (a, b) => a.id == b.id
 
                         /*  A custom builder that is for inserting items with animations.
 

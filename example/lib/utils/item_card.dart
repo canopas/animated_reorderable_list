@@ -1,30 +1,24 @@
 import 'package:flutter/material.dart';
 
 class ItemCard extends StatelessWidget {
-  final int index;
+  final int id;
+  final bool dragEnabled;
 
-  const ItemCard({super.key, required this.index});
+  const ItemCard({super.key, required this.id, this.dragEnabled = true});
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.translucent,
-      onTap: () {
-        print('Tapped on item $index');
-      },
-      onLongPress: () {
-        print('Long pressed on item $index');
-      },
-      child: SizedBox(
-        height: 150.0,
-        width: 150,
-        child: Card(
-          color: Colors.primaries[index % Colors.primaries.length],
-          child: Center(
-            child: Text(
-              (index).toString(),
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
+    return SizedBox(
+      height: 150.0,
+      width: 150,
+      child: Card(
+        color: dragEnabled
+            ? Colors.primaries[id % Colors.primaries.length]
+            : Colors.grey,
+        child: Center(
+          child: Text(
+            (id).toString(),
+            style: Theme.of(context).textTheme.headlineMedium,
           ),
         ),
       ),

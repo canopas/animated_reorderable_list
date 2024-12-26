@@ -24,6 +24,7 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
     bool? longPressDraggable,
     bool Function(E a, E b)? isSameItem,
     Duration? dragStartDelay,
+    List<E> nonDraggableItems = const [],
   }) : super(
             key: key,
             items: items,
@@ -42,7 +43,8 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
             buildDefaultDragHandles: buildDefaultDragHandles,
             longPressDraggable: longPressDraggable,
             isSameItem: isSameItem,
-            dragStartDelay: dragStartDelay);
+            dragStartDelay: dragStartDelay,
+            nonDraggableItems: nonDraggableItems);
 
   const MotionListImpl.grid({
     Key? key,
@@ -64,6 +66,7 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
     bool? longPressDraggable,
     bool Function(E a, E b)? isSameItem,
     Duration? dragStartDelay,
+    List<E> nonDraggableItems = const [],
   }) : super(
             key: key,
             items: items,
@@ -83,7 +86,8 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
             buildDefaultDragHandles: buildDefaultDragHandles,
             longPressDraggable: longPressDraggable,
             isSameItem: isSameItem,
-            dragStartDelay: dragStartDelay);
+            dragStartDelay: dragStartDelay,
+            nonDraggableItems: nonDraggableItems);
 
   @override
   MotionListImplState<E> createState() => MotionListImplState<E>();
@@ -110,6 +114,7 @@ class MotionListImplState<E extends Object>
       buildDefaultDragHandles: buildDefaultDragHandles,
       longPressDraggable: longPressDraggable,
       dragStartDelay: dragStartDelay,
+      nonDraggableIndices: nonDraggableItems,
     );
   }
 }

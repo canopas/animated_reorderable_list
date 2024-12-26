@@ -35,6 +35,7 @@ abstract class MotionListBase<W extends Widget, E extends Object>
   final bool? longPressDraggable;
   final bool Function(E a, E b)? isSameItem;
   final Duration? dragStartDelay;
+  final List<E> nonDraggableItems;
 
   const MotionListBase(
       {Key? key,
@@ -55,8 +56,8 @@ abstract class MotionListBase<W extends Widget, E extends Object>
       this.buildDefaultDragHandles,
       this.longPressDraggable,
       this.isSameItem,
-      this.dragStartDelay
-      })
+      this.dragStartDelay,
+      required this.nonDraggableItems})
       : super(key: key);
 }
 
@@ -144,6 +145,13 @@ abstract class MotionListBaseState<
   @protected
   Duration get dragStartDelay =>
       widget.dragStartDelay ?? kDefaultDragStartDelay;
+
+  @nonVirtual
+  @protected
+  List<int> get nonDraggableItems => widget.items.asMap().entries
+      .where((entry) => widget.nonDraggableItems.contains(entry.value))
+      .map((entry) => entry.key)
+      .toList();
 
   @override
   void initState() {
