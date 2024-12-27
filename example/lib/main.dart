@@ -189,7 +189,7 @@ class _HomePageState extends State<HomePage> {
                         sliverGridDelegate:
                             SliverReorderableGridDelegateWithFixedCrossAxisCount(
                                 crossAxisCount: 4),
-                        enterTransition: animations,
+                        enterTransition: [FadeIn()],
                         exitTransition: animations,
                         insertDuration: const Duration(milliseconds: 300),
                         removeDuration: const Duration(milliseconds: 300),

@@ -137,7 +137,29 @@ class AnimatedListView<E extends Object> extends StatelessWidget {
   /// Whether the extent of the scroll view in the scrollDirection should be determined by the contents being viewed.
   final bool shrinkWrap;
 
-  /// A function that compares two items to determine whether they are the same.
+  /// A callback function to determine if two items in the list are considered the same.
+  ///
+  /// This function is important to prevent unnecessary animations when editing or updating items.
+  /// For example, if your items have a unique `id`, you can use this function to compare them
+  /// and return `true`, indicating they represent the same item.
+  ///
+  ///
+  /// **Why is this important?**
+  ///
+  /// If `isSameItem` is not defined and you are working with immutable objects (e.g., creating new
+  /// instances on every update), the library may interpret these as different items. This will
+  /// trigger animations unnecessarily. Additionally, if you are generating `Key` values directly
+  /// from these instances, it can result in the following exception:
+  ///
+  /// `Multiple widgets used the same GlobalKey.`
+  ///
+  /// To avoid this exception, you must implement the `isSameItem` callback to accurately compare
+  /// the identity of the items in your list.
+  ///
+  /// Example:
+  /// ```dart
+  /// isSameItem: (a, b) => a.id == b.id,
+  /// ```
   final bool Function(E a, E b)? isSameItem;
 
   /// Whether to enable swap animation when changing the order of the items.
