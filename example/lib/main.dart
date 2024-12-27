@@ -188,7 +188,7 @@ class _HomePageState extends State<HomePage> {
                           });
                         },
                         nonDraggableItems: nonDraggableItems,
-                        dragStartDelay: const Duration(milliseconds: 330),
+                        dragStartDelay: const Duration(milliseconds: 300),
                         onReorderEnd: (int index) {
                           //  print(" End index :  $index");
                         },
@@ -234,6 +234,7 @@ class _HomePageState extends State<HomePage> {
                         insertDuration: const Duration(milliseconds: 300),
                         removeDuration: const Duration(milliseconds: 300),
                         nonDraggableItems: nonDraggableItems,
+                        dragStartDelay: const Duration(milliseconds: 300),
                         onReorder: (int oldIndex, int newIndex) {
                           final User user = list.removeAt(oldIndex);
                           list.insert(newIndex, user);
