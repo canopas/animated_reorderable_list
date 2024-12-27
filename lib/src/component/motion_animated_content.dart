@@ -77,7 +77,9 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
       listState.unregisterItem(oldWidget.index, this);
       listState.registerItem(this);
     }
-    if (oldWidget.index != widget.index && !_dragging && widget.isGrid) {
+    if (oldWidget.index != widget.index && !_dragging) {
+      // Reset this flag to false after the drag is completed and items are reordered
+      listState._isDragging = false;
       _updateAnimationTranslation();
     }
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -92,29 +94,31 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
   }
 
   void _updateAnimationTranslation() {
-    Offset offsetDiff =
-        (widget.motionData.startOffset + offset) - widget.motionData.endOffset;
-    _startOffset = offsetDiff;
-    if (offsetDiff.dx != 0 || offsetDiff.dy != 0) {
-      if (_offsetAnimation == null) {
-        _offsetAnimation = AnimationController(
-          vsync: listState,
-          duration: kAnimationDuration,
-        )
-          ..addListener(rebuild)
-          ..addStatusListener((AnimationStatus status) {
-            if (status == AnimationStatus.completed) {
-              widget.updateMotionData?.call(widget.motionData);
+    if (widget.isGrid || widget.motionData.animate) {
+      Offset offsetDiff = (widget.motionData.startOffset + offset) -
+          widget.motionData.endOffset;
+      _startOffset = offsetDiff;
+      if (offsetDiff.dx != 0 || offsetDiff.dy != 0) {
+        if (_offsetAnimation == null) {
+          _offsetAnimation = AnimationController(
+            vsync: listState,
+            duration: kAnimationDuration,
+          )
+            ..addListener(rebuild)
+            ..addStatusListener((AnimationStatus status) {
+              if (status == AnimationStatus.completed) {
+                widget.updateMotionData?.call(widget.motionData);
 
-              _startOffset = _targetOffset;
-              _offsetAnimation!.dispose();
-              _offsetAnimation = null;
-            }
-          })
-          ..forward();
-      } else {
-        _startOffset = offsetDiff;
-        _offsetAnimation!.forward(from: 0.0);
+                _startOffset = _targetOffset;
+                _offsetAnimation!.dispose();
+                _offsetAnimation = null;
+              }
+            })
+            ..forward();
+        } else {
+          _startOffset = offsetDiff;
+          _offsetAnimation!.forward(from: 0.0);
+        }
       }
     }
   }

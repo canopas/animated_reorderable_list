@@ -156,7 +156,7 @@ abstract class MotionListBaseState<
       _exitAnimations = [];
       addEffects(exitTransition, _exitAnimations, enter: false);
     }
-    calculateDiff(oldList, newList);
+    calculateDiff(oldList, newList, oldWidget);
     oldList = List.from(newList);
     super.didUpdateWidget(oldWidget);
   }
@@ -196,7 +196,32 @@ abstract class MotionListBaseState<
     enteries.add(entry);
   }
 
-  void calculateDiff(List oldList, List newList) {
+  void calculateDiff(List oldList, List newList, covariant B oldWidget) {
+    final swappedPairs = [];
+
+    if (oldList.length == newList.length) {
+      for (int i = 0; i < newList.length; i++) {
+        if (!isSameItem(oldList[i], newList[i])) {
+          final oldIndex =
+              oldList.indexWhere((oldItem) => isSameItem(oldItem, newList[i]));
+
+          if (oldIndex != -1) {
+            if (isSameItem(newList[oldIndex], oldList[i])) {
+              swappedPairs.add([i, oldIndex]);
+            }
+          }
+        }
+      }
+
+      if (swappedPairs.isEmpty) {
+        return;
+      }
+      // Handle swapped Items
+      for (List<int> pair in swappedPairs) {
+        listKey.currentState!.moveItem(pair[0], pair[1]);
+      }
+    }
+
     // Detect removed and updated items
     for (int i = oldList.length - 1; i >= 0; i--) {
       if (newList.indexWhere((element) => isSameItem(oldList[i], element)) ==

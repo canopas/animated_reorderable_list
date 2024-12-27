@@ -95,6 +95,7 @@ class MotionBuilderState extends State<MotionBuilder>
   int? _recognizerPointer;
   EdgeDraggingAutoScroller? _autoScroller;
   late ScrollableState _scrollable;
+  bool _isDragging = false;
 
   bool autoScrolling = false;
 
@@ -161,6 +162,8 @@ class MotionBuilderState extends State<MotionBuilder>
   Drag? _dragStart(Offset position) {
     assert(_dragInfo == null);
     final MotionAnimatedContentState item = _items[_dragIndex]!;
+    _isDragging = true;
+
     item.dragging = true;
     widget.onReorderStart?.call(_dragIndex!);
     item.rebuild();
@@ -206,6 +209,8 @@ class MotionBuilderState extends State<MotionBuilder>
     setState(() {
       _dragReset();
     });
+
+    _isDragging = false;
   }
 
   Future<void> _autoScrollIfNecessary() async {
@@ -336,6 +341,7 @@ class MotionBuilderState extends State<MotionBuilder>
     setState(() {
       _dragReset();
     });
+    _isDragging = false;
   }
 
   void _dragReset() {
@@ -601,6 +607,23 @@ class MotionBuilderState extends State<MotionBuilder>
     }
   }
 
+  void moveItem(int fromIndex, int toIndex) {
+    if (fromIndex == toIndex) return;
+    if (!childrenMap.containsKey(fromIndex) &&
+        !childrenMap.containsKey(toIndex)) {
+      return;
+    }
+    if (_dragInfo != null || _isDragging) return;
+
+    final fromOffset = _itemOffsetAt(fromIndex);
+    final toOffset = _itemOffsetAt(toIndex);
+    childrenMap[toIndex] = childrenMap[fromIndex]!.copyWith(
+        startOffset: fromOffset, endOffset: toOffset, animate: !_isDragging);
+    childrenMap[fromIndex] = childrenMap[toIndex]!.copyWith(
+        startOffset: toOffset, endOffset: fromOffset, animate: !_isDragging);
+    setState(() {});
+  }
+
   void _onItemRemoved(int itemIndex, Duration removeDuration) {
     final updatedChildrenMap = <int, MotionData>{};
     if (childrenMap.containsKey(itemIndex)) {
@@ -708,8 +731,12 @@ class MotionBuilderState extends State<MotionBuilder>
       isGrid: isGrid,
       updateMotionData: (MotionData motionData) {
         final itemOffset = _itemOffsetAt(index);
-        childrenMap[index] = motionData.copyWith(
-            startOffset: itemOffset, endOffset: itemOffset, visible: true);
+        final replaceData = motionData.copyWith(
+            startOffset: itemOffset,
+            endOffset: itemOffset,
+            visible: true,
+            animate: false);
+        childrenMap[index] = replaceData;
       },
       capturedThemes:
           InheritedTheme.capture(from: context, to: overlay.context),
