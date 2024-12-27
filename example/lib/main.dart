@@ -23,7 +23,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   AnimationType appliedStyle = AnimationType.fadeIn;
   List<User> list =
-      List.generate(8, (index) => User(name: "User $index", index: index));
+      List.generate(288, (index) => User(name: "User $index", index: index));
   int addedNumber = 9;
   bool isGrid = true;
 
@@ -88,12 +88,15 @@ class _HomePageState extends State<HomePage> {
             IconButton(
                 onPressed: () {
                   final child1 = list[0];
-                  final child2 = list[6];
+                  final child2 = list[5];
                   list[0] = child2;
-                  list[6] = child1;
+                  list[5] = child1;
                   setState(() {});
                 },
-                icon: const Icon(Icons.swap_horizontal_circle, color: Colors.black,)),
+                icon: const Icon(
+                  Icons.swap_horizontal_circle,
+                  color: Colors.black,
+                )),
             TextButton(
                 onPressed: insert,
                 child: const Text(
