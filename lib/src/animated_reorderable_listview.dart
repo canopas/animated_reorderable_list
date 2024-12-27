@@ -197,6 +197,11 @@ class AnimatedReorderableListView<E extends Object> extends StatelessWidget {
   /// A function that compares two items to determine whether they are the same.
   final bool Function(E a, E b)? isSameItem;
 
+  /// Whether to enable swap animation when changing the order of the items.
+  ///
+  /// Defaults to true.
+  final bool enableSwap;
+
   const AnimatedReorderableListView({
     Key? key,
     required this.items,
@@ -226,6 +231,7 @@ class AnimatedReorderableListView<E extends Object> extends StatelessWidget {
     this.longPressDraggable = true,
     this.shrinkWrap = false,
     this.isSameItem,
+    this.enableSwap = true,
   }) : super(key: key);
 
   @override
@@ -262,6 +268,7 @@ class AnimatedReorderableListView<E extends Object> extends StatelessWidget {
               removeItemBuilder: removeItemBuilder,
               longPressDraggable: longPressDraggable,
               isSameItem: isSameItem,
+              enableSwap: enableSwap,
             ),
           ),
         ]);

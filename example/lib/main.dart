@@ -85,6 +85,18 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
           actions: [
+            IconButton(
+                onPressed: () {
+                  final child1 = list[0];
+                  final child2 = list[5];
+                  list[0] = child2;
+                  list[5] = child1;
+                  setState(() {});
+                },
+                icon: const Icon(
+                  Icons.swap_horizontal_circle,
+                  color: Colors.black,
+                )),
             TextButton(
                 onPressed: insert,
                 child: const Text(
@@ -181,7 +193,7 @@ class _HomePageState extends State<HomePage> {
                         onReorderStart: (int index) {
                           // print(" Start index :  $index");
                         },
-                        proxyDecorator: proxyDecorator
+                        proxyDecorator: proxyDecorator,
 
                         /*  A custom builder that is for inserting items with animations.
 
@@ -203,7 +215,7 @@ class _HomePageState extends State<HomePage> {
                                      );
                                     },
                       */
-                        )
+                      )
                     : AnimatedReorderableListView(
                         items: list,
                         itemBuilder: (BuildContext context, int index) {
