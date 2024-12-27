@@ -146,6 +146,11 @@ class AnimatedGridView<E extends Object> extends StatelessWidget {
   /// A function that compares two items to determine whether they are the same.
   final bool Function(E a, E b)? isSameItem;
 
+  /// Whether to enable swap animation when changing the order of the items.
+  ///
+  /// Defaults to true.
+  final bool enableSwap;
+
   const AnimatedGridView(
       {Key? key,
       required this.items,
@@ -169,7 +174,8 @@ class AnimatedGridView<E extends Object> extends StatelessWidget {
       this.insertItemBuilder,
       this.removeItemBuilder,
       this.shrinkWrap = false,
-      this.isSameItem})
+      this.isSameItem,
+      this.enableSwap = true})
       : super(key: key);
 
   @override
@@ -200,7 +206,8 @@ class AnimatedGridView<E extends Object> extends StatelessWidget {
                 scrollDirection: scrollDirection,
                 insertItemBuilder: insertItemBuilder,
                 removeItemBuilder: removeItemBuilder,
-                isSameItem: isSameItem),
+                isSameItem: isSameItem,
+                enableSwap: enableSwap),
           ),
         ]);
   }

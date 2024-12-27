@@ -33,6 +33,7 @@ abstract class MotionListBase<W extends Widget, E extends Object>
   final bool? buildDefaultDragHandles;
   final bool? longPressDraggable;
   final bool Function(E a, E b)? isSameItem;
+  final bool enableSwap;
 
   const MotionListBase(
       {Key? key,
@@ -52,7 +53,8 @@ abstract class MotionListBase<W extends Widget, E extends Object>
       this.removeItemBuilder,
       this.buildDefaultDragHandles,
       this.longPressDraggable,
-      this.isSameItem})
+      this.isSameItem,
+      this.enableSwap = true})
       : super(key: key);
 }
 
@@ -156,7 +158,7 @@ abstract class MotionListBaseState<
       _exitAnimations = [];
       addEffects(exitTransition, _exitAnimations, enter: false);
     }
-    calculateDiff(oldList, newList, oldWidget);
+    calculateDiff(oldList, newList);
     oldList = List.from(newList);
     super.didUpdateWidget(oldWidget);
   }
@@ -196,10 +198,10 @@ abstract class MotionListBaseState<
     enteries.add(entry);
   }
 
-  void calculateDiff(List oldList, List newList, covariant B oldWidget) {
+  void calculateDiff(List oldList, List newList) {
     final swappedPairs = [];
 
-    if (oldList.length == newList.length) {
+    if (oldList.length == newList.length && widget.enableSwap) {
       for (int i = 0; i < newList.length; i++) {
         if (!isSameItem(oldList[i], newList[i])) {
           final oldIndex =

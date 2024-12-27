@@ -521,11 +521,13 @@ class MotionBuilderState extends State<MotionBuilder>
           updatedChildrenMap[itemIndex] = motionData.copyWith(visible: false);
           updatedChildrenMap[entry.key + 1] = entry.value.copyWith(
               startOffset: _itemOffsetAt(entry.key),
-              endOffset: getChildOffset(entry.key));
+              endOffset: getChildOffset(entry.key),
+              animate: isGrid);
         } else if (entry.key > itemIndex) {
           updatedChildrenMap[entry.key + 1] = entry.value.copyWith(
               startOffset: _itemOffsetAt(entry.key),
-              endOffset: getChildOffset(entry.key));
+              endOffset: getChildOffset(entry.key),
+              animate: isGrid);
         } else {
           updatedChildrenMap[entry.key] = entry.value;
         }
@@ -635,7 +637,8 @@ class MotionBuilderState extends State<MotionBuilder>
         } else {
           updatedChildrenMap[entry.key - 1] = childrenMap[entry.key]!.copyWith(
               startOffset: _itemOffsetAt(entry.key),
-              endOffset: _itemOffsetAt(entry.key - 1));
+              endOffset: _itemOffsetAt(entry.key - 1),
+              animate: isGrid);
         }
       }
     }
@@ -728,15 +731,13 @@ class MotionBuilderState extends State<MotionBuilder>
       index: index,
       key: itemGlobalKey,
       motionData: motionData,
-      isGrid: isGrid,
       updateMotionData: (MotionData motionData) {
         final itemOffset = _itemOffsetAt(index);
-        final replaceData = motionData.copyWith(
+        childrenMap[index] = motionData.copyWith(
             startOffset: itemOffset,
             endOffset: itemOffset,
             visible: true,
             animate: false);
-        childrenMap[index] = replaceData;
       },
       capturedThemes:
           InheritedTheme.capture(from: context, to: overlay.context),

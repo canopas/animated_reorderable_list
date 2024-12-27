@@ -6,7 +6,6 @@ class MotionAnimatedContent extends StatefulWidget {
   final Widget child;
   final Function(MotionData)? updateMotionData;
   final CapturedThemes? capturedThemes;
-  final bool isGrid;
 
   const MotionAnimatedContent({
     Key? key,
@@ -15,7 +14,6 @@ class MotionAnimatedContent extends StatefulWidget {
     required this.child,
     this.updateMotionData,
     required this.capturedThemes,
-    required this.isGrid,
   }) : super(key: key);
 
   @override
@@ -94,7 +92,7 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
   }
 
   void _updateAnimationTranslation() {
-    if (widget.isGrid || widget.motionData.animate) {
+    if (widget.motionData.animate) {
       Offset offsetDiff = (widget.motionData.startOffset + offset) -
           widget.motionData.endOffset;
       _startOffset = offsetDiff;
