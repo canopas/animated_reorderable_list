@@ -207,6 +207,11 @@ class AnimatedReorderableListView<E extends Object> extends StatelessWidget {
   /// The item can't be draggable, but it can be reordered.
   final List<E> nonDraggableItems;
 
+  /// Whether to enable swap animation when changing the order of the items.
+  ///
+  /// Defaults to true.
+  final bool enableSwap;
+
   const AnimatedReorderableListView({
     Key? key,
     required this.items,
@@ -238,6 +243,7 @@ class AnimatedReorderableListView<E extends Object> extends StatelessWidget {
     this.isSameItem,
     this.dragStartDelay = const Duration(milliseconds: 500),
     this.nonDraggableItems = const [],
+    this.enableSwap = true,
   }) : super(key: key);
 
   @override
@@ -277,6 +283,7 @@ class AnimatedReorderableListView<E extends Object> extends StatelessWidget {
               isSameItem: isSameItem,
               dragStartDelay: dragStartDelay,
               nonDraggableItems: nonDraggableItems,
+              enableSwap: enableSwap,
             ),
           ),
         ]);

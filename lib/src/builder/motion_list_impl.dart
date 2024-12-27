@@ -26,6 +26,7 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
     bool Function(E a, E b)? isSameItem,
     Duration? dragStartDelay,
     List<E> nonDraggableItems = const [],
+    bool enableSwap = true,
   }) : super(
             key: key,
             items: items,
@@ -47,6 +48,7 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
             isSameItem: isSameItem,
             dragStartDelay: dragStartDelay,
             nonDraggableItems: nonDraggableItems);
+            enableSwap: enableSwap);
 
   const MotionListImpl.grid({
     Key? key,
@@ -70,6 +72,7 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
     bool Function(E a, E b)? isSameItem,
     Duration? dragStartDelay,
     List<E> nonDraggableItems = const [],
+    bool enableSwap = true,
   }) : super(
             key: key,
             items: items,
@@ -92,6 +95,7 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
             isSameItem: isSameItem,
             dragStartDelay: dragStartDelay,
             nonDraggableItems: nonDraggableItems);
+            enableSwap: enableSwap);
 
   @override
   MotionListImplState<E> createState() => MotionListImplState<E>();

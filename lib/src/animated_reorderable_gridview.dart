@@ -195,6 +195,11 @@ class AnimatedReorderableGridView<E extends Object> extends StatelessWidget {
   /// The item can't be draggable, but it can be reordered.
   final List<E> nonDraggableItems;
 
+  /// Whether to enable swap animation when changing the order of the items.
+  ///
+  /// Defaults to true.
+  final bool enableSwap;
+
   const AnimatedReorderableGridView(
       {Key? key,
       required this.items,
@@ -225,7 +230,8 @@ class AnimatedReorderableGridView<E extends Object> extends StatelessWidget {
       this.removeItemBuilder,
       this.isSameItem,
       this.dragStartDelay = const Duration(milliseconds: 500),
-      this.nonDraggableItems = const []})
+      this.nonDraggableItems = const [],
+      this.enableSwap = true})
       : super(key: key);
 
   @override
@@ -265,6 +271,7 @@ class AnimatedReorderableGridView<E extends Object> extends StatelessWidget {
               isSameItem: isSameItem,
               dragStartDelay: dragStartDelay,
               nonDraggableItems: nonDraggableItems,
+              enableSwap: enableSwap,
             ),
           ),
         ]);

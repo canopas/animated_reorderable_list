@@ -40,6 +40,7 @@ abstract class MotionListBase<W extends Widget, E extends Object>
   final bool Function(E a, E b)? isSameItem;
   final Duration? dragStartDelay;
   final List<E> nonDraggableItems;
+  final bool enableSwap;
 
   const MotionListBase(
       {Key? key,
@@ -62,9 +63,11 @@ abstract class MotionListBase<W extends Widget, E extends Object>
       this.longPressDraggable,
       this.isSameItem,
       this.dragStartDelay,
+        this.enableSwap = true,
       required this.nonDraggableItems})
       : assert(itemBuilder != null || itemBuilderWithEnableDrag != null),
-        super(key: key);
+
+       super(key: key);
 }
 
 abstract class MotionListBaseState<
@@ -228,6 +231,31 @@ abstract class MotionListBaseState<
   }
 
   void calculateDiff(List oldList, List newList) {
+    final swappedPairs = [];
+
+    if (oldList.length == newList.length && widget.enableSwap) {
+      for (int i = 0; i < newList.length; i++) {
+        if (!isSameItem(oldList[i], newList[i])) {
+          final oldIndex =
+              oldList.indexWhere((oldItem) => isSameItem(oldItem, newList[i]));
+
+          if (oldIndex != -1) {
+            if (isSameItem(newList[oldIndex], oldList[i])) {
+              swappedPairs.add([i, oldIndex]);
+            }
+          }
+        }
+      }
+
+      if (swappedPairs.isEmpty) {
+        return;
+      }
+      // Handle swapped Items
+      for (List<int> pair in swappedPairs) {
+        listKey.currentState!.moveItem(pair[0], pair[1]);
+      }
+    }
+
     // Detect removed and updated items
     for (int i = oldList.length - 1; i >= 0; i--) {
       if (newList.indexWhere((element) => isSameItem(oldList[i], element)) ==
