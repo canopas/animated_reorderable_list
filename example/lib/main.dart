@@ -166,12 +166,13 @@ class _HomePageState extends State<HomePage> {
                 child: isGrid
                     ? AnimatedReorderableGridView(
                         items: list,
-                        itemBuilder: (BuildContext context, int index) {
+                        itemBuilder: (BuildContext context, int index,
+                            bool dragEnabled) {
                           final user = list[index];
                           return ItemCard(
                               key: ValueKey(user.id),
                               id: user.id,
-                              dragEnabled: !nonDraggableItems.contains(user));
+                              dragEnabled: dragEnabled);
                         },
                         sliverGridDelegate:
                             SliverReorderableGridDelegateWithFixedCrossAxisCount(
@@ -219,19 +220,20 @@ class _HomePageState extends State<HomePage> {
                         )
                     : AnimatedReorderableListView(
                         items: list,
-                        itemBuilder: (BuildContext context, int index) {
+                        itemBuilder: (BuildContext context, int index,
+                            bool dragEnabled) {
                           final user = list[index];
-
                           return ItemTile(
                             key: ValueKey(user.id),
                             id: user.id,
-                            dragEnabled: !nonDraggableItems.contains(user),
+                            dragEnabled: dragEnabled,
                           );
                         },
                         enterTransition: animations,
                         exitTransition: animations,
                         insertDuration: const Duration(milliseconds: 300),
                         removeDuration: const Duration(milliseconds: 300),
+                        nonDraggableItems: nonDraggableItems,
                         onReorder: (int oldIndex, int newIndex) {
                           final User user = list.removeAt(oldIndex);
                           list.insert(newIndex, user);
@@ -243,7 +245,6 @@ class _HomePageState extends State<HomePage> {
                           }
                           setState(() {});
                         },
-                        nonDraggableItems: nonDraggableItems,
                         proxyDecorator: proxyDecorator,
                         isSameItem: (a, b) => a.id == b.id
 

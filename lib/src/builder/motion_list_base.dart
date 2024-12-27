@@ -7,6 +7,9 @@ import 'motion_animated_builder.dart';
 typedef ItemBuilder<W extends Widget, E> = Widget Function(
     BuildContext context, int index);
 
+typedef ItemBuilderWithEnableDrag<W extends Widget, E> = Widget Function(
+    BuildContext context, int index, bool dragEnabled);
+
 typedef AnimatedWidgetBuilder<W extends Widget, E> = Widget Function(
     Widget child, Animation<double> animation);
 
@@ -17,7 +20,8 @@ const Duration kDefaultDragStartDelay = Duration(milliseconds: 500);
 
 abstract class MotionListBase<W extends Widget, E extends Object>
     extends StatefulWidget {
-  final ItemBuilder<W, E> itemBuilder;
+  final ItemBuilder<W, E>? itemBuilder;
+  final ItemBuilderWithEnableDrag<W, E>? itemBuilderWithEnableDrag;
   final List<E> items;
   final ReorderCallback? onReorder;
   final void Function(int)? onReorderStart;
@@ -40,7 +44,8 @@ abstract class MotionListBase<W extends Widget, E extends Object>
   const MotionListBase(
       {Key? key,
       required this.items,
-      required this.itemBuilder,
+      this.itemBuilder,
+      this.itemBuilderWithEnableDrag,
       this.onReorder,
       this.onReorderEnd,
       this.onReorderStart,
@@ -58,7 +63,8 @@ abstract class MotionListBase<W extends Widget, E extends Object>
       this.isSameItem,
       this.dragStartDelay,
       required this.nonDraggableItems})
-      : super(key: key);
+      : assert(itemBuilder != null || itemBuilderWithEnableDrag != null),
+        super(key: key);
 }
 
 abstract class MotionListBaseState<
@@ -86,7 +92,13 @@ abstract class MotionListBaseState<
 
   @nonVirtual
   @protected
-  ItemBuilder<W, E> get itemBuilder => widget.itemBuilder;
+  ItemBuilder<W, E> get itemBuilder {
+    if (widget.itemBuilderWithEnableDrag != null) {
+      return (context, index) => widget.itemBuilderWithEnableDrag!(
+          context, index, !nonDraggableItems.contains(index));
+    }
+    return widget.itemBuilder!;
+  }
 
   @nonVirtual
   @protected

@@ -26,8 +26,8 @@ class AnimatedReorderableGridView<E extends Object> extends StatelessWidget {
   /// The current list of items that this[AnimatedReorderableGridView] should represent.
   final List<E> items;
 
-  ///Called, as needed, to build list item widget
-  final ItemBuilder<Widget, E> itemBuilder;
+  /// Called, as needed, to build list item widget with drag enabled.
+  final ItemBuilderWithEnableDrag<Widget, E>? itemBuilder;
 
   /// Controls the layout of tiles in a grid.
   /// Given the current constraints on the grid,
@@ -186,6 +186,8 @@ class AnimatedReorderableGridView<E extends Object> extends StatelessWidget {
   final bool Function(E a, E b)? isSameItem;
 
   /// The amount of time to wait before starting the drag operation.
+  ///
+  /// Set to [Duration.zero] to start the drag operation immediately.
   final Duration dragStartDelay;
 
   /// A list of items that are not draggable.
@@ -245,7 +247,7 @@ class AnimatedReorderableGridView<E extends Object> extends StatelessWidget {
             padding: padding ?? EdgeInsets.zero,
             sliver: MotionListImpl.grid(
               items: items,
-              itemBuilder: itemBuilder,
+              itemBuilderWithEnableDrag: itemBuilder,
               sliverGridDelegate: sliverGridDelegate,
               insertDuration: insertDuration,
               removeDuration: removeDuration,

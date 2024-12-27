@@ -31,8 +31,8 @@ class AnimatedReorderableListView<E extends Object> extends StatelessWidget {
   /// The current list of items that this[AnimatedReorderableListView] should represent.
   final List<E> items;
 
-  ///Called, as needed, to build list item widget
-  final ItemBuilder itemBuilder;
+  /// Called, as needed, to build list item widget with drag enabled.
+  final ItemBuilderWithEnableDrag<Widget, E>? itemBuilder;
 
   ///List of [AnimationEffect](s) used for the appearing animation when an item was inserted into the list.
   ///
@@ -198,6 +198,8 @@ class AnimatedReorderableListView<E extends Object> extends StatelessWidget {
   final bool Function(E a, E b)? isSameItem;
 
   /// The amount of time to wait before starting the drag operation.
+  ///
+  /// Set to [Duration.zero] to start the drag operation immediately.
   final Duration dragStartDelay;
 
   /// A list of item that are not draggable.
@@ -257,7 +259,7 @@ class AnimatedReorderableListView<E extends Object> extends StatelessWidget {
             padding: padding ?? EdgeInsets.zero,
             sliver: MotionListImpl(
               items: items,
-              itemBuilder: itemBuilder,
+              itemBuilderWithEnableDrag: itemBuilder,
               enterTransition: enterTransition,
               exitTransition: exitTransition,
               insertDuration: insertDuration,
