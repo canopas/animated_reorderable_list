@@ -30,6 +30,8 @@ class MotionBuilder<E> extends StatefulWidget {
   final SliverGridDelegate? delegateBuilder;
   final bool buildDefaultDragHandles;
   final bool longPressDraggable;
+  final Duration dragStartDelay;
+  final List<int> nonDraggableIndices;
 
   const MotionBuilder(
       {Key? key,
@@ -44,7 +46,9 @@ class MotionBuilder<E> extends StatefulWidget {
       this.delegateBuilder,
       this.scrollDirection = Axis.vertical,
       required this.buildDefaultDragHandles,
-      this.longPressDraggable = false})
+      this.longPressDraggable = false,
+      required this.dragStartDelay,
+      required this.nonDraggableIndices})
       : assert(initialCount >= 0),
         super(key: key);
 
@@ -420,6 +424,9 @@ class MotionBuilderState extends State<MotionBuilder>
   }
 
   void registerItem(MotionAnimatedContentState item) {
+    if (_dragInfo != null && _items[item.index] != item) {
+      item.updateForGap(false);
+    }
     _items[item.index] = item;
     if (item.index == _dragInfo?.index) {
       item.dragging = true;
@@ -565,7 +572,7 @@ class MotionBuilderState extends State<MotionBuilder>
 
     assert(_activeItemAt(_outgoingItems, itemIndex) == null);
 
-    if (childrenMap.containsKey(itemIndex)) {
+    if (childrenMap.containsKey(index)) {
       final _ActiveItem? incomingItem =
           _removeActiveItemAt(_incomingItems, itemIndex);
 
@@ -578,15 +585,16 @@ class MotionBuilderState extends State<MotionBuilder>
         ..addStatusListener((status) => ());
       final _ActiveItem outgoingItem =
           _ActiveItem.animation(controller, itemIndex, sizeController);
+
       _outgoingItems
         ..add(outgoingItem)
         ..sort();
 
       controller.reverse().then<void>((void value) {
         if (controller.status == AnimationStatus.dismissed) {
-          if (childrenMap.containsKey(itemIndex)) {
+          if (childrenMap.containsKey(index)) {
             childrenMap.update(
-                itemIndex, (value) => value.copyWith(visible: false));
+                index, (value) => value.copyWith(visible: false));
           }
           sizeController.reverse(from: 1.0).then((value) {
             final removedItem =
@@ -602,7 +610,7 @@ class MotionBuilderState extends State<MotionBuilder>
             for (final _ActiveItem item in _outgoingItems) {
               if (item.itemIndex > outgoingItem.itemIndex) item.itemIndex -= 1;
             }
-            _onItemRemoved(itemIndex, removeItemDuration);
+            _onItemRemoved(index, removeItemDuration);
           });
         }
       });
@@ -684,6 +692,9 @@ class MotionBuilderState extends State<MotionBuilder>
     return _sizeExtent(_items[index]!.targetGeometry().size, scrollDirection);
   }
 
+  bool _dragEnabled(int index) =>
+      widget.onReorder != null && !widget.nonDraggableIndices.contains(index);
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -700,6 +711,7 @@ class MotionBuilderState extends State<MotionBuilder>
     if (outgoingItem != null) {
       final item = _items[index];
       if (item == null) return const SizedBox();
+
       final child = item.widget;
       return _removeItemBuilder(outgoingItem, child);
     }
@@ -707,9 +719,11 @@ class MotionBuilderState extends State<MotionBuilder>
       return SizedBox.fromSize(size: _dragInfo!.itemSize);
     }
 
-    final Widget child = widget.onReorder != null
-        ? reorderableItemBuilder(context, _itemIndexToIndex(index))
-        : widget.itemBuilder(context, _itemIndexToIndex(index));
+    final itemIndex = _itemIndexToIndex(index);
+
+    final Widget child = _dragEnabled(itemIndex)
+        ? reorderableItemBuilder(context, itemIndex)
+        : widget.itemBuilder(context, itemIndex);
 
     assert(() {
       if (child.key == null) {
@@ -763,7 +777,7 @@ class MotionBuilderState extends State<MotionBuilder>
     }());
     final Key itemGlobalKey = _MotionBuilderItemGlobalKey(item.key!, this);
 
-    if (!widget.longPressDraggable) {
+    if (widget.dragStartDelay.inMilliseconds == 0) {
       return ReorderableGridDragStartListener(
         key: itemGlobalKey,
         index: index,
@@ -819,12 +833,16 @@ class MotionBuilderState extends State<MotionBuilder>
         case TargetPlatform.fuchsia:
         case TargetPlatform.iOS:
           return ReorderableGridDelayedDragStartListener(
-              key: itemGlobalKey, index: index, child: item);
+              dragStartDelay: widget.dragStartDelay,
+              key: itemGlobalKey,
+              index: index,
+              child: item);
       }
     }
 
     const bool enable = true;
     return ReorderableGridDelayedDragStartListener(
+      dragStartDelay: widget.dragStartDelay,
       key: itemGlobalKey,
       index: index,
       enabled: enable,

@@ -7,16 +7,21 @@ import 'motion_animated_builder.dart';
 typedef ItemBuilder<W extends Widget, E> = Widget Function(
     BuildContext context, int index);
 
+typedef ItemBuilderWithEnableDrag<W extends Widget, E> = Widget Function(
+    BuildContext context, int index, bool dragEnabled);
+
 typedef AnimatedWidgetBuilder<W extends Widget, E> = Widget Function(
     Widget child, Animation<double> animation);
 
 typedef EqualityChecker<E> = bool Function(E, E);
 
 const Duration kAnimationDuration = Duration(milliseconds: 300);
+const Duration kDefaultDragStartDelay = Duration(milliseconds: 500);
 
 abstract class MotionListBase<W extends Widget, E extends Object>
     extends StatefulWidget {
-  final ItemBuilder<W, E> itemBuilder;
+  final ItemBuilder<W, E>? itemBuilder;
+  final ItemBuilderWithEnableDrag<W, E>? itemBuilderWithEnableDrag;
   final List<E> items;
   final ReorderCallback? onReorder;
   final void Function(int)? onReorderStart;
@@ -33,12 +38,15 @@ abstract class MotionListBase<W extends Widget, E extends Object>
   final bool? buildDefaultDragHandles;
   final bool? longPressDraggable;
   final bool Function(E a, E b)? isSameItem;
+  final Duration? dragStartDelay;
+  final List<E> nonDraggableItems;
   final bool enableSwap;
 
   const MotionListBase(
       {Key? key,
       required this.items,
-      required this.itemBuilder,
+      this.itemBuilder,
+      this.itemBuilderWithEnableDrag,
       this.onReorder,
       this.onReorderEnd,
       this.onReorderStart,
@@ -54,8 +62,11 @@ abstract class MotionListBase<W extends Widget, E extends Object>
       this.buildDefaultDragHandles,
       this.longPressDraggable,
       this.isSameItem,
-      this.enableSwap = true})
-      : super(key: key);
+      this.dragStartDelay,
+      this.enableSwap = true,
+      required this.nonDraggableItems})
+      : assert(itemBuilder != null || itemBuilderWithEnableDrag != null),
+        super(key: key);
 }
 
 abstract class MotionListBaseState<
@@ -83,7 +94,13 @@ abstract class MotionListBaseState<
 
   @nonVirtual
   @protected
-  ItemBuilder<W, E> get itemBuilder => widget.itemBuilder;
+  ItemBuilder<W, E> get itemBuilder {
+    if (widget.itemBuilderWithEnableDrag != null) {
+      return (context, index) => widget.itemBuilderWithEnableDrag!(
+          context, index, !nonDraggableItems.contains(index));
+    }
+    return widget.itemBuilder!;
+  }
 
   @nonVirtual
   @protected
@@ -137,6 +154,20 @@ abstract class MotionListBaseState<
   @protected
   bool Function(E a, E b) get isSameItem =>
       widget.isSameItem ?? (a, b) => a == b;
+
+  @nonVirtual
+  @protected
+  Duration get dragStartDelay =>
+      widget.dragStartDelay ?? kDefaultDragStartDelay;
+
+  @nonVirtual
+  @protected
+  List<int> get nonDraggableItems => widget.items
+      .asMap()
+      .entries
+      .where((entry) => widget.nonDraggableItems.contains(entry.value))
+      .map((entry) => entry.key)
+      .toList();
 
   @override
   void initState() {
@@ -222,6 +253,7 @@ abstract class MotionListBaseState<
       for (List<int> pair in swappedPairs) {
         listKey.currentState!.moveItem(pair[0], pair[1]);
       }
+      return;
     }
 
     // Detect removed and updated items

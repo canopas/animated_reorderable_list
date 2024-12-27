@@ -1,16 +1,24 @@
 class User {
   final String name;
-  final int index;
+  final int id;
 
-  User({required this.name, required this.index});
+  User({required this.name, required this.id});
 
   User copyWith({
     String? name,
-    int? index,
+    int? id,
   }) {
     return User(
       name: name ?? this.name,
-      index: index ?? this.index,
+      id: id ?? this.id,
     );
   }
+
+  @override
+  bool operator ==(Object other) {
+    return other is User && other.name == name && other.id == id;
+  }
+
+  @override
+  int get hashCode => Object.hash(name, id);
 }

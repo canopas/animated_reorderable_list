@@ -8,7 +8,8 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
   const MotionListImpl({
     Key? key,
     required List<E> items,
-    required ItemBuilder itemBuilder,
+    ItemBuilder? itemBuilder,
+    ItemBuilderWithEnableDrag? itemBuilderWithEnableDrag,
     List<AnimationEffect>? enterTransition,
     List<AnimationEffect>? exitTransition,
     Duration? insertDuration,
@@ -23,11 +24,14 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
     bool? buildDefaultDragHandles,
     bool? longPressDraggable,
     bool Function(E a, E b)? isSameItem,
+    Duration? dragStartDelay,
+    List<E> nonDraggableItems = const [],
     bool enableSwap = true,
   }) : super(
             key: key,
             items: items,
             itemBuilder: itemBuilder,
+            itemBuilderWithEnableDrag: itemBuilderWithEnableDrag,
             enterTransition: enterTransition,
             exitTransition: exitTransition,
             insertDuration: insertDuration,
@@ -42,13 +46,16 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
             buildDefaultDragHandles: buildDefaultDragHandles,
             longPressDraggable: longPressDraggable,
             isSameItem: isSameItem,
+            dragStartDelay: dragStartDelay,
+            nonDraggableItems: nonDraggableItems,
             enableSwap: enableSwap);
 
   const MotionListImpl.grid({
     Key? key,
     required List<E> items,
-    required ItemBuilder itemBuilder,
+    ItemBuilder? itemBuilder,
     required SliverGridDelegate sliverGridDelegate,
+    ItemBuilderWithEnableDrag? itemBuilderWithEnableDrag,
     List<AnimationEffect>? enterTransition,
     List<AnimationEffect>? exitTransition,
     ReorderCallback? onReorder,
@@ -63,12 +70,15 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
     bool? buildDefaultDragHandles,
     bool? longPressDraggable,
     bool Function(E a, E b)? isSameItem,
+    Duration? dragStartDelay,
+    List<E> nonDraggableItems = const [],
     bool enableSwap = true,
   }) : super(
             key: key,
             items: items,
             itemBuilder: itemBuilder,
             sliverGridDelegate: sliverGridDelegate,
+            itemBuilderWithEnableDrag: itemBuilderWithEnableDrag,
             enterTransition: enterTransition,
             exitTransition: exitTransition,
             insertDuration: insertDuration,
@@ -83,6 +93,8 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
             buildDefaultDragHandles: buildDefaultDragHandles,
             longPressDraggable: longPressDraggable,
             isSameItem: isSameItem,
+            dragStartDelay: dragStartDelay,
+            nonDraggableItems: nonDraggableItems,
             enableSwap: enableSwap);
 
   @override
@@ -109,6 +121,8 @@ class MotionListImplState<E extends Object>
       delegateBuilder: sliverGridDelegate,
       buildDefaultDragHandles: buildDefaultDragHandles,
       longPressDraggable: longPressDraggable,
+      dragStartDelay: dragStartDelay,
+      nonDraggableIndices: nonDraggableItems,
     );
   }
 }

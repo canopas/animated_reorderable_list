@@ -31,8 +31,8 @@ class AnimatedReorderableListView<E extends Object> extends StatelessWidget {
   /// The current list of items that this[AnimatedReorderableListView] should represent.
   final List<E> items;
 
-  ///Called, as needed, to build list item widget
-  final ItemBuilder itemBuilder;
+  /// Called, as needed, to build list item widget with drag enabled.
+  final ItemBuilderWithEnableDrag<Widget, E>? itemBuilder;
 
   ///List of [AnimationEffect](s) used for the appearing animation when an item was inserted into the list.
   ///
@@ -188,7 +188,7 @@ class AnimatedReorderableListView<E extends Object> extends StatelessWidget {
   /// transition for the widget that is built.
   final AnimatedWidgetBuilder? removeItemBuilder;
 
-  /// Whether the items can be dragged by long pressing on them.
+  @Deprecated("Use [dragStartDelay] instead.")
   final bool longPressDraggable;
 
   /// Whether the extent of the scroll view in the scrollDirection should be determined by the contents being viewed.
@@ -196,6 +196,16 @@ class AnimatedReorderableListView<E extends Object> extends StatelessWidget {
 
   /// A function that compares two items to determine whether they are the same.
   final bool Function(E a, E b)? isSameItem;
+
+  /// The amount of time to wait before starting the drag operation.
+  ///
+  /// Set to [Duration.zero] to start the drag operation immediately.
+  final Duration dragStartDelay;
+
+  /// A list of item that are not draggable.
+  ///
+  /// The item can't be draggable, but it can be reordered.
+  final List<E> nonDraggableItems;
 
   /// Whether to enable swap animation when changing the order of the items.
   ///
@@ -231,6 +241,8 @@ class AnimatedReorderableListView<E extends Object> extends StatelessWidget {
     this.longPressDraggable = true,
     this.shrinkWrap = false,
     this.isSameItem,
+    this.dragStartDelay = const Duration(milliseconds: 500),
+    this.nonDraggableItems = const [],
     this.enableSwap = true,
   }) : super(key: key);
 
@@ -253,7 +265,7 @@ class AnimatedReorderableListView<E extends Object> extends StatelessWidget {
             padding: padding ?? EdgeInsets.zero,
             sliver: MotionListImpl(
               items: items,
-              itemBuilder: itemBuilder,
+              itemBuilderWithEnableDrag: itemBuilder,
               enterTransition: enterTransition,
               exitTransition: exitTransition,
               insertDuration: insertDuration,
@@ -266,8 +278,11 @@ class AnimatedReorderableListView<E extends Object> extends StatelessWidget {
               scrollDirection: scrollDirection,
               insertItemBuilder: insertItemBuilder,
               removeItemBuilder: removeItemBuilder,
+              //ignore: deprecated_member_use_from_same_package
               longPressDraggable: longPressDraggable,
               isSameItem: isSameItem,
+              dragStartDelay: dragStartDelay,
+              nonDraggableItems: nonDraggableItems,
               enableSwap: enableSwap,
             ),
           ),

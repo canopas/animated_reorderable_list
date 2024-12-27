@@ -75,6 +75,8 @@ class ReorderableGridDragStartListener extends StatelessWidget {
 ///    reorder its items.
 class ReorderableGridDelayedDragStartListener
     extends ReorderableGridDragStartListener {
+  final Duration dragStartDelay;
+
   /// Creates a listener for an drag following a long press event over the
   /// given child widget.
   ///
@@ -84,11 +86,13 @@ class ReorderableGridDelayedDragStartListener
     Key? key,
     required Widget child,
     required int index,
+    required this.dragStartDelay,
     bool enabled = true,
   }) : super(key: key, child: child, index: index, enabled: enabled);
 
   @override
   MultiDragGestureRecognizer createRecognizer() {
-    return DelayedMultiDragGestureRecognizer(debugOwner: this);
+    return DelayedMultiDragGestureRecognizer(
+        delay: dragStartDelay, debugOwner: this);
   }
 }

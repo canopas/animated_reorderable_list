@@ -26,8 +26,8 @@ class AnimatedReorderableGridView<E extends Object> extends StatelessWidget {
   /// The current list of items that this[AnimatedReorderableGridView] should represent.
   final List<E> items;
 
-  ///Called, as needed, to build list item widget
-  final ItemBuilder<Widget, E> itemBuilder;
+  /// Called, as needed, to build list item widget with drag enabled.
+  final ItemBuilderWithEnableDrag<Widget, E>? itemBuilder;
 
   /// Controls the layout of tiles in a grid.
   /// Given the current constraints on the grid,
@@ -176,7 +176,7 @@ class AnimatedReorderableGridView<E extends Object> extends StatelessWidget {
   /// transition for the widget that is built.
   final AnimatedWidgetBuilder? removeItemBuilder;
 
-  /// Whether the items can be dragged by long pressing on them.
+  @Deprecated("Use [dragStartDelay] instead.")
   final bool longPressDraggable;
 
   /// Whether the extent of the scroll view in the scrollDirection should be determined by the contents being viewed.
@@ -184,6 +184,16 @@ class AnimatedReorderableGridView<E extends Object> extends StatelessWidget {
 
   /// A function that compares two items to determine whether they are the same.
   final bool Function(E a, E b)? isSameItem;
+
+  /// The amount of time to wait before starting the drag operation.
+  ///
+  /// Set to [Duration.zero] to start the drag operation immediately.
+  final Duration dragStartDelay;
+
+  /// A list of items that are not draggable.
+  ///
+  /// The item can't be draggable, but it can be reordered.
+  final List<E> nonDraggableItems;
 
   /// Whether to enable swap animation when changing the order of the items.
   ///
@@ -219,6 +229,8 @@ class AnimatedReorderableGridView<E extends Object> extends StatelessWidget {
       this.insertItemBuilder,
       this.removeItemBuilder,
       this.isSameItem,
+      this.dragStartDelay = const Duration(milliseconds: 500),
+      this.nonDraggableItems = const [],
       this.enableSwap = true})
       : super(key: key);
 
@@ -241,7 +253,7 @@ class AnimatedReorderableGridView<E extends Object> extends StatelessWidget {
             padding: padding ?? EdgeInsets.zero,
             sliver: MotionListImpl.grid(
               items: items,
-              itemBuilder: itemBuilder,
+              itemBuilderWithEnableDrag: itemBuilder,
               sliverGridDelegate: sliverGridDelegate,
               insertDuration: insertDuration,
               removeDuration: removeDuration,
@@ -254,8 +266,11 @@ class AnimatedReorderableGridView<E extends Object> extends StatelessWidget {
               scrollDirection: scrollDirection,
               insertItemBuilder: insertItemBuilder,
               removeItemBuilder: removeItemBuilder,
+              //ignore: deprecated_member_use_from_same_package
               longPressDraggable: longPressDraggable,
               isSameItem: isSameItem,
+              dragStartDelay: dragStartDelay,
+              nonDraggableItems: nonDraggableItems,
               enableSwap: enableSwap,
             ),
           ),
