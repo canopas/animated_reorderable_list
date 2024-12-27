@@ -63,11 +63,10 @@ abstract class MotionListBase<W extends Widget, E extends Object>
       this.longPressDraggable,
       this.isSameItem,
       this.dragStartDelay,
-        this.enableSwap = true,
+      this.enableSwap = true,
       required this.nonDraggableItems})
       : assert(itemBuilder != null || itemBuilderWithEnableDrag != null),
-
-       super(key: key);
+        super(key: key);
 }
 
 abstract class MotionListBaseState<
@@ -254,6 +253,7 @@ abstract class MotionListBaseState<
       for (List<int> pair in swappedPairs) {
         listKey.currentState!.moveItem(pair[0], pair[1]);
       }
+      return;
     }
 
     // Detect removed and updated items

@@ -47,7 +47,7 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
             longPressDraggable: longPressDraggable,
             isSameItem: isSameItem,
             dragStartDelay: dragStartDelay,
-            nonDraggableItems: nonDraggableItems);
+            nonDraggableItems: nonDraggableItems,
             enableSwap: enableSwap);
 
   const MotionListImpl.grid({
@@ -94,7 +94,7 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
             longPressDraggable: longPressDraggable,
             isSameItem: isSameItem,
             dragStartDelay: dragStartDelay,
-            nonDraggableItems: nonDraggableItems);
+            nonDraggableItems: nonDraggableItems,
             enableSwap: enableSwap);
 
   @override
