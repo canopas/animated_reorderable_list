@@ -287,8 +287,15 @@ You can use multiple animations at the same time by providing a list of animatio
 The following animations are available:
 
 | Animation Type   | ListView Example              | GridView Example              |
-|------------------|-------------------------------|-------------------------------|
-| **FadeIn**       | ![Fade In List](./gifs/fade_in_list.gif) | ![Fade In Grid](./gifs/fade_in_grid.gif)  |
+|------------------|-----------------
+
+
+https://github.com/user-attachments/assets/d0bef9d4-dc66-44d8-987c-776890132ccb
+
+
+--------------|-------------------------------|
+| **FadeIn**       | ![List](https://github.com/user-attachments/assets/38a7bd7a-4db3-4aea-b0a1-cc414152b4d4) | ![Grid](https://github.com/user-attachments/assets/d0bef9d4-dc66-44d8-987c-776890132ccb
+))  |
 | **SlideIn**      | ![Slide In List](./gifs/slide_in_list.gif) | ![Slide In Grid](./gifs/slide_in_grid.gif)  |
 | **ScaleIn**      | ![Scale In List](./gifs/scale_in_list.gif) | ![Scale In Grid](./gifs/scale_in_grid.gif) |
 | **FlipAnimation** | ![Flip Animation List](./gifs/flip_list.gif) | ![Flip Animation Grid](./gifs/flip_grid.gif)  |
