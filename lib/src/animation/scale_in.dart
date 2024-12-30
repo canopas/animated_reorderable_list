@@ -7,6 +7,7 @@ class ScaleIn extends AnimationEffect<double> {
   final double? begin;
   final double? end;
 
+  /// A scaling animation where the item grows into view.
   ScaleIn({super.delay, super.duration, super.curve, this.begin, this.end});
 
   @override

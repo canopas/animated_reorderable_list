@@ -7,6 +7,7 @@ class ScaleInBottom extends AnimationEffect<double> {
   final double? begin;
   final double? end;
 
+  /// A scaling effect originating from the bottom.
   ScaleInBottom(
       {super.delay, super.duration, super.curve, this.begin, this.end});
 

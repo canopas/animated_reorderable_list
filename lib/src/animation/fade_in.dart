@@ -7,6 +7,7 @@ class FadeIn extends AnimationEffect<double> {
   final double? begin;
   final double? end;
 
+  /// A smooth fade-in animation.
   FadeIn({super.delay, super.duration, super.curve, this.begin, this.end});
 
   @override

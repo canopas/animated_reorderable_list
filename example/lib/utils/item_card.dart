@@ -1,3 +1,4 @@
+import 'package:example/theme/colors.dart';
 import 'package:flutter/material.dart';
 
 class ItemCard extends StatelessWidget {
@@ -12,14 +13,12 @@ class ItemCard extends StatelessWidget {
       height: 150.0,
       width: 150,
       child: Card(
-        color: dragEnabled
-            ? Colors.primaries[id % Colors.primaries.length]
-            : Colors.grey,
+        color: !dragEnabled ? containerLowColor : primaryColor,
         child: Center(
-          child: Text(
-            (id).toString(),
-            style: Theme.of(context).textTheme.headlineMedium,
-          ),
+          child: dragEnabled
+              ? Text((id).toString(),
+                  style: const TextStyle(fontSize: 22, color: Colors.black))
+              : const Icon(Icons.lock, color: Colors.white),
         ),
       ),
     );

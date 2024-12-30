@@ -8,6 +8,7 @@ class ScaleInTop extends AnimationEffect<double> {
   final double? begin;
   final double? end;
 
+  /// A scaling effect originating from the top.
   ScaleInTop({super.delay, super.duration, super.curve, this.begin, this.end});
 
   @override

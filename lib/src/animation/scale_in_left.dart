@@ -7,6 +7,7 @@ class ScaleInLeft extends AnimationEffect<double> {
   final double? begin;
   final double? end;
 
+  /// A scaling effect originating from the left.
   ScaleInLeft({super.delay, super.duration, super.curve, this.begin, this.end});
 
   @override
