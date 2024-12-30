@@ -1,3 +1,13 @@
+## 1.1.4
+
+### Improvements
+- Add swap animation when changing the order of items in the list
+- Add 'enableSwap' to enable/disable swap animation
+- Add 'nonDraggableItems' to make items non-draggable and enable/disable reordering
+- Add `dragStartDelay` to delay the start of the drag gesture
+- Deprecate 'longPressDrag' in favor of `dragStartDelay`
+- Update Example App
+
 ## 1.1.3
 
 ### Bug fixes

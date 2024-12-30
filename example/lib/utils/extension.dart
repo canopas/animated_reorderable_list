@@ -5,7 +5,3 @@ extension StringExtension on String {
     return "${this[0].toUpperCase()}${substring(1)}";
   }
 }
-
-extension BuildContextExtensions on BuildContext {
-  EdgeInsets get mediaQueryPadding => MediaQuery.paddingOf(this);
-}
