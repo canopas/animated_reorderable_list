@@ -13,7 +13,7 @@ class ItemCard extends StatelessWidget {
       height: 150.0,
       width: 150,
       child: Card(
-        color: !dragEnabled ? containerLowColor : primaryColor,
+        color: !dragEnabled ? containerLowColor : Colors.primaries[id % Colors.primaries.length],
         child: Center(
           child: dragEnabled
               ? Text((id).toString(),
