@@ -31,17 +31,17 @@ class AnimatedReorderableListView<E extends Object> extends StatelessWidget {
   /// The current list of items that this[AnimatedReorderableListView] should represent.
   final List<E> items;
 
-  /// Called, as needed, to build list item widget with drag enabled.
-  final ItemBuilderWithEnableDrag<Widget, E>? itemBuilder;
+  ///Called, as needed, to build list item widget
+  final ItemBuilder<Widget, E> itemBuilder;
 
   ///List of [AnimationEffect](s) used for the appearing animation when an item was inserted into the list.
   ///
-  ///Defaults to [FadeAnimation()]
+  ///Defaults to [Fade()]
   final List<AnimationEffect>? enterTransition;
 
   ///List of [AnimationEffect](s) used for the disappearing animation when an item was removed from the list.
   ///
-  ///Defaults to [FadeAnimation()]
+  ///Defaults to [Fade()]
   final List<AnimationEffect>? exitTransition;
 
   /// The duration of the animation when an item was inserted into the list.
@@ -98,20 +98,7 @@ class AnimatedReorderableListView<E extends Object> extends StatelessWidget {
 
   final bool buildDefaultDragHandles;
 
-  /// {@template flutter.widgets.scroll_view.reverse}
-  /// Whether the scroll view scrolls in the reading direction.
-  ///
-  /// For example, if the reading direction is left-to-right and
-  /// [scrollDirection] is [Axis.horizontal], then the scroll view scrolls from
-  /// left to right when [reverse] is false and from right to left when
-  /// [reverse] is true.
-  ///
-  /// Similarly, if [scrollDirection] is [Axis.vertical], then the scroll view
-  /// scrolls from top to bottom when [reverse] is false and from bottom to top
-  /// when [reverse] is true.
-  ///
-  /// Defaults to false.
-  /// {@endtemplate}
+  /// {@macro flutter.widgets.scroll_view.reverse}
   final bool reverse;
 
   /// [ScrollController] to get the current scroll position.
@@ -217,7 +204,7 @@ class AnimatedReorderableListView<E extends Object> extends StatelessWidget {
   /// ```dart
   /// isSameItem: (a, b) => a.id == b.id,
   /// ```
-  final bool Function(E a, E b)? isSameItem;
+  final bool Function(E a, E b) isSameItem;
 
   /// The amount of time to wait before starting the drag operation.
   ///
@@ -234,6 +221,8 @@ class AnimatedReorderableListView<E extends Object> extends StatelessWidget {
   /// Defaults to true.
   final bool enableSwap;
 
+  /// Creates a [AnimatedReorderableListView] that enables users to interactively reorder items through dragging,
+  /// with animated insertion and removal of items.
   const AnimatedReorderableListView({
     Key? key,
     required this.items,
@@ -262,7 +251,7 @@ class AnimatedReorderableListView<E extends Object> extends StatelessWidget {
     this.removeItemBuilder,
     this.longPressDraggable = true,
     this.shrinkWrap = false,
-    this.isSameItem,
+    required this.isSameItem,
     this.dragStartDelay = const Duration(milliseconds: 500),
     this.nonDraggableItems = const [],
     this.enableSwap = true,
@@ -287,7 +276,7 @@ class AnimatedReorderableListView<E extends Object> extends StatelessWidget {
             padding: padding ?? EdgeInsets.zero,
             sliver: MotionListImpl(
               items: items,
-              itemBuilderWithEnableDrag: itemBuilder,
+              itemBuilder: itemBuilder,
               enterTransition: enterTransition,
               exitTransition: exitTransition,
               insertDuration: insertDuration,

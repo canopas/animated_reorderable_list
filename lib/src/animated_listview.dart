@@ -42,20 +42,7 @@ class AnimatedListView<E extends Object> extends StatelessWidget {
   /// Defaults to [Axis.vertical].
   final Axis scrollDirection;
 
-  /// {@template flutter.widgets.scroll_view.reverse}
-  /// Whether the scroll view scrolls in the reading direction.
-  ///
-  /// For example, if the reading direction is left-to-right and
-  /// [scrollDirection] is [Axis.horizontal], then the scroll view scrolls from
-  /// left to right when [reverse] is false and from right to left when
-  /// [reverse] is true.
-  ///
-  /// Similarly, if [scrollDirection] is [Axis.vertical], then the scroll view
-  /// scrolls from top to bottom when [reverse] is false and from bottom to top
-  /// when [reverse] is true.
-  ///
-  /// Defaults to false.
-  /// {@endtemplate}
+  /// {@macro flutter.widgets.scroll_view.reverse}
   final bool reverse;
 
   /// [ScrollController] to get the current scroll position.
@@ -167,6 +154,7 @@ class AnimatedListView<E extends Object> extends StatelessWidget {
   /// Defaults to true.
   final bool enableSwap;
 
+  /// Creates a [AnimatedListView] that animates insertion and removal of the item.
   const AnimatedListView({
     Key? key,
     required this.items,
@@ -189,7 +177,7 @@ class AnimatedListView<E extends Object> extends StatelessWidget {
     this.insertItemBuilder,
     this.removeItemBuilder,
     this.shrinkWrap = false,
-    this.isSameItem,
+    required this.isSameItem,
     this.enableSwap = true,
   }) : super(key: key);
 

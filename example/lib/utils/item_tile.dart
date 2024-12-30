@@ -1,4 +1,7 @@
+import 'package:example/utils/extension.dart';
 import 'package:flutter/material.dart';
+
+import '../theme/colors.dart';
 
 class ItemTile extends StatelessWidget {
   final int id;
@@ -17,16 +20,16 @@ class ItemTile extends StatelessWidget {
       width: double.infinity,
       margin: const EdgeInsets.symmetric(vertical: 4),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(dragEnabled ? 10 : 0),
-        color: dragEnabled
-            ? Colors.primaries[id % Colors.primaries.length]
-            : Colors.grey,
+        borderRadius: BorderRadius.circular(10),
+        color: !dragEnabled ? containerLowColor : primaryColor,
       ),
       child: Center(
-        child: Text(
-          'Item $id',
-          style: const TextStyle(fontSize: 25),
-        ),
+        child: dragEnabled
+            ? Text(
+                'Item $id',
+                style: const TextStyle(fontSize: 25),
+              )
+            : const Icon(Icons.lock, color: Colors.white),
       ),
     );
   }

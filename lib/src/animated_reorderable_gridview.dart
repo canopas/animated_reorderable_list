@@ -7,7 +7,7 @@ import 'builder/motion_list_impl.dart';
 
 ///A GridView that enables users to interactively reorder items through dragging, with animated insertion and removal of items.
 ///
-///  enterTransition: [FadeEffect(), ScaleEffect()],
+///  enterTransition: [Fade(), Scale()],
 ///
 /// Effects are always run in parallel (ie. the fade and scale effects in the
 /// example above would be run simultaneously), but you can apply delays to
@@ -26,8 +26,8 @@ class AnimatedReorderableGridView<E extends Object> extends StatelessWidget {
   /// The current list of items that this[AnimatedReorderableGridView] should represent.
   final List<E> items;
 
-  /// Called, as needed, to build list item widget with drag enabled.
-  final ItemBuilderWithEnableDrag<Widget, E>? itemBuilder;
+  ///Called, as needed, to build list item widget
+  final ItemBuilder<Widget, E> itemBuilder;
 
   /// Controls the layout of tiles in a grid.
   /// Given the current constraints on the grid,
@@ -36,9 +36,46 @@ class AnimatedReorderableGridView<E extends Object> extends StatelessWidget {
   /// but it is more efficient to place tiles in roughly in order by scroll offset because grids reify a contiguous sequence of children.
   final SliverGridDelegate sliverGridDelegate;
 
-  ///List of [AnimationEffect](s) used for the appearing animation when item is added in the list.
+  /// A list of [AnimationEffect](s) used for the appearing animation when an item is added to the list.
   ///
-  ///Defaults to [FadeAnimation()]
+  /// This property controls how newly added items animate into view. The animations in this list
+  /// will run sequentially, meaning each effect will be applied one after another in the order
+  /// specified. By default, this property uses a single [Fade()] effect.
+  ///
+  /// ### Default Value
+  /// If not explicitly provided, the default animation applied is:
+  /// ```dart
+  /// [Fade()]
+  /// ```
+  ///
+  /// ### Supported Animations
+  /// The following animation effects are supported by the library and can be combined as desired:
+  /// - `FadeIn()`: A smooth fade-in animation.
+  /// - `FlipInY()`: An animation that flips the item along the Y-axis.
+  /// - `FlipInX()`: An animation that flips the item along the X-axis.
+  /// - `Landing()`: An animation that mimics a landing effect.
+  /// - `SizeAnimation()`: Gradually animates the size of the item.
+  /// - `ScaleIn()`: A scaling animation where the item grows into view.
+  /// - `ScaleInTop()`: A scaling effect originating from the top.
+  /// - `ScaleInBottom()`: A scaling effect originating from the bottom.
+  /// - `ScaleInLeft()`: A scaling effect originating from the left.
+  /// - `ScaleInRight()`: A scaling effect originating from the right.
+  /// - `SlideInLeft()`: A sliding animation from the left.
+  /// - `SlideInRight()`: A sliding animation from the right.
+  /// - `SlideInUp()`: A sliding animation from the bottom to the top.
+  /// - `SlideInDown()`: A sliding animation from the top to the bottom.
+  ///
+  /// ### Custom Animations
+  /// In addition to the predefined animations listed above, you can create custom configurations
+  /// for each animation to suit your specific needs. For example, you can adjust the duration,
+  /// curve, or other parameters for finer control:
+  /// ```dart
+  /// enterTransition: [
+  ///   FadeIn(duration: Duration(milliseconds: 500), curve: Curves.easeIn),
+  ///   SlideInLeft(delay: Duration(milliseconds: 200)),
+  /// ],
+  /// ```
+  ///
   final List<AnimationEffect>? enterTransition;
 
   ///List of [AnimationEffect](s) used for the disappearing animation when item is removed from list.
@@ -93,20 +130,7 @@ class AnimatedReorderableGridView<E extends Object> extends StatelessWidget {
   /// {@endtemplate}
   final EdgeInsetsGeometry? padding;
 
-  /// {@template flutter.widgets.scroll_view.reverse}
-  /// Whether the scroll view scrolls in the reading direction.
-  ///
-  /// For example, if the reading direction is left-to-right and
-  /// [scrollDirection] is [Axis.horizontal], then the scroll view scrolls from
-  /// left to right when [reverse] is false and from right to left when
-  /// [reverse] is true.
-  ///
-  /// Similarly, if [scrollDirection] is [Axis.vertical], then the scroll view
-  /// scrolls from top to bottom when [reverse] is false and from bottom to top
-  /// when [reverse] is true.
-  ///
-  /// Defaults to false.
-  /// {@endtemplate}
+  /// {@macro flutter.widgets.scroll_view.reverse}
   final bool reverse;
 
   /// [ScrollController] to get the current scroll position.
@@ -205,7 +229,7 @@ class AnimatedReorderableGridView<E extends Object> extends StatelessWidget {
   /// ```dart
   /// isSameItem: (a, b) => a.id == b.id,
   /// ```
-  final bool Function(E a, E b)? isSameItem;
+  final bool Function(E a, E b) isSameItem;
 
   /// The amount of time to wait before starting the drag operation.
   ///
@@ -222,6 +246,8 @@ class AnimatedReorderableGridView<E extends Object> extends StatelessWidget {
   /// Defaults to true.
   final bool enableSwap;
 
+  /// Creates a [AnimatedReorderableGridView] that enables users to interactively reorder items through dragging,
+  /// with animated insertion and removal of items.
   const AnimatedReorderableGridView(
       {Key? key,
       required this.items,
@@ -250,7 +276,7 @@ class AnimatedReorderableGridView<E extends Object> extends StatelessWidget {
       this.shrinkWrap = false,
       this.insertItemBuilder,
       this.removeItemBuilder,
-      this.isSameItem,
+     required this.isSameItem,
       this.dragStartDelay = const Duration(milliseconds: 500),
       this.nonDraggableItems = const [],
       this.enableSwap = true})
@@ -275,7 +301,7 @@ class AnimatedReorderableGridView<E extends Object> extends StatelessWidget {
             padding: padding ?? EdgeInsets.zero,
             sliver: MotionListImpl.grid(
               items: items,
-              itemBuilderWithEnableDrag: itemBuilder,
+              itemBuilder: itemBuilder,
               sliverGridDelegate: sliverGridDelegate,
               insertDuration: insertDuration,
               removeDuration: removeDuration,
