@@ -7,6 +7,7 @@ class Landing extends AnimationEffect<double> {
   final double? begin;
   final double? end;
 
+  ///  An animation that mimics a landing effect.
   Landing({super.delay, super.duration, super.curve, this.begin, this.end});
 
   @override

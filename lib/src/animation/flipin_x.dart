@@ -9,6 +9,7 @@ class FlipInX extends AnimationEffect<double> {
   final double? begin;
   final double? end;
 
+  /// An animation that flips the item along the X-axis.
   FlipInX({super.delay, super.duration, super.curve, this.begin, this.end});
 
   @override

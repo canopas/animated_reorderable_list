@@ -1,5 +1,4 @@
 import 'package:example/theme/colors.dart';
-import 'package:example/utils/extension.dart';
 import 'package:flutter/material.dart';
 
 class ItemCard extends StatelessWidget {

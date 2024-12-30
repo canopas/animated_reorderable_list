@@ -7,6 +7,7 @@ class SlideInRight extends AnimationEffect<Offset> {
   final Offset? begin;
   final Offset? end;
 
+  /// A sliding animation from the right.
   SlideInRight(
       {super.delay, super.duration, super.curve, this.begin, this.end});
 

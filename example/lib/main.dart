@@ -93,9 +93,23 @@ class _HomePageState extends State<HomePage> {
             alignment: Alignment.bottomCenter,
             children: [
               isGrid
-                  ? AnimatedReorderableGridView(
+                  ? AnimatedListView(
                       items: list,
-                      itemBuilder: (BuildContext context, int index) {
+                      itemBuilder: (context, index) {
+                        final user = list[index];
+                        return ItemTile(
+                          key: ValueKey(user.id),
+                          id: user.id,
+                          dragEnabled: !nonDraggableItems.contains(user),
+                        );
+                      },
+                      enterTransition: animations,
+                      exitTransition: animations,
+                      isSameItem: (a, b) => a.id == b.id,
+                    )
+                  : AnimatedGridView(
+                      items: list,
+                      itemBuilder: (context, index) {
                         final user = list[index];
                         return ItemCard(
                           key: ValueKey(user.id),
@@ -108,97 +122,114 @@ class _HomePageState extends State<HomePage> {
                               crossAxisCount: 4),
                       enterTransition: animations,
                       exitTransition: animations,
-                      insertDuration: const Duration(milliseconds: 300),
-                      removeDuration: const Duration(milliseconds: 300),
-                      onReorder: (int oldIndex, int newIndex) {
-                        setState(() {
-                          final User user = list.removeAt(oldIndex);
-                          list.insert(newIndex, user);
-                        });
-                      },
-                      nonDraggableItems: nonDraggableItems,
-                      dragStartDelay: const Duration(milliseconds: 300),
-                      onReorderEnd: (int index) {
-                        //  print(" End index :  $index");
-                      },
-                      onReorderStart: (int index) {
-                        // print(" Start index :  $index");
-                      },
-                      proxyDecorator: proxyDecorator,
-                      isSameItem: (a, b) => a.id == b.id,
-
-                      /*  A custom builder that is for inserting items with animations.
-
-                              insertItemBuilder: (Widget child, Animation<double> animation){
-                                 return ScaleTransition(
-                                       scale: animation,
-                                       child: child,
-                                     );
-                                    },
-
-
-                      */
-                      /*  A custom builder that is for removing items with animations.
-
-                                  removeItemBuilder: (Widget child, Animation<double> animation){
-                                     return ScaleTransition(
-                                       scale: animation,
-                                       child: child,
-                                     );
-                                    },
-                      */
-                    )
-                  : AnimatedReorderableListView(
-                      items: list,
-                      itemBuilder: (BuildContext context, int index) {
-                        final user = list[index];
-                        return ItemTile(
-                          key: ValueKey(user.id),
-                          id: user.id,
-                          dragEnabled: !nonDraggableItems.contains(user),
-                        );
-                      },
-                      enterTransition: animations,
-                      exitTransition: animations,
-                      insertDuration: const Duration(milliseconds: 300),
-                      removeDuration: const Duration(milliseconds: 300),
-                      nonDraggableItems: nonDraggableItems,
-                      dragStartDelay: const Duration(milliseconds: 300),
-                      onReorder: (int oldIndex, int newIndex) {
-                        final User user = list.removeAt(oldIndex);
-                        list.insert(newIndex, user);
-
-                        // Add isSameItem to compare objects when creating new
-
-                        for (int i = 0; i < list.length; i++) {
-                          list[i] = list[i].copyWith(id: list[i].id);
-                        }
-                        setState(() {});
-                      },
-                      proxyDecorator: proxyDecorator,
-                      isSameItem: (a, b) => a.id == b.id
-
-                      /*  A custom builder that is for inserting items with animations.
-
-                              insertItemBuilder: (Widget child, Animation<double> animation){
-                                 return ScaleTransition(
-                                       scale: animation,
-                                       child: child,
-                                     );
-                                    },
-
-
-                      */
-                      /*  A custom builder that is for removing items with animations.
-
-                                  removeItemBuilder: (Widget child, Animation<double> animation){
-                                     return ScaleTransition(
-                                       scale: animation,
-                                       child: child,
-                                     );
-                                    },
-                      */
-                      ),
+                      isSameItem: (a, b) => a.id == b.id),
+              // isGrid
+              //     ? AnimatedReorderableGridView(
+              //   items: list,
+              //   itemBuilder: (BuildContext context, int index) {
+              //     final user = list[index];
+              //     return ItemCard(
+              //       key: ValueKey(user.id),
+              //       id: user.id,
+              //       dragEnabled: !nonDraggableItems.contains(user),
+              //     );
+              //   },
+              //   sliverGridDelegate:
+              //   SliverReorderableGridDelegateWithFixedCrossAxisCount(
+              //       crossAxisCount: 4),
+              //   enterTransition: animations,
+              //   exitTransition: animations,
+              //   insertDuration: const Duration(milliseconds: 300),
+              //   removeDuration: const Duration(milliseconds: 300),
+              //   onReorder: (int oldIndex, int newIndex) {
+              //     setState(() {
+              //       final User user = list.removeAt(oldIndex);
+              //       list.insert(newIndex, user);
+              //     });
+              //   },
+              //   nonDraggableItems: nonDraggableItems,
+              //   dragStartDelay: const Duration(milliseconds: 300),
+              //   onReorderEnd: (int index) {
+              //     //  print(" End index :  $index");
+              //   },
+              //   onReorderStart: (int index) {
+              //     // print(" Start index :  $index");
+              //   },
+              //   proxyDecorator: proxyDecorator,
+              //   isSameItem: (a, b) => a.id == b.id,
+              //
+              //   /*  A custom builder that is for inserting items with animations.
+              //
+              //                 insertItemBuilder: (Widget child, Animation<double> animation){
+              //                    return ScaleTransition(
+              //                          scale: animation,
+              //                          child: child,
+              //                        );
+              //                       },
+              //
+              //
+              //         */
+              //   /*  A custom builder that is for removing items with animations.
+              //
+              //                     removeItemBuilder: (Widget child, Animation<double> animation){
+              //                        return ScaleTransition(
+              //                          scale: animation,
+              //                          child: child,
+              //                        );
+              //                       },
+              //         */
+              // )
+              //     : AnimatedReorderableListView(
+              //     items: list,
+              //     itemBuilder: (BuildContext context, int index) {
+              //       final user = list[index];
+              //       return ItemTile(
+              //         key: ValueKey(user.id),
+              //         id: user.id,
+              //         dragEnabled: !nonDraggableItems.contains(user),
+              //       );
+              //     },
+              //     enterTransition: [SlideInDown()],
+              //     exitTransition: animations,
+              //     insertDuration: const Duration(milliseconds: 300),
+              //     removeDuration: const Duration(milliseconds: 300),
+              //     nonDraggableItems: nonDraggableItems,
+              //     dragStartDelay: const Duration(milliseconds: 300),
+              //     onReorder: (int oldIndex, int newIndex) {
+              //       final User user = list.removeAt(oldIndex);
+              //       list.insert(newIndex, user);
+              //
+              //       // Add isSameItem to compare objects when creating new
+              //
+              //       for (int i = 0; i < list.length; i++) {
+              //         list[i] = list[i].copyWith(id: list[i].id);
+              //       }
+              //       setState(() {});
+              //     },
+              //     proxyDecorator: proxyDecorator,
+              //     isSameItem: (a, b) => a.id == b.id
+              //
+              //   /*  A custom builder that is for inserting items with animations.
+              //
+              //                 insertItemBuilder: (Widget child, Animation<double> animation){
+              //                    return ScaleTransition(
+              //                          scale: animation,
+              //                          child: child,
+              //                        );
+              //                       },
+              //
+              //
+              //         */
+              //   /*  A custom builder that is for removing items with animations.
+              //
+              //                     removeItemBuilder: (Widget child, Animation<double> animation){
+              //                        return ScaleTransition(
+              //                          scale: animation,
+              //                          child: child,
+              //                        );
+              //                       },
+              //         */
+              // ),
               _buildAnimationControlPanel(context),
             ],
           ),

@@ -5,9 +5,12 @@ import '../../animated_reorderable_list.dart';
 import 'builder/motion_list_base.dart';
 import 'builder/motion_list_impl.dart';
 
+/// @docImport 'animated_reorderable_listview';
+
 ///A GridView that enables users to interactively reorder items through dragging, with animated insertion and removal of items.
-///
-///  enterTransition: [Fade(), Scale()],
+///  ```dart
+///  enterTransition: [FadeIn(), ScaleIn()],
+///  ```
 ///
 /// Effects are always run in parallel (ie. the fade and scale effects in the
 /// example above would be run simultaneously), but you can apply delays to
@@ -16,17 +19,24 @@ import 'builder/motion_list_impl.dart';
 /// The [onReorder] parameter is required and will be called when a child
 /// widget is dragged to a new position.
 ///
-///
 /// All list items must have a key.
 ///
-/// While a drag is underway, the widget returned by the [AnimatedReorderableGridView.proxyDecorator]
+/// While a drag is underway, the widget returned by the [AnimatedReorderableListView.proxyDecorator]
 /// callback serves as a "proxy" (a substitute) for the item in the list. The proxy is
 /// created with the original list item as its child.
-class AnimatedReorderableGridView<E extends Object> extends StatelessWidget {
+///
+class AnimatedReorderableGridView<E extends Object> extends StatefulWidget {
   /// The current list of items that this[AnimatedReorderableGridView] should represent.
   final List<E> items;
 
-  ///Called, as needed, to build list item widget
+  /// Called, as needed, to build list item widgets.
+  ///
+  /// List items are only built when they're scrolled into view.
+  ///
+  /// The [ItemBuilder] index parameter indicates the item's
+  /// position in the list. The value of the index parameter will be between
+  /// zero and one less than [items]. All items in the list must have a
+  /// unique [Key].
   final ItemBuilder<Widget, E> itemBuilder;
 
   /// Controls the layout of tiles in a grid.
@@ -40,12 +50,12 @@ class AnimatedReorderableGridView<E extends Object> extends StatelessWidget {
   ///
   /// This property controls how newly added items animate into view. The animations in this list
   /// will run sequentially, meaning each effect will be applied one after another in the order
-  /// specified. By default, this property uses a single [Fade()] effect.
+  /// specified. By default, this property uses a single [FadeIn()] effect.
   ///
   /// ### Default Value
   /// If not explicitly provided, the default animation applied is:
   /// ```dart
-  /// [Fade()]
+  /// [FadeIn()]
   /// ```
   ///
   /// ### Supported Animations
@@ -78,26 +88,108 @@ class AnimatedReorderableGridView<E extends Object> extends StatelessWidget {
   ///
   final List<AnimationEffect>? enterTransition;
 
-  ///List of [AnimationEffect](s) used for the disappearing animation when item is removed from list.
+  /// A list of [AnimationEffect](s) used for the disappearing animation when an item was removed from the list.
   ///
-  ///Defaults to [FadeAnimation()]
+  /// This property controls how item will be removed from the view. The animations in this list
+  /// will run sequentially, meaning each effect will be applied one after another in the order
+  /// specified. By default, this property uses a single [FadeIn()] effect.
+  ///
+  /// ### Default Value
+  /// If not explicitly provided, the default animation applied is:
+  /// ```dart
+  /// [FadeIn()]
+  /// ```
+  ///
+  /// ### Supported Animations
+  /// The following animation effects are supported by the library and can be combined as desired:
+  /// - `FadeIn()`: A smooth fade-in animation.
+  /// - `FlipInY()`: An animation that flips the item along the Y-axis.
+  /// - `FlipInX()`: An animation that flips the item along the X-axis.
+  /// - `Landing()`: An animation that mimics a landing effect.
+  /// - `SizeAnimation()`: Gradually animates the size of the item.
+  /// - `ScaleIn()`: A scaling animation where the item grows into view.
+  /// - `ScaleInTop()`: A scaling effect originating from the top.
+  /// - `ScaleInBottom()`: A scaling effect originating from the bottom.
+  /// - `ScaleInLeft()`: A scaling effect originating from the left.
+  /// - `ScaleInRight()`: A scaling effect originating from the right.
+  /// - `SlideInLeft()`: A sliding animation from the left.
+  /// - `SlideInRight()`: A sliding animation from the right.
+  /// - `SlideInUp()`: A sliding animation from the bottom to the top.
+  /// - `SlideInDown()`: A sliding animation from the top to the bottom.
+  ///
+  /// ### Custom Animations
+  /// In addition to the predefined animations listed above, you can create custom configurations
+  /// for each animation to suit your specific needs. For example, you can adjust the duration,
+  /// curve, or other parameters for finer control:
+  /// ```dart
+  /// exitTransition: [
+  ///   FadeIn(duration: Duration(milliseconds: 500), curve: Curves.easeIn),
+  ///   SlideInLeft(delay: Duration(milliseconds: 200)),
+  /// ],
+  /// ```
+  ///
   final List<AnimationEffect>? exitTransition;
 
-  /// The duration of the animation when an item was inserted into the list.
+  /// The duration of the animation when an item is inserted into the list.
   ///
-  /// If you provide a specific duration for each AnimationEffect, it will override this [insertDuration].
+  /// This property defines the default duration for all animations applied to items
+  /// when they are added to the list. If you provide a specific duration for each
+  /// [AnimationEffect] in the `enterTransition` list, the [insertDuration]
+  /// override the durations of all animations in the [enterTransition].
+  ///
+  /// **Usage:**
+  /// - If `insertDuration` is provided, it will override all durations specified
+  ///   in the [enterTransition] list.
+  /// - If `insertDuration` is not provided, the individual durations defined
+  ///   in [enterTransition] will be used instead.
+  /// - If neither `insertDuration` nor individual durations are specified, a default
+  ///   duration (e.g., `const Duration(milliseconds: 300)`) will be used.
+  ///
+  /// **Example:**
+  /// ```dart
+  /// AnimatedReorderableGridView(
+  ///   insertDuration: Duration(milliseconds: 500), // Default duration for item insertions.
+  ///   enterTransition: [
+  ///     FadeIn(duration: Duration(milliseconds: 300)), // Overrides the default for this effect.
+  ///     SlideInLeft(), // Will use the default duration from `insertDuration`.
+  ///   ],
+  /// );
+  /// ```
+  /// insertDuration
   final Duration? insertDuration;
 
-  /// The duration of the animation when an item was removed from the list.
+  /// The duration of the animation when an item is removed from the list.
   ///
-  /// If you provide a specific duration for each AnimationEffect, it will override this [removeDuration].
+  /// This property defines the default duration for all animations applied to items
+  /// when they are removed from the list. If you provide a specific duration for each
+  /// [AnimationEffect] in the `exitTransition` list, the [removeDuration]
+  /// override the durations of all animations in the [exitTransition].
+  ///
+  /// **Usage:**
+  /// - If `removeDuration` is specified, it will be applied as the default duration
+  ///   for the removal animation of items.
+  /// - If specific durations are provided for individual `AnimationEffect`s, they take precedence.
+  /// - If neither `removeDuration` nor individual durations are specified, a default
+  ///   duration (e.g., `const Duration(milliseconds: 300)`) may be used.
+  ///
+  /// **Example:**
+  /// ```dart
+  /// AnimatedReorderableGridView(
+  ///   removeDuration: Duration(milliseconds: 400), // Default duration for item removals.
+  ///   exitTransition: [
+  ///     FadeOut(duration: Duration(milliseconds: 200)), // Overrides the default for this effect.
+  ///     SlideOutRight(), // Will use the default duration from `removeDuration`.
+  ///   ],
+  /// );
+  /// ```
+  /// `removeDuration` is overridden by the duration specified in the `exitTransition`.
   final Duration? removeDuration;
 
-  /// A callback used by [ReorderableList] to report that a list item has moved
+  /// A callback used by [AnimatedReorderableGridView] to report that a list item has moved
   /// to a new position in the list.
   ///
-  /// Implementations should remove the corresponding list item at [oldIndex]
-  /// and reinsert it at [newIndex].
+  /// Implementations should remove the corresponding list item at `oldIndex`
+  /// and reinsert it at `newIndex`.
   final ReorderCallback onReorder;
 
   /// A callback that is called when an item drag has started.
@@ -123,13 +215,6 @@ class AnimatedReorderableGridView<E extends Object> extends StatelessWidget {
   /// Defaults to [Axis.vertical].
   final Axis scrollDirection;
 
-  /// {@template flutter.widgets.reorderable_list.padding}
-  /// The amount of space by which to inset the list contents.
-  ///
-  /// It defaults to `EdgeInsets.all(0)`.
-  /// {@endtemplate}
-  final EdgeInsetsGeometry? padding;
-
   /// {@macro flutter.widgets.scroll_view.reverse}
   final bool reverse;
 
@@ -151,6 +236,13 @@ class AnimatedReorderableGridView<E extends Object> extends StatelessWidget {
   ///
   /// Defaults to null.
   final bool? primary;
+
+  /// {@template flutter.widgets.reorderable_list.padding}
+  /// The amount of space by which to inset the list contents.
+  ///
+  /// It defaults to `EdgeInsets.all(0)`.
+  /// {@endtemplate}
+  final EdgeInsetsGeometry? padding;
 
   /// How the scroll view should respond to user input.
   ///
@@ -189,8 +281,10 @@ class AnimatedReorderableGridView<E extends Object> extends StatelessWidget {
   /// A custom builder that is for adding items with animations.
   ///
   /// The child argument is the widget that is returned by [itemBuilder],
-  ///  and the `animation` is an [Animation] that should be used to animate an exit
+  ///  and the `animation` is an [Animation] that should be used to animate an enter
   /// transition for the widget that is built.
+  ///
+  /// If specified, the [enterTransition] will be ignored.
   final AnimatedWidgetBuilder? insertItemBuilder;
 
   /// A custom builder that is for removing items with animations.
@@ -198,9 +292,13 @@ class AnimatedReorderableGridView<E extends Object> extends StatelessWidget {
   /// The child argument is the widget that is returned by [itemBuilder],
   ///  and the `animation` is an [Animation] that should be used to animate an exit
   /// transition for the widget that is built.
+  ///
+  /// If specified, the [exitTransition] will be ignored.
   final AnimatedWidgetBuilder? removeItemBuilder;
 
   @Deprecated("Use [dragStartDelay] instead.")
+
+  /// Set [dragStartDelay] to [Duration.zero] to start the drag operation immediately.
   final bool longPressDraggable;
 
   /// Whether the extent of the scroll view in the scrollDirection should be determined by the contents being viewed.
@@ -276,50 +374,100 @@ class AnimatedReorderableGridView<E extends Object> extends StatelessWidget {
       this.shrinkWrap = false,
       this.insertItemBuilder,
       this.removeItemBuilder,
-     required this.isSameItem,
+      required this.isSameItem,
       this.dragStartDelay = const Duration(milliseconds: 500),
       this.nonDraggableItems = const [],
       this.enableSwap = true})
       : super(key: key);
 
+  /// The state from the closest instance of this class that encloses the given
+  /// context.
+  ///
+  /// If no [AnimatedReorderableGridViewState] surrounds the given context, then this function
+  /// will assert in debug mode and throw an exception in release mode.
+  ///
+  /// This method can be expensive (it walks the element tree).
+  static AnimatedReorderableGridViewState of(BuildContext context) {
+    final AnimatedReorderableGridViewState? result =
+        context.findAncestorStateOfType<AnimatedReorderableGridViewState>();
+    assert(() {
+      if (result == null) {
+        throw FlutterError.fromParts(<DiagnosticsNode>[
+          ErrorSummary(
+              'AnimatedReorderableGridViewState.of() called with a context that does not contain a AnimatedReorderableGridViewState.'),
+          ErrorDescription(
+            'No AnimatedReorderableGridViewState ancestor could be found starting from the context that was passed to AnimatedReorderableGridViewState.of().',
+          ),
+          ErrorHint(
+              'This can happen when the context provided is from the same StatefulWidget that '
+              'built the AnimatedReorderableGridViewState. '),
+          context.describeElement('The context used was'),
+        ]);
+      }
+      return true;
+    }());
+    return result!;
+  }
+
+  /// The state from the closest instance of this class that encloses the given
+  /// context.
+  ///
+  /// This method is typically used by [AnimatedReorderableGridViewState] item widgets that insert
+  /// or remove items in response to user input.
+  ///
+  /// If no [AnimatedReorderableGridViewState] surrounds the context given, then this function will
+  /// return null.
+  ///
+  /// This method can be expensive (it walks the element tree).
+  static AnimatedReorderableGridViewState? maybeOf(BuildContext context) {
+    return context.findAncestorStateOfType<AnimatedReorderableGridViewState>();
+  }
+
+  @override
+  State<AnimatedReorderableGridView<E>> createState() =>
+      AnimatedReorderableGridViewState();
+}
+
+class AnimatedReorderableGridViewState<E extends Object>
+    extends State<AnimatedReorderableGridView<E>> {
   @override
   Widget build(BuildContext context) {
     return CustomScrollView(
-        scrollDirection: scrollDirection,
-        reverse: reverse,
-        controller: controller,
-        primary: primary,
-        physics: physics,
-        scrollBehavior: scrollBehavior,
-        restorationId: restorationId,
-        keyboardDismissBehavior: keyboardDismissBehavior,
-        dragStartBehavior: dragStartBehavior,
-        clipBehavior: clipBehavior,
-        shrinkWrap: shrinkWrap,
+        scrollDirection: widget.scrollDirection,
+        reverse: widget.reverse,
+        controller: widget.controller,
+        primary: widget.primary,
+        physics: widget.physics,
+        scrollBehavior: widget.scrollBehavior,
+        restorationId: widget.restorationId,
+        keyboardDismissBehavior: widget.keyboardDismissBehavior,
+        dragStartBehavior: widget.dragStartBehavior,
+        clipBehavior: widget.clipBehavior,
+        shrinkWrap: widget.shrinkWrap,
         slivers: [
           SliverPadding(
-            padding: padding ?? EdgeInsets.zero,
+            padding: widget.padding ?? EdgeInsets.zero,
             sliver: MotionListImpl.grid(
-              items: items,
-              itemBuilder: itemBuilder,
-              sliverGridDelegate: sliverGridDelegate,
-              insertDuration: insertDuration,
-              removeDuration: removeDuration,
-              enterTransition: enterTransition,
-              exitTransition: exitTransition,
-              onReorder: onReorder,
-              onReorderStart: onReorderStart,
-              onReorderEnd: onReorderEnd,
-              proxyDecorator: proxyDecorator,
-              scrollDirection: scrollDirection,
-              insertItemBuilder: insertItemBuilder,
-              removeItemBuilder: removeItemBuilder,
+              items: widget.items,
+              itemBuilder: widget.itemBuilder,
+              sliverGridDelegate: widget.sliverGridDelegate,
+              insertDuration: widget.insertDuration,
+              removeDuration: widget.removeDuration,
+              enterTransition: widget.enterTransition,
+              exitTransition: widget.exitTransition,
+              onReorder: widget.onReorder,
+              onReorderStart: widget.onReorderStart,
+              onReorderEnd: widget.onReorderEnd,
+              proxyDecorator: widget.proxyDecorator,
+              scrollDirection: widget.scrollDirection,
+              insertItemBuilder: widget.insertItemBuilder,
+              removeItemBuilder: widget.removeItemBuilder,
               //ignore: deprecated_member_use_from_same_package
-              longPressDraggable: longPressDraggable,
-              isSameItem: isSameItem,
-              dragStartDelay: dragStartDelay,
-              nonDraggableItems: nonDraggableItems,
-              enableSwap: enableSwap,
+              longPressDraggable: widget.longPressDraggable,
+              isSameItem: widget.isSameItem,
+              dragStartDelay: widget.dragStartDelay,
+              nonDraggableItems: widget.nonDraggableItems,
+              enableSwap: widget.enableSwap,
             ),
           ),
         ]);

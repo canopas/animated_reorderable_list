@@ -7,6 +7,7 @@ class ScaleInRight extends AnimationEffect<double> {
   final double? begin;
   final double? end;
 
+  /// A scaling effect originating from the right.
   ScaleInRight(
       {super.delay, super.duration, super.curve, this.begin, this.end});
 

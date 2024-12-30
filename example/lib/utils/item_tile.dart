@@ -1,6 +1,4 @@
-import 'package:example/utils/extension.dart';
 import 'package:flutter/material.dart';
-
 import '../theme/colors.dart';
 
 class ItemTile extends StatelessWidget {

@@ -9,6 +9,7 @@ class FlipInY extends AnimationEffect<double> {
   final double? begin;
   final double? end;
 
+  /// An animation that flips the item along the Y-axis.
   FlipInY({super.delay, super.duration, super.curve, this.begin, this.end});
 
   @override

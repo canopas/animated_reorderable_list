@@ -7,6 +7,7 @@ class SlideInUp extends AnimationEffect<Offset> {
   final Offset? begin;
   final Offset? end;
 
+  /// A sliding animation from the bottom to the top.
   SlideInUp({super.delay, super.duration, super.curve, this.begin, this.end});
 
   @override

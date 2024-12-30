@@ -60,7 +60,7 @@ abstract class MotionListBase<W extends Widget, E extends Object>
       this.dragStartDelay,
       this.enableSwap = true,
       required this.nonDraggableItems})
-      : assert(itemBuilder != null ),
+      : assert(itemBuilder != null),
         super(key: key);
 }
 

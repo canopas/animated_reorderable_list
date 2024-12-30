@@ -10,6 +10,7 @@ class SizeAnimation extends AnimationEffect<double> {
   final Axis? axis;
   final double? axisAlignment;
 
+  /// Gradually animates the size of the item.
   SizeAnimation(
       {super.delay,
       super.duration,

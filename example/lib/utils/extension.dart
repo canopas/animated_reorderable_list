@@ -7,6 +7,5 @@ extension StringExtension on String {
 }
 
 extension BuildContextExtensions on BuildContext {
-
   EdgeInsets get mediaQueryPadding => MediaQuery.paddingOf(this);
 }
