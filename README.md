@@ -286,12 +286,12 @@ You can use multiple animations at the same time by providing a list of animatio
 
 The following animations are available:
 
-| Animation Type   | ListView Example              | GridView Example              | Description                                      |
-|------------------|-------------------------------|-------------------------------|--------------------------------------------------|
-| **FadeIn**       | ![Fade In List](./gifs/fade_in_list.gif) | ![Fade In Grid](./gifs/fade_in_grid.gif) | Items fade into view when added to the list/grid. |
-| **SlideIn**      | ![Slide In List](./gifs/slide_in_list.gif) | ![Slide In Grid](./gifs/slide_in_grid.gif) | Items slide into view from the specified direction. |
-| **ScaleIn**      | ![Scale In List](./gifs/scale_in_list.gif) | ![Scale In Grid](./gifs/scale_in_grid.gif) | Items scale up from a smaller size to full size. |
-| **FlipAnimation** | ![Flip Animation List](./gifs/flip_list.gif) | ![Flip Animation Grid](./gifs/flip_grid.gif) | Items flip in from an edge or axis.             |
+| Animation Type   | ListView Example              | GridView Example              |
+|------------------|-------------------------------|-------------------------------|
+| **FadeIn**       | ![Fade In List](./gifs/fade_in_list.gif) | ![Fade In Grid](./gifs/fade_in_grid.gif)  |
+| **SlideIn**      | ![Slide In List](./gifs/slide_in_list.gif) | ![Slide In Grid](./gifs/slide_in_grid.gif)  |
+| **ScaleIn**      | ![Scale In List](./gifs/scale_in_list.gif) | ![Scale In Grid](./gifs/scale_in_grid.gif) |
+| **FlipAnimation** | ![Flip Animation List](./gifs/flip_list.gif) | ![Flip Animation Grid](./gifs/flip_grid.gif)  |
 
 
 ## Bugs and Feedback
