@@ -158,7 +158,11 @@ abstract class MotionListBaseState<
   List<int> get nonDraggableItems => widget.items
       .asMap()
       .entries
-      .where((entry) => widget.nonDraggableItems.contains(entry.value))
+      .where((entry) {
+        final found =
+            widget.nonDraggableItems.where((e) => isSameItem(e, entry.value));
+        return found.isNotEmpty;
+      })
       .map((entry) => entry.key)
       .toList();
 
@@ -167,7 +171,11 @@ abstract class MotionListBaseState<
   List<int> get lockedIndices => widget.items
       .asMap()
       .entries
-      .where((entry) => widget.lockedItems.contains(entry.value))
+      .where((entry) {
+        final items =
+            widget.lockedItems.where((e) => isSameItem(e, entry.value));
+        return items.isNotEmpty;
+      })
       .map((entry) => entry.key)
       .toList();
 

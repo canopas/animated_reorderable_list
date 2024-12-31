@@ -39,7 +39,8 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     list = List.generate(8, (index) => User(name: "User $index", id: index));
     nonDraggableItems = list.where((user) => user.id == 1).toList();
-    lockedItems = list.where((user) => user.id == 0).toList();
+    lockedItems =
+        List.generate(1, (index) => User(name: "User $index", id: index));
   }
 
   void insert() {
