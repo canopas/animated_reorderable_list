@@ -355,7 +355,9 @@ class AnimatedReorderableListView<E extends Object> extends StatefulWidget {
   /// The item can't be draggable, but it can be reordered.
   final List<E> nonDraggableItems;
 
-  /// A list of items that are locked and can't be reordered.
+  /// A list of items that are locked and can't be reordered and dragged.
+  ///
+  /// Add elements in this list if all the elements in the list has same height. If the elements has different height, the reordered items will not be placed in the correct position.
   final List<E> lockedItems;
 
   /// Whether to enable swap animation when changing the order of the items.

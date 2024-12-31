@@ -27,7 +27,7 @@ class _HomePageState extends State<HomePage> {
   List<User> list = [];
 
   int addedNumber = 9;
-  bool isGrid = false;
+  bool isGrid = true;
 
   List<User> nonDraggableItems = [];
   List<User> lockedItems = [];
