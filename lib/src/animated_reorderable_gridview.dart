@@ -339,6 +339,9 @@ class AnimatedReorderableGridView<E extends Object> extends StatefulWidget {
   /// The item can't be draggable, but it can be reordered.
   final List<E> nonDraggableItems;
 
+  /// A list of items that are locked and can't be reordered.
+  final List<E> lockedItems;
+
   /// Whether to enable swap animation when changing the order of the items.
   ///
   /// Defaults to true.
@@ -377,6 +380,7 @@ class AnimatedReorderableGridView<E extends Object> extends StatefulWidget {
       required this.isSameItem,
       this.dragStartDelay = const Duration(milliseconds: 500),
       this.nonDraggableItems = const [],
+      this.lockedItems = const [],
       this.enableSwap = true})
       : super(key: key);
 
@@ -467,6 +471,7 @@ class AnimatedReorderableGridViewState<E extends Object>
               isSameItem: widget.isSameItem,
               dragStartDelay: widget.dragStartDelay,
               nonDraggableItems: widget.nonDraggableItems,
+              lockedItems: widget.lockedItems,
               enableSwap: widget.enableSwap,
             ),
           ),

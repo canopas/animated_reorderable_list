@@ -36,6 +36,7 @@ abstract class MotionListBase<W extends Widget, E extends Object>
   final bool Function(E a, E b)? isSameItem;
   final Duration? dragStartDelay;
   final List<E> nonDraggableItems;
+  final List<E> lockedItems;
   final bool enableSwap;
 
   const MotionListBase(
@@ -59,7 +60,8 @@ abstract class MotionListBase<W extends Widget, E extends Object>
       this.isSameItem,
       this.dragStartDelay,
       this.enableSwap = true,
-      required this.nonDraggableItems})
+      required this.nonDraggableItems,
+      required this.lockedItems})
       : assert(itemBuilder != null),
         super(key: key);
 }
@@ -156,7 +158,24 @@ abstract class MotionListBaseState<
   List<int> get nonDraggableItems => widget.items
       .asMap()
       .entries
-      .where((entry) => widget.nonDraggableItems.contains(entry.value))
+      .where((entry) {
+        final found =
+            widget.nonDraggableItems.where((e) => isSameItem(e, entry.value));
+        return found.isNotEmpty;
+      })
+      .map((entry) => entry.key)
+      .toList();
+
+  @nonVirtual
+  @protected
+  List<int> get lockedIndices => widget.items
+      .asMap()
+      .entries
+      .where((entry) {
+        final items =
+            widget.lockedItems.where((e) => isSameItem(e, entry.value));
+        return items.isNotEmpty;
+      })
       .map((entry) => entry.key)
       .toList();
 

@@ -32,6 +32,7 @@ class MotionBuilder<E> extends StatefulWidget {
   final bool longPressDraggable;
   final Duration dragStartDelay;
   final List<int> nonDraggableIndices;
+  final List<int> lockedIndices;
 
   const MotionBuilder(
       {Key? key,
@@ -48,7 +49,8 @@ class MotionBuilder<E> extends StatefulWidget {
       required this.buildDefaultDragHandles,
       this.longPressDraggable = false,
       required this.dragStartDelay,
-      required this.nonDraggableIndices})
+      required this.nonDraggableIndices,
+      required this.lockedIndices})
       : assert(initialCount >= 0),
         super(key: key);
 
@@ -306,12 +308,18 @@ class MotionBuilderState extends State<MotionBuilder>
       if (_insertIndex == item.index || isGrid) {
         _finalDropPosition = _itemOffsetAt(_insertIndex!);
       } else if (_reverse) {
-        if (_insertIndex! >= _items.length) {
+        if (_insertIndex! >= _items.length - 1) {
           _finalDropPosition = _itemStartOffsetAt(_items.length - 1) -
               _extentOffset(item.itemExtent, scrollDirection);
         } else {
-          final int atIndex =
+          int atIndex =
               _dragIndex! < _insertIndex! ? _insertIndex! + 1 : _insertIndex!;
+          if (_dragIndex! > _insertIndex! && widget.lockedIndices.isNotEmpty) {
+            atIndex = _insertIndex! + 1;
+            if (!widget.lockedIndices.contains(atIndex)) {
+              atIndex = _insertIndex!;
+            }
+          }
           _finalDropPosition = _itemStartOffsetAt(atIndex) +
               _extentOffset(_itemExtent(atIndex), scrollDirection);
         }
@@ -320,8 +328,17 @@ class MotionBuilderState extends State<MotionBuilder>
           _finalDropPosition = _itemStartOffsetAt(0) -
               _extentOffset(item.itemExtent, scrollDirection);
         } else {
-          final int atIndex =
+          int atIndex =
               _dragIndex! < _insertIndex! ? _insertIndex! : _insertIndex! - 1;
+
+          // if the item is locked, we need to calculate final position from the previous item
+          // if the previous item is locked, then we calculate position from the previous item
+          if (_dragIndex! < _insertIndex! && widget.lockedIndices.isNotEmpty) {
+            atIndex = _insertIndex! - 1;
+            if (!widget.lockedIndices.contains(atIndex)) {
+              atIndex = _insertIndex!;
+            }
+          }
           _finalDropPosition = _itemStartOffsetAt(atIndex) +
               _extentOffset(_itemExtent(atIndex), scrollDirection);
         }
@@ -387,7 +404,9 @@ class MotionBuilderState extends State<MotionBuilder>
     for (final MotionAnimatedContentState item in _items.values) {
       if (!item.mounted) continue;
       final Rect geometry = item.targetGeometryNonOffset();
-
+      if (widget.lockedIndices.contains(item.index)) {
+        continue;
+      }
       if (geometry.contains(dragCenter)) {
         newIndex = item.index;
         break;
@@ -398,7 +417,10 @@ class MotionBuilderState extends State<MotionBuilder>
     _insertIndex = newIndex;
 
     for (final MotionAnimatedContentState item in _items.values) {
-      if (item.index == _dragIndex) continue;
+      if (item.index == _dragIndex ||
+          widget.lockedIndices.contains(item.index)) {
+        continue;
+      }
       item.updateForGap(true);
     }
   }
@@ -410,16 +432,24 @@ class MotionBuilderState extends State<MotionBuilder>
 
     if (index < minPos || index > maxPos) return Offset.zero;
 
-    final int direction = _insertIndex! > _dragIndex! ? -1 : 1;
+    int direction = _insertIndex! > _dragIndex! ? -1 : 1;
+
+    int targetIndex = index + direction;
+
+    Offset targetOffset = _extentOffset(_dragInfo!.itemExtent, scrollDirection);
+
+    while (widget.lockedIndices.contains(targetIndex)) {
+      targetIndex += direction;
+      targetOffset += _extentOffset(_dragInfo!.itemExtent, scrollDirection);
+    }
     if (isGrid) {
-      return _itemOffsetAt(index + direction) - _itemOffsetAt(index);
+      return _itemOffsetAt(targetIndex) - _itemOffsetAt(index);
     } else {
-      final Offset offset =
-          _extentOffset(_dragInfo!.itemExtent, scrollDirection);
-      if (_insertIndex! > _dragIndex!) {
-        return _reverse ? offset : -offset;
+      if (_reverse) {
+        return _insertIndex! > _dragIndex! ? targetOffset : -targetOffset;
+      } else {
+        return _insertIndex! > _dragIndex! ? -targetOffset : targetOffset;
       }
-      return _reverse ? -offset : offset;
     }
   }
 
@@ -685,15 +715,19 @@ class MotionBuilderState extends State<MotionBuilder>
   }
 
   Offset _itemStartOffsetAt(int index) {
+    if (!_items.containsKey(index)) return Offset.zero;
     return _items[index]!.targetGeometry().topLeft;
   }
 
   double _itemExtent(int index) {
+    if (!_items.containsKey(index)) return 0;
     return _sizeExtent(_items[index]!.targetGeometry().size, scrollDirection);
   }
 
   bool _dragEnabled(int index) =>
-      widget.onReorder != null && !widget.nonDraggableIndices.contains(index);
+      widget.onReorder != null &&
+      !widget.nonDraggableIndices.contains(index) &&
+      !widget.lockedIndices.contains(index);
 
   @override
   Widget build(BuildContext context) {

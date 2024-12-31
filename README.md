@@ -14,12 +14,14 @@ drag-and-drop functionality in Flutter.
 - [x] Pre-built animation like fade,scale, slide, flip etc for Flutter list.
 - [x] Provides support for both lists and grids
 - [x] Supports large lists and creates items on demand as they come into the viewport.
+- [x] Enable/disable drag and drop functionality.
+- [x] Control reordering of item / locked an item.
 
 ## Demo
 
 ### Reorderable List
 
-| ![Image 1](https://github.com/user-attachments/assets/f68812ad-5106-4154-9e9a-7a09e7d23015?raw=true) | ![Image 2](https://github.com/user-attachments/assets/e954b616-1820-4004-9c0e-23b002a6b36f?raw=true) | ![Image 3](https://github.com/user-attachments/assets/9b5c695b-7874-4ea3-86b0-1b00b2bf8d65?raw=true) |
+| ![Image 1](https://github.com/user-attachments/assets/7a31a2c0-f49b-4280-ac8c-b4bc35e5a3db?raw=true) | ![Image 2](https://github.com/user-attachments/assets/3a7d34ec-eb2f-491c-af8f-43b569607d91?raw=true) | ![Image 3](https://github.com/user-attachments/assets/68c1b0f7-481e-4e6e-b995-e1b754354d1f?raw=true) |
 |                  :---:                             |                     :---:                          |                            :---:                   |
 |                ReorderableGridView                 |                   ReorderableListView              |              Swap Animation                        | 
 
