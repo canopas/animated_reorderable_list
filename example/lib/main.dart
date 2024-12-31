@@ -116,20 +116,14 @@ class _HomePageState extends State<HomePage> {
                         insertDuration: const Duration(milliseconds: 300),
                         removeDuration: const Duration(milliseconds: 300),
                         onReorder: (int oldIndex, int newIndex) {
-                          setState(() {
-                            final User user = list.removeAt(oldIndex);
-                            list.insert(newIndex, user);
-                          });
-
-                          // Position locked item at the same position if lockedItem is not empty
                           final Map<User, int> lockedItemPositions = {
                             for (int i = 0; i < list.length; i++)
                               if (lockedItems.contains(list[i])) list[i]: i
                           };
                           setState(() {
+                            final User user = list.removeAt(oldIndex);
+                            list.insert(newIndex, user);
                             for (var entry in lockedItemPositions.entries) {
-                              final User user = list.removeAt(oldIndex);
-                              list.insert(newIndex, user);
                               list.remove(entry.key);
                               list.insert(
                                   entry.value,
@@ -190,20 +184,14 @@ class _HomePageState extends State<HomePage> {
                         lockedItems: lockedItems,
                         dragStartDelay: const Duration(milliseconds: 300),
                         onReorder: (int oldIndex, int newIndex) {
-                          setState(() {
-                            final User user = list.removeAt(oldIndex);
-                            list.insert(newIndex, user);
-                          });
-
-                          // Position locked item at the same position if lockedItem is not empty
                           final Map<User, int> lockedItemPositions = {
                             for (int i = 0; i < list.length; i++)
                               if (lockedItems.contains(list[i])) list[i]: i
                           };
                           setState(() {
+                            final User user = list.removeAt(oldIndex);
+                            list.insert(newIndex, user);
                             for (var entry in lockedItemPositions.entries) {
-                              final User user = list.removeAt(oldIndex);
-                              list.insert(newIndex, user);
                               list.remove(entry.key);
                               list.insert(
                                   entry.value,
