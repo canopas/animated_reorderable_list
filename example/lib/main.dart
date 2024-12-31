@@ -160,7 +160,7 @@ class _HomePageState extends State<HomePage> {
                             dragEnabled: !nonDraggableItems.contains(user),
                           );
                         },
-                        enterTransition: [SlideInDown()],
+                        enterTransition: animations,
                         exitTransition: animations,
                         insertDuration: const Duration(milliseconds: 300),
                         removeDuration: const Duration(milliseconds: 300),
@@ -215,37 +215,39 @@ class _HomePageState extends State<HomePage> {
           color: containerLowColor,
           borderRadius: BorderRadius.circular(10),
         ),
-        child: DropdownButtonHideUnderline(
-          child: DropdownButton<AnimationType>(
-              dropdownColor: containerLowColor,
-              borderRadius: BorderRadius.circular(10),
-              alignment: Alignment.center,
-              iconEnabledColor: primaryColor,
-              value: appliedStyle,
-              items: AnimationType.values.map((AnimationType animationType) {
-                return DropdownMenuItem<AnimationType>(
-                  value: animationType,
-                  child: Text(
-                    animationType.name.capitalize(),
-                    style: const TextStyle(
-                        fontSize: 20,
-                        color: primaryColor,
-                        fontWeight: FontWeight.w500),
-                  ),
-                );
-              }).toList(),
-              onChanged: (AnimationType? animationType) {
-                if (animationType == null) {
-                  return;
-                }
-                animations = [];
-                AnimationEffect animation =
-                    AnimationProvider.buildAnimation(animationType);
-                animations.add(animation);
-                setState(() {
-                  appliedStyle = animationType;
-                });
-              }),
+        child: Center(
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<AnimationType>(
+                dropdownColor: containerLowColor,
+                borderRadius: BorderRadius.circular(10),
+                alignment: Alignment.center,
+                iconEnabledColor: primaryColor,
+                value: appliedStyle,
+                items: AnimationType.values.map((AnimationType animationType) {
+                  return DropdownMenuItem<AnimationType>(
+                    value: animationType,
+                    child: Text(
+                      animationType.name.capitalize(),
+                      style: const TextStyle(
+                          fontSize: 20,
+                          color: primaryColor,
+                          fontWeight: FontWeight.w500),
+                    ),
+                  );
+                }).toList(),
+                onChanged: (AnimationType? animationType) {
+                  if (animationType == null) {
+                    return;
+                  }
+                  animations = [];
+                  AnimationEffect animation =
+                      AnimationProvider.buildAnimation(animationType);
+                  animations.add(animation);
+                  setState(() {
+                    appliedStyle = animationType;
+                  });
+                }),
+          ),
         ));
   }
 
