@@ -14,6 +14,8 @@ drag-and-drop functionality in Flutter.
 - [x] Pre-built animation like fade,scale, slide, flip etc for Flutter list.
 - [x] Provides support for both lists and grids
 - [x] Supports large lists and creates items on demand as they come into the viewport.
+- [x] Enable/disable drag and drop functionality.
+- [x] Control reordering of item / locked an item.
 
 ## Demo
 

@@ -1,3 +1,8 @@
+## 1.1.5
+
+### Improvements
+- Add `lockedItems` to make items locked and non-draggable
+
 ## 1.1.4
 
 ### Improvements
