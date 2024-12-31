@@ -25,6 +25,7 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
     bool Function(E a, E b)? isSameItem,
     Duration? dragStartDelay,
     List<E> nonDraggableItems = const [],
+    List<E> lockedItems = const [],
     bool enableSwap = true,
   }) : super(
             key: key,
@@ -46,6 +47,7 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
             isSameItem: isSameItem,
             dragStartDelay: dragStartDelay,
             nonDraggableItems: nonDraggableItems,
+            lockedItems: lockedItems,
             enableSwap: enableSwap);
 
   const MotionListImpl.grid({
@@ -69,6 +71,7 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
     bool Function(E a, E b)? isSameItem,
     Duration? dragStartDelay,
     List<E> nonDraggableItems = const [],
+    List<E> lockedItems = const [],
     bool enableSwap = true,
   }) : super(
             key: key,
@@ -91,6 +94,7 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
             isSameItem: isSameItem,
             dragStartDelay: dragStartDelay,
             nonDraggableItems: nonDraggableItems,
+            lockedItems: lockedItems,
             enableSwap: enableSwap);
 
   @override
@@ -119,6 +123,7 @@ class MotionListImplState<E extends Object>
       longPressDraggable: longPressDraggable,
       dragStartDelay: dragStartDelay,
       nonDraggableIndices: nonDraggableItems,
+      lockedIndices: lockedIndices,
     );
   }
 }

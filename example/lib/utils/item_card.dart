@@ -4,8 +4,13 @@ import 'package:flutter/material.dart';
 class ItemCard extends StatelessWidget {
   final int id;
   final bool dragEnabled;
+  final bool isLocked;
 
-  const ItemCard({super.key, required this.id, this.dragEnabled = true});
+  const ItemCard(
+      {super.key,
+      required this.id,
+      this.dragEnabled = true,
+      this.isLocked = false});
 
   @override
   Widget build(BuildContext context) {
@@ -13,11 +18,12 @@ class ItemCard extends StatelessWidget {
       height: 150.0,
       width: 150,
       child: Card(
-        color: !dragEnabled
+        color: isLocked
             ? containerLowColor
-            : Colors.primaries[id % Colors.primaries.length],
+            : Colors.primaries[id % Colors.primaries.length]
+                .withValues(alpha: dragEnabled ? 1 : 0.3),
         child: Center(
-          child: dragEnabled
+          child: !isLocked
               ? Text((id).toString(),
                   style: const TextStyle(fontSize: 22, color: Colors.black))
               : const Icon(Icons.lock, color: Colors.white),

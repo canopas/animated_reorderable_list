@@ -27,9 +27,10 @@ class _HomePageState extends State<HomePage> {
   List<User> list = [];
 
   int addedNumber = 9;
-  bool isGrid = true;
+  bool isGrid = false;
 
   List<User> nonDraggableItems = [];
+  List<User> lockedItems = [];
 
   List<AnimationEffect> animations = [];
 
@@ -37,7 +38,8 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     list = List.generate(8, (index) => User(name: "User $index", id: index));
-    nonDraggableItems = list.where((user) => user.id == 0).toList();
+    nonDraggableItems = list.where((user) => user.id == 1).toList();
+    lockedItems = list.where((user) => user.id == 0).toList();
   }
 
   void insert() {
@@ -63,9 +65,9 @@ class _HomePageState extends State<HomePage> {
           actions: [
             IconButton(
                 onPressed: () {
-                  final child1 = list[1];
+                  final child1 = list[2];
                   final child2 = list[7];
-                  list[1] = child2;
+                  list[2] = child2;
                   list[7] = child1;
                   setState(() {});
                 },
@@ -103,6 +105,7 @@ class _HomePageState extends State<HomePage> {
                             key: ValueKey(user.id),
                             id: user.id,
                             dragEnabled: !nonDraggableItems.contains(user),
+                            isLocked: lockedItems.contains(user),
                           );
                         },
                         sliverGridDelegate:
@@ -113,12 +116,24 @@ class _HomePageState extends State<HomePage> {
                         insertDuration: const Duration(milliseconds: 300),
                         removeDuration: const Duration(milliseconds: 300),
                         onReorder: (int oldIndex, int newIndex) {
+                          final Map<User, int> lockedItemPositions = {
+                            for (int i = 0; i < list.length; i++)
+                              if (lockedItems.contains(list[i])) list[i]: i
+                          };
                           setState(() {
                             final User user = list.removeAt(oldIndex);
                             list.insert(newIndex, user);
+                            for (var entry in lockedItemPositions.entries) {
+                              list.remove(entry.key);
+                              list.insert(
+                                  entry.value,
+                                  entry
+                                      .key); // Insert based on original position (id in this case)
+                            }
                           });
                         },
                         nonDraggableItems: nonDraggableItems,
+                        lockedItems: lockedItems,
                         dragStartDelay: const Duration(milliseconds: 300),
                         onReorderEnd: (int index) {
                           //  print(" End index :  $index");
@@ -158,6 +173,7 @@ class _HomePageState extends State<HomePage> {
                             key: ValueKey(user.id),
                             id: user.id,
                             dragEnabled: !nonDraggableItems.contains(user),
+                            isLocked: lockedItems.contains(user),
                           );
                         },
                         enterTransition: animations,
@@ -165,17 +181,24 @@ class _HomePageState extends State<HomePage> {
                         insertDuration: const Duration(milliseconds: 300),
                         removeDuration: const Duration(milliseconds: 300),
                         nonDraggableItems: nonDraggableItems,
+                        lockedItems: lockedItems,
                         dragStartDelay: const Duration(milliseconds: 300),
                         onReorder: (int oldIndex, int newIndex) {
-                          final User user = list.removeAt(oldIndex);
-                          list.insert(newIndex, user);
-
-                          // Add isSameItem to compare objects when creating new
-
-                          for (int i = 0; i < list.length; i++) {
-                            list[i] = list[i].copyWith(id: list[i].id);
-                          }
-                          setState(() {});
+                          final Map<User, int> lockedItemPositions = {
+                            for (int i = 0; i < list.length; i++)
+                              if (lockedItems.contains(list[i])) list[i]: i
+                          };
+                          setState(() {
+                            final User user = list.removeAt(oldIndex);
+                            list.insert(newIndex, user);
+                            for (var entry in lockedItemPositions.entries) {
+                              list.remove(entry.key);
+                              list.insert(
+                                  entry.value,
+                                  entry
+                                      .key); // Insert based on original position (id in this case)
+                            }
+                          });
                         },
                         proxyDecorator: proxyDecorator,
                         isSameItem: (a, b) => a.id == b.id
