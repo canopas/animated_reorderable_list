@@ -19,7 +19,9 @@ class ItemTile extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 4),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
-        color: !dragEnabled ? containerLowColor : Colors.primaries[id % Colors.primaries.length],
+        color: !dragEnabled
+            ? containerLowColor
+            : Colors.primaries[id % Colors.primaries.length],
       ),
       child: Center(
         child: dragEnabled
