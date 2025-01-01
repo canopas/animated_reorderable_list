@@ -255,9 +255,9 @@ You can use multiple animations at the same time by providing a list of animatio
 
 The following animations are available:
 
-| Animation Type   | ListView Example              | GridView Example              |
-|------------------|-------------------------------|-------------------------------|
-| **FadeIn**       | <img src="https://github.com/user-attachments/assets/ee8e2655-db72-472b-81b1-b9d1f6535518?raw=true" width="250"/> | <img src="https://github.com/user-attachments/assets/38376923-8aa6-4803-a09c-a301db98c939?raw=true" width="250"/>  |
+| Animation Type   | ListView Example                                                                                                  | GridView Example              |
+|------------------|-------------------------------------------------------------------------------------------------------------------|-------------------------------|
+| **FadeIn**       | <img src="gif/animations/list/fade-in.gif?raw=true" width="250"/>                                                 | <img src="https://github.com/user-attachments/assets/38376923-8aa6-4803-a09c-a301db98c939?raw=true" width="250"/>  |
 | **FlipInY**      | <img src="https://github.com/user-attachments/assets/e7ed69dc-c038-4c14-ad82-59dec5075b10?raw=true" width="250"/> | <img src="https://github.com/user-attachments/assets/cb8c0be3-9178-41e4-991b-4d652bde7ed1?raw=true" width="250"/>  |
 | **FlipInX**      | <img src="https://github.com/user-attachments/assets/08a7753f-95f7-48c8-881f-3e746798b3ca?raw=true" width="250"/> | <img src="https://github.com/user-attachments/assets/f67f2463-459e-4e97-ac3f-4cb410eacf00?raw=true" width="250"/>  |
 | **Landing**      | <img src="https://github.com/user-attachments/assets/1c8ab183-1bce-4cf9-9a3d-7b4132083583?raw=true" width="250"/> | <img src="https://github.com/user-attachments/assets/363f34d1-45b5-4260-a2ce-ec927b67ec02?raw=true" width="250"/>  |
