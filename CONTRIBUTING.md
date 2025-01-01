@@ -29,4 +29,4 @@ Labels on issues are managed by contributors, you don't have to worry about them
 * **non-library**: issue is not in the core library code, but rather in documentation, samples, build process, releases
 
 ## License
-By contributing to animated_reorderable_list, you agree that your contributions will be licensed under its Apache License, Version 2.0. See LICENSE file for details.
+By contributing to animated_reorderable_list, you agree that your contributions will be licensed under its BSD 3-Clause. See LICENSE file for details.
