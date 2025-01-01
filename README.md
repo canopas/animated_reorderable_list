@@ -21,9 +21,9 @@ drag-and-drop functionality in Flutter.
 
 ### Reorderable List
 
-| <img src="./gif/animated-grid.gif" width="250"/> | <img src="./gif/animated-list.gif" width="250"/> | <img src="./gif/animated-grid.gif" width="250"/> |
-|:------------------------------------------------:|:------------------------------------------------:|:------------------------------------------------:|
-|               ReorderableGridView                |               ReorderableListView                |                  Swap Animation                  | 
+| <img src="./gif/animated-grid.gif" width="250"/> | <img src="./gif/animated-list.gif" width="250"/> | <img src="./gif/swap-animation.gif" width="250"/> |
+|:------------------------------------------------:|:------------------------------------------------:|:-------------------------------------------------:|
+|               ReorderableGridView                |               ReorderableListView                |                  Swap Animation                   | 
 
 ## How to use it?
 
