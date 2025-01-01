@@ -21,9 +21,9 @@ drag-and-drop functionality in Flutter.
 
 ### Reorderable List
 
-| <img src="./gif/animated-grid.gif" width="300"/>   |  <img src="./gif/animated-list.gif" width="300"/>  |  <img src="./gif/animated-grid.gif" width="300"/>  |
-|                  :---:                             |                     :---:                          |                            :---:                   |
-|                ReorderableGridView                 |                   ReorderableListView              |              Swap Animation                        | 
+| <img src="./gif/animated-grid.gif" width="300"/> | <img src="./gif/animated-list.gif" width="300"/> | <img src="./gif/animated-grid.gif" width="300"/> |
+|:------------------------------------------------:|:------------------------------------------------:|:------------------------------------------------:|
+|               ReorderableGridView                |               ReorderableListView                |                  Swap Animation                  | 
 
 ## How to use it?
 
@@ -255,22 +255,22 @@ You can use multiple animations at the same time by providing a list of animatio
 
 The following animations are available:
 
-| Animation Type   | ListView Example                                                   | GridView Example                                                  |
-|------------------|--------------------------------------------------------------------|-------------------------------------------------------------------|
-| **FadeIn**       | <img src="./gif/animations/list/fade-in.gif" width="250"/>         | <img src="./gif/animations/grid/fade-in.gif" width="250"/>        |
-| **FlipInY**      | <img src="./gif/animations/list/flip-in-y.gif" width="250"/>       | <img src="./gif/animations/grid/flip-in-y.gif" width="250"/>      |
-| **FlipInX**      | <img src="./gif/animations/list/flip-in-x.gif" width="250"/>       | <img src="./gif/animations/grid/flip-in-x.gif" width="250"/>      |
-| **Landing**      | <img src="./gif/animations/list/landing.gif" width="250"/>         | <img src="./gif/animations/grid/landing.gif" width="250"/>        |
-| **ScaleIn**      | <img src="./gif/animations/list/scale-in.gif" width="250"/>        | <img src="./gif/animations/grid/scale-in.gif" width="250"/>       |
-| **ScaleInTop**   | <img src="./gif/animations/list/scale-in-top.gif" width="250"/>    | <img src="./gif/animations/grid/scale-in-top.gif" width="250"/>   |
-| **ScaleInBottom**| <img src="./gif/animations/list/scale-in-bottom.gif" width="250"/> | <img src="./gif/animations/grid/scale-in-bottom.gif" width="250"/>|
-| **ScaleInLeft**  | <img src="./gif/animations/list/scale-in-left.gif" width="250"/>   | <img src="./gif/animations/grid/scale-in-left.gif" width="250"/>  |
-| **ScaleInRight** | <img src="./gif/animations/list/scale-in-right.gif" width="250"/>  | <img src="./gif/animations/grid/scale-in-right.gif" width="250"/> |
-| **Size**         | <img src="./gif/animations/list/size.gif" width="250"/>            | <img src="./gif/animations/grid/size.gif" width="250"/>           |
-| **SlideInLeft**  | <img src="./gif/animations/list/slide-in-left.gif" width="250"/>   | <img src="./gif/animations/grid/slide-in-left.gif" width="250"/>  |
-| **SlideInRight** | <img src="./gif/animations/list/slide-in-right.gif" width="250"/>  | <img src="./gif/animations/grid/slide-in-right.gif" width="250"/> |
-| **SlideInDown**  | <img src="./gif/animations/list/slide-in-down.gif" width="250"/>   | <img src="./gif/animations/grid/slide-in-down.gif" width="250"/>  |
-| **SlideInUp**    | <img src="./gif/animations/list/slide-in-up.gif" width="250"/>     | <img src="./gif/animations/grid/slide-in-up.gif" width="250"/>    |
+| Animation Type    | ListView Example                                                   | GridView Example                                                   |
+|-------------------|--------------------------------------------------------------------|--------------------------------------------------------------------|
+| **FadeIn**        | <img src="./gif/animations/list/fade-in.gif" width="250"/>         | <img src="./gif/animations/grid/fade-in.gif" width="250"/>         |
+| **FlipInY**       | <img src="./gif/animations/list/flip-in-y.gif" width="250"/>       | <img src="./gif/animations/grid/flip-in-y.gif" width="250"/>       |
+| **FlipInX**       | <img src="./gif/animations/list/flip-in-x.gif" width="250"/>       | <img src="./gif/animations/grid/flip-in-x.gif" width="250"/>       |
+| **Landing**       | <img src="./gif/animations/list/landing.gif" width="250"/>         | <img src="./gif/animations/grid/landing.gif" width="250"/>         |
+| **ScaleIn**       | <img src="./gif/animations/list/scale-in.gif" width="250"/>        | <img src="./gif/animations/grid/scale-in.gif" width="250"/>        |
+| **ScaleInTop**    | <img src="./gif/animations/list/scale-in-top.gif" width="250"/>    | <img src="./gif/animations/grid/scale-in-top.gif" width="250"/>    |
+| **ScaleInBottom** | <img src="./gif/animations/list/scale-in-bottom.gif" width="250"/> | <img src="./gif/animations/grid/scale-in-bottom.gif" width="250"/> |
+| **ScaleInLeft**   | <img src="./gif/animations/list/scale-in-left.gif" width="250"/>   | <img src="./gif/animations/grid/scale-in-left.gif" width="250"/>   |
+| **ScaleInRight**  | <img src="./gif/animations/list/scale-in-right.gif" width="250"/>  | <img src="./gif/animations/grid/scale-in-right.gif" width="250"/>  |
+| **Size**          | <img src="./gif/animations/list/size.gif" width="250"/>            | <img src="./gif/animations/grid/size.gif" width="250"/>            |
+| **SlideInLeft**   | <img src="./gif/animations/list/slide-in-left.gif" width="250"/>   | <img src="./gif/animations/grid/slide-in-left.gif" width="250"/>   |
+| **SlideInRight**  | <img src="./gif/animations/list/slide-in-right.gif" width="250"/>  | <img src="./gif/animations/grid/slide-in-right.gif" width="250"/>  |
+| **SlideInDown**   | <img src="./gif/animations/list/slide-in-down.gif" width="250"/>   | <img src="./gif/animations/grid/slide-in-down.gif" width="250"/>   |
+| **SlideInUp**     | <img src="./gif/animations/list/slide-in-up.gif" width="250"/>     | <img src="./gif/animations/grid/slide-in-up.gif" width="250"/>     |
 
 
 
