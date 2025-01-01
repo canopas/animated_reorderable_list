@@ -2,6 +2,7 @@
 
 ### Improvements
 - Add `lockedItems` to make items locked and non-draggable.
+### Bug Fixes
 - Fix issue with `nonDraggableItems` for different instances of the list.
 
 ## 1.1.4
