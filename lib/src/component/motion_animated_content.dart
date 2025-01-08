@@ -95,6 +95,7 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
     if (widget.motionData.animate) {
       Offset offsetDiff = (widget.motionData.startOffset + offset) -
           widget.motionData.endOffset;
+      print(widget.motionData);
       _startOffset = offsetDiff;
       if (offsetDiff.dx != 0 || offsetDiff.dy != 0) {
         if (_offsetAnimation == null) {

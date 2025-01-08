@@ -691,20 +691,8 @@ class MotionBuilderState extends State<MotionBuilder>
     if (!isGrid) {
       return currentOffset;
     }
-
-    if (widget.delegateBuilder
-        is SliverReorderableGridDelegateWithFixedCrossAxisCount) {
-      final delegateBuilder = widget.delegateBuilder
-          as SliverReorderableGridDelegateWithFixedCrossAxisCount;
-      return delegateBuilder.getOffset(index, currentOffset);
-    } else if (widget.delegateBuilder
-        is SliverReorderableGridWithMaxCrossAxisExtent) {
-      final delegateBuilder =
-          widget.delegateBuilder as SliverReorderableGridWithMaxCrossAxisExtent;
-      final offset = delegateBuilder.getOffset(index, currentOffset);
-      return offset;
-    }
-    return Offset.zero;
+    final offset = getOffset(index, currentOffset);
+    return offset;
   }
 
   Offset _itemOffsetAt(int index) {
@@ -729,12 +717,68 @@ class MotionBuilderState extends State<MotionBuilder>
       !widget.nonDraggableIndices.contains(index) &&
       !widget.lockedIndices.contains(index);
 
+  double childCrossAxisExtent = 0.0;
+  double childMainAxisExtent = 0.0;
+  int crossAxisCount = 0;
+  double crossAxisSpacing = 0.0;
+
+  void _updateChildExtent(SliverConstraints constraints) {
+    if (widget.delegateBuilder == null) return;
+    if (childCrossAxisExtent != 0.0 && childMainAxisExtent != 0.0) return;
+    if (widget.delegateBuilder is SliverGridDelegateWithFixedCrossAxisCount) {
+      final delegateBuilder =
+          widget.delegateBuilder as SliverGridDelegateWithFixedCrossAxisCount;
+      crossAxisCount = delegateBuilder.crossAxisCount;
+      crossAxisSpacing = delegateBuilder.crossAxisSpacing;
+      final childAspectRatio = delegateBuilder.childAspectRatio;
+      final usableCrossAxisCount = max(
+          0.0,
+          constraints.crossAxisExtent -
+              crossAxisSpacing * (crossAxisCount - 1));
+
+      childCrossAxisExtent = usableCrossAxisCount / crossAxisCount;
+      childMainAxisExtent = childCrossAxisExtent / childAspectRatio;
+    }
+    if (widget.delegateBuilder is SliverGridDelegateWithMaxCrossAxisExtent) {
+      final delegateBuilder =
+          widget.delegateBuilder as SliverGridDelegateWithMaxCrossAxisExtent;
+      int childCrossAxisCount = (constraints.crossAxisExtent /
+              (delegateBuilder.maxCrossAxisExtent + crossAxisSpacing))
+          .ceil();
+      // Ensure a minimum count of 1, can be zero and result in an infinite extent
+      // below when the window size is 0.
+      crossAxisCount = max(1, childCrossAxisCount);
+      final double usableCrossAxisExtent = max(
+        0.0,
+        constraints.crossAxisExtent - crossAxisSpacing * (crossAxisCount - 1),
+      );
+      childCrossAxisExtent = usableCrossAxisExtent / crossAxisCount;
+      childMainAxisExtent = delegateBuilder.mainAxisExtent ??
+          childCrossAxisExtent / delegateBuilder.childAspectRatio;
+    }
+  }
+
+  Offset getOffset(int index, Offset currentOffset) {
+    final int col = index % crossAxisCount;
+    final crossAxisStart = crossAxisSpacing;
+
+    if (col == crossAxisCount - 1) {
+      return Offset(crossAxisStart, currentOffset.dy + childMainAxisExtent);
+    } else {
+      return Offset(currentOffset.dx + childCrossAxisExtent, currentOffset.dy);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
     return widget.delegateBuilder != null
-        ? SliverGrid(
-            gridDelegate: widget.delegateBuilder!, delegate: _createDelegate())
+        ? SliverLayoutBuilder(builder: (context, constraints) {
+            _updateChildExtent(constraints);
+            return SliverGrid(
+                gridDelegate: widget.delegateBuilder!,
+                delegate: _createDelegate());
+          })
         : SliverList(delegate: _createDelegate());
   }
 

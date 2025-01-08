@@ -97,73 +97,156 @@ class _HomePageState extends State<HomePage> {
               _buildAnimationControlPanel(),
               Expanded(
                 child: isGrid
-                    ? AnimatedReorderableGridView(
-                        items: list,
-                        itemBuilder: (BuildContext context, int index) {
-                          final user = list[index];
-                          return ItemCard(
-                            key: ValueKey(user.id),
-                            id: user.id,
-                            dragEnabled: !nonDraggableItems.contains(user),
-                            isLocked: lockedItems.contains(user),
-                          );
-                        },
-                        sliverGridDelegate:
-                            SliverReorderableGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 4),
-                        enterTransition: animations,
-                        exitTransition: animations,
-                        insertDuration: const Duration(milliseconds: 300),
-                        removeDuration: const Duration(milliseconds: 300),
-                        onReorder: (int oldIndex, int newIndex) {
-                          final Map<User, int> lockedItemPositions = {
-                            for (int i = 0; i < list.length; i++)
-                              if (lockedItems.contains(list[i])) list[i]: i
-                          };
-                          setState(() {
-                            final User user = list.removeAt(oldIndex);
-                            list.insert(newIndex, user);
-                            for (var entry in lockedItemPositions.entries) {
-                              list.remove(entry.key);
-                              list.insert(
-                                  entry.value,
-                                  entry
-                                      .key); // Insert based on original position (id in this case)
-                            }
-                          });
-                        },
-                        nonDraggableItems: nonDraggableItems,
-                        lockedItems: lockedItems,
-                        dragStartDelay: const Duration(milliseconds: 300),
-                        onReorderEnd: (int index) {
-                          //  print(" End index :  $index");
-                        },
-                        onReorderStart: (int index) {
-                          // print(" Start index :  $index");
-                        },
-                        proxyDecorator: proxyDecorator,
-                        isSameItem: (a, b) => a.id == b.id,
+                    ? Row(
+                        children: [
+                          Expanded(
+                            child: AnimatedReorderableGridView(
+                              items: list,
+                              itemBuilder: (BuildContext context, int index) {
+                                final user = list[index];
+                                return ItemCard(
+                                  key: ValueKey(user.id),
+                                  id: user.id,
+                                  dragEnabled:
+                                      !nonDraggableItems.contains(user),
+                                  isLocked: lockedItems.contains(user),
+                                );
+                              },
+                              sliverGridDelegate:
+                                  const SliverGridDelegateWithMaxCrossAxisExtent(
+                                maxCrossAxisExtent: 99/2,
+                              ),
+                              enterTransition: animations,
+                              exitTransition: animations,
+                              insertDuration: const Duration(milliseconds: 300),
+                              removeDuration: const Duration(milliseconds: 300),
+                              onReorder: (int oldIndex, int newIndex) {
+                                final Map<User, int> lockedItemPositions = {
+                                  for (int i = 0; i < list.length; i++)
+                                    if (lockedItems.contains(list[i]))
+                                      list[i]: i
+                                };
+                                setState(() {
+                                  final User user = list.removeAt(oldIndex);
+                                  list.insert(newIndex, user);
+                                  for (var entry
+                                      in lockedItemPositions.entries) {
+                                    list.remove(entry.key);
+                                    list.insert(
+                                        entry.value,
+                                        entry
+                                            .key); // Insert based on original position (id in this case)
+                                  }
+                                });
+                              },
+                              nonDraggableItems: nonDraggableItems,
+                              lockedItems: lockedItems,
+                              dragStartDelay: const Duration(milliseconds: 300),
+                              onReorderEnd: (int index) {
+                                //  print(" End index :  $index");
+                              },
+                              onReorderStart: (int index) {
+                                // print(" Start index :  $index");
+                              },
+                              proxyDecorator: proxyDecorator,
+                              isSameItem: (a, b) => a.id == b.id,
 
-                        /*  A custom builder that is for inserting items with animations.
+                              /*  A custom builder that is for inserting items with animations.
 
-                                insertItemBuilder: (Widget child, Animation<double> animation){
-                                   return ScaleTransition(
-                                         scale: animation,
-                                         child: child,
-                                       );
-                                      },
+                                      insertItemBuilder: (Widget child, Animation<double> animation){
+                                         return ScaleTransition(
+                                               scale: animation,
+                                               child: child,
+                                             );
+                                            },
 
 
-                        */
-                        /*  A custom builder that is for removing items with animations.
+                              */
+                              /*  A custom builder that is for removing items with animations.
 
-                                    removeItemBuilder: (Widget child, Animation<double> animation){
-                                       return ScaleTransition(
-                                         scale: animation,
-                                         child: child,
-                                       );
-                                      },
-                        */
+                                          removeItemBuilder: (Widget child, Animation<double> animation){
+                                             return ScaleTransition(
+                                               scale: animation,
+                                               child: child,
+                                             );
+                                            },
+                              */
+                            ),
+                          ),
+                          Expanded(
+                            child: AnimatedReorderableGridView(
+                              items: list,
+                              itemBuilder: (BuildContext context, int index) {
+                                final user = list[index];
+                                return ItemCard(
+                                  key: ValueKey(user.id),
+                                  id: user.id,
+                                  dragEnabled:
+                                      !nonDraggableItems.contains(user),
+                                  isLocked: lockedItems.contains(user),
+                                );
+                              },
+                              sliverGridDelegate:
+                                  const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 4),
+                              enterTransition: animations,
+                              exitTransition: animations,
+                              insertDuration: const Duration(milliseconds: 300),
+                              removeDuration: const Duration(milliseconds: 300),
+                              onReorder: (int oldIndex, int newIndex) {
+                                final Map<User, int> lockedItemPositions = {
+                                  for (int i = 0; i < list.length; i++)
+                                    if (lockedItems.contains(list[i]))
+                                      list[i]: i
+                                };
+                                setState(() {
+                                  final User user = list.removeAt(oldIndex);
+                                  list.insert(newIndex, user);
+                                  for (var entry
+                                      in lockedItemPositions.entries) {
+                                    list.remove(entry.key);
+                                    list.insert(
+                                        entry.value,
+                                        entry
+                                            .key); // Insert based on original position (id in this case)
+                                  }
+                                });
+                              },
+                              nonDraggableItems: nonDraggableItems,
+                              lockedItems: lockedItems,
+                              dragStartDelay: const Duration(milliseconds: 300),
+                              onReorderEnd: (int index) {
+                                //  print(" End index :  $index");
+                              },
+                              onReorderStart: (int index) {
+                                // print(" Start index :  $index");
+                              },
+                              proxyDecorator: proxyDecorator,
+                              isSameItem: (a, b) => a.id == b.id,
+
+                              /*  A custom builder that is for inserting items with animations.
+
+                                      insertItemBuilder: (Widget child, Animation<double> animation){
+                                         return ScaleTransition(
+                                               scale: animation,
+                                               child: child,
+                                             );
+                                            },
+
+
+                              */
+                              /*  A custom builder that is for removing items with animations.
+
+                                          removeItemBuilder: (Widget child, Animation<double> animation){
+                                             return ScaleTransition(
+                                               scale: animation,
+                                               child: child,
+                                             );
+                                            },
+                              */
+                            ),
+                          ),
+                        ],
                       )
                     : AnimatedReorderableListView(
                         items: list,
