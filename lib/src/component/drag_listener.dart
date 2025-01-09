@@ -50,7 +50,8 @@ class ReorderableGridDragStartListener extends StatelessWidget {
   }
 
   void _startDragging(BuildContext context, PointerDownEvent event) {
-    final ReorderableAnimatedBuilderState? list = ReorderableAnimatedBuilder.maybeOf(context);
+    final ReorderableAnimatedBuilderState? list =
+        ReorderableAnimatedBuilder.maybeOf(context);
     list?.startItemDragReorder(
       index: index,
       event: event,

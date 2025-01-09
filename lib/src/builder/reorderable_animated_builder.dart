@@ -214,7 +214,6 @@ class ReorderableAnimatedBuilderState extends State<ReorderableAnimatedBuilder>
     setState(() {
       _dragReset();
     });
-
     _isDragging = false;
   }
 

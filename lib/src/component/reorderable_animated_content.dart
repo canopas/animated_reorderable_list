@@ -17,7 +17,8 @@ class ReorderableAnimatedContent extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<ReorderableAnimatedContent> createState() => ReorderableAnimatedContentState();
+  State<ReorderableAnimatedContent> createState() =>
+      ReorderableAnimatedContentState();
 }
 
 class ReorderableAnimatedContentState extends State<ReorderableAnimatedContent>
