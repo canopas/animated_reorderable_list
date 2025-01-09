@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 
-import '../builder/motion_animated_builder.dart';
+import '../builder/reorderable_animated_builder.dart';
 
 class ReorderableGridDragStartListener extends StatelessWidget {
   /// Creates a listener for a drag immediately following a pointer down
@@ -50,7 +50,7 @@ class ReorderableGridDragStartListener extends StatelessWidget {
   }
 
   void _startDragging(BuildContext context, PointerDownEvent event) {
-    final MotionBuilderState? list = MotionBuilder.maybeOf(context);
+    final ReorderableAnimatedBuilderState? list = ReorderableAnimatedBuilder.maybeOf(context);
     list?.startItemDragReorder(
       index: index,
       event: event,

@@ -1,4 +1,4 @@
-part of '../builder/motion_animated_builder.dart';
+part of '../builder/reorderable_animated_builder.dart';
 
 typedef _DragItemUpdate = void Function(
     _DragInfo item, Offset position, Offset delta);
@@ -14,7 +14,7 @@ class _DragInfo extends Drag {
   final ReorderItemProxyDecorator? proxyDecorator;
   final TickerProvider tickerProvider;
 
-  late MotionBuilderState listState;
+  late ReorderableAnimatedBuilderState listState;
   late int index;
   late Widget child;
   late Offset dragPosition;
@@ -26,7 +26,7 @@ class _DragInfo extends Drag {
   AnimationController? _proxyAnimation;
 
   _DragInfo({
-    required MotionAnimatedContentState item,
+    required ReorderableAnimatedContentState item,
     Offset initialPosition = Offset.zero,
     required this.gridView,
     this.scrollDirection = Axis.vertical,
@@ -131,7 +131,7 @@ Offset _overlayOrigin(BuildContext context) {
 }
 
 class _DragItemProxy extends StatelessWidget {
-  final MotionBuilderState listState;
+  final ReorderableAnimatedBuilderState listState;
   final int index;
   final Widget child;
   final Offset position;

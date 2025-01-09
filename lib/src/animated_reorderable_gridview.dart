@@ -2,8 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 
 import '../../animated_reorderable_list.dart';
-import 'builder/motion_list_base.dart';
-import 'builder/motion_list_impl.dart';
+import 'builder/reorderable_animated_list_base.dart';
+import 'builder/reorderable_animated_list_impl.dart';
 
 /// @docImport 'animated_reorderable_listview';
 
@@ -451,7 +451,7 @@ class AnimatedReorderableGridViewState<E extends Object>
         slivers: [
           SliverPadding(
             padding: widget.padding ?? EdgeInsets.zero,
-            sliver: MotionListImpl.grid(
+            sliver: ReorderableAnimatedListImpl.grid(
               items: widget.items,
               itemBuilder: widget.itemBuilder,
               sliverGridDelegate: widget.sliverGridDelegate,

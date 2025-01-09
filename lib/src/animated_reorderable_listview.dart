@@ -1,8 +1,8 @@
 import 'package:flutter/gestures.dart';
 import 'package:animated_reorderable_list/animated_reorderable_list.dart';
 import 'package:flutter/material.dart';
-import 'builder/motion_list_base.dart';
-import 'builder/motion_list_impl.dart';
+import 'builder/reorderable_animated_list_base.dart';
+import 'builder/reorderable_animated_list_impl.dart';
 
 ///A [ListView] that enables users to interactively reorder items through dragging, with animated insertion and removal of items.
 ///
@@ -469,7 +469,7 @@ class AnimatedReorderableListViewState<E extends Object>
         slivers: [
           SliverPadding(
             padding: widget.padding ?? EdgeInsets.zero,
-            sliver: MotionListImpl(
+            sliver: ReorderableAnimatedListImpl(
               items: widget.items,
               itemBuilder: widget.itemBuilder,
               enterTransition: widget.enterTransition,

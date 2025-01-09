@@ -1,28 +1,28 @@
-part of '../builder/motion_animated_builder.dart';
+part of '../builder/reorderable_animated_builder.dart';
 
-class MotionAnimatedContent extends StatefulWidget {
+class ReorderableAnimatedContent extends StatefulWidget {
   final int index;
-  final MotionData motionData;
+  final ItemTransitionData transitionData;
   final Widget child;
-  final Function(MotionData)? updateMotionData;
+  final Function()? updateItemPosition;
   final CapturedThemes? capturedThemes;
 
-  const MotionAnimatedContent({
+  const ReorderableAnimatedContent({
     Key? key,
     required this.index,
-    required this.motionData,
+    required this.transitionData,
     required this.child,
-    this.updateMotionData,
+    this.updateItemPosition,
     required this.capturedThemes,
   }) : super(key: key);
 
   @override
-  State<MotionAnimatedContent> createState() => MotionAnimatedContentState();
+  State<ReorderableAnimatedContent> createState() => ReorderableAnimatedContentState();
 }
 
-class MotionAnimatedContentState extends State<MotionAnimatedContent>
+class ReorderableAnimatedContentState extends State<ReorderableAnimatedContent>
     with SingleTickerProviderStateMixin {
-  late MotionBuilderState listState;
+  late ReorderableAnimatedBuilderState listState;
 
   Offset _targetOffset = Offset.zero;
   Offset _startOffset = Offset.zero;
@@ -55,13 +55,12 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
 
   @override
   void initState() {
-    listState = MotionBuilder.of(context);
+    listState = ReorderableAnimatedBuilder.of(context);
     listState.registerItem(this);
-    visible = widget.motionData.visible;
+    visible = widget.transitionData.visible;
 
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      widget.updateMotionData?.call(widget.motionData);
-    });
+    _updateItemPosition();
+
     Future.delayed(kAnimationDuration).then((value) {
       visible = true;
       rebuild();
@@ -70,7 +69,7 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
   }
 
   @override
-  void didUpdateWidget(covariant MotionAnimatedContent oldWidget) {
+  void didUpdateWidget(covariant ReorderableAnimatedContent oldWidget) {
     if (oldWidget.index != widget.index) {
       listState.unregisterItem(oldWidget.index, this);
       listState.registerItem(this);
@@ -79,23 +78,16 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
       // Reset this flag to false after the drag is completed and items are reordered
       listState._isDragging = false;
       _updateAnimationTranslation();
+    } else {
+      _updateItemPosition();
     }
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      if (mounted) {
-        setState(() {
-          visible = true;
-        });
-        widget.updateMotionData?.call(widget.motionData);
-      }
-    });
     super.didUpdateWidget(oldWidget);
   }
 
   void _updateAnimationTranslation() {
-    if (widget.motionData.animate) {
-      Offset offsetDiff = (widget.motionData.startOffset + offset) -
-          widget.motionData.endOffset;
-      print(widget.motionData);
+    if (widget.transitionData.animate) {
+      Offset offsetDiff = (widget.transitionData.startOffset + offset) -
+          widget.transitionData.endOffset;
       _startOffset = offsetDiff;
       if (offsetDiff.dx != 0 || offsetDiff.dy != 0) {
         if (_offsetAnimation == null) {
@@ -106,8 +98,7 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
             ..addListener(rebuild)
             ..addStatusListener((AnimationStatus status) {
               if (status == AnimationStatus.completed) {
-                widget.updateMotionData?.call(widget.motionData);
-
+                widget.updateItemPosition?.call();
                 _startOffset = _targetOffset;
                 _offsetAnimation!.dispose();
                 _offsetAnimation = null;
@@ -164,6 +155,14 @@ class MotionAnimatedContentState extends State<MotionAnimatedContent>
       _startOffset = _targetOffset;
     }
     rebuild();
+  }
+
+  void _updateItemPosition() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        widget.updateItemPosition?.call();
+      }
+    });
   }
 
   @override

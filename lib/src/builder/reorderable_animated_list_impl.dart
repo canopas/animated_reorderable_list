@@ -1,11 +1,11 @@
 import 'package:animated_reorderable_list/animated_reorderable_list.dart';
 import 'package:flutter/material.dart';
 
-import 'motion_animated_builder.dart';
-import 'motion_list_base.dart';
+import 'reorderable_animated_builder.dart';
+import 'reorderable_animated_list_base.dart';
 
-class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
-  const MotionListImpl({
+class ReorderableAnimatedListImpl<E extends Object> extends ReorderableAnimatedListBase<Widget, E> {
+  const ReorderableAnimatedListImpl({
     Key? key,
     required List<E> items,
     required ItemBuilder? itemBuilder,
@@ -50,7 +50,7 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
             lockedItems: lockedItems,
             enableSwap: enableSwap);
 
-  const MotionListImpl.grid({
+  const ReorderableAnimatedListImpl.grid({
     Key? key,
     required List<E> items,
     required SliverGridDelegate sliverGridDelegate,
@@ -98,16 +98,16 @@ class MotionListImpl<E extends Object> extends MotionListBase<Widget, E> {
             enableSwap: enableSwap);
 
   @override
-  MotionListImplState<E> createState() => MotionListImplState<E>();
+  ReorderableAnimatedListImplState<E> createState() => ReorderableAnimatedListImplState<E>();
 }
 
-class MotionListImplState<E extends Object>
-    extends MotionListBaseState<Widget, MotionListImpl<E>, E> {
+class ReorderableAnimatedListImplState<E extends Object>
+    extends ReorderableAnimatedListBaseState<Widget, ReorderableAnimatedListImpl<E>, E> {
   @override
   Widget build(BuildContext context) {
     assert(debugCheckHasMaterialLocalizations(context));
     assert(debugCheckHasOverlay(context));
-    return MotionBuilder(
+    return ReorderableAnimatedBuilder(
       key: listKey,
       initialCount: oldList.length,
       onReorder: onReorder,

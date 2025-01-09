@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:animated_reorderable_list/animated_reorderable_list.dart';
 import 'package:flutter/material.dart';
-import 'motion_animated_builder.dart';
+import 'reorderable_animated_builder.dart';
 
 typedef ItemBuilder<W extends Widget, E> = Widget Function(
     BuildContext context, int index);
@@ -15,7 +15,7 @@ typedef EqualityChecker<E> = bool Function(E, E);
 const Duration kAnimationDuration = Duration(milliseconds: 300);
 const Duration kDefaultDragStartDelay = Duration(milliseconds: 500);
 
-abstract class MotionListBase<W extends Widget, E extends Object>
+abstract class ReorderableAnimatedListBase<W extends Widget, E extends Object>
     extends StatefulWidget {
   final ItemBuilder<W, E>? itemBuilder;
   final List<E> items;
@@ -39,7 +39,7 @@ abstract class MotionListBase<W extends Widget, E extends Object>
   final List<E> lockedItems;
   final bool enableSwap;
 
-  const MotionListBase(
+  const ReorderableAnimatedListBase(
       {Key? key,
       required this.items,
       this.itemBuilder,
@@ -66,9 +66,9 @@ abstract class MotionListBase<W extends Widget, E extends Object>
         super(key: key);
 }
 
-abstract class MotionListBaseState<
+abstract class ReorderableAnimatedListBaseState<
     W extends Widget,
-    B extends MotionListBase<W, E>,
+    B extends ReorderableAnimatedListBase<W, E>,
     E extends Object> extends State<B> with TickerProviderStateMixin {
   late List<E> oldList;
 
@@ -83,11 +83,11 @@ abstract class MotionListBaseState<
   Duration get exitDuration => _exitDuration;
 
   @protected
-  GlobalKey<MotionBuilderState> listKey = GlobalKey();
+  GlobalKey<ReorderableAnimatedBuilderState> listKey = GlobalKey();
 
   @nonVirtual
   @protected
-  MotionBuilderState get list => listKey.currentState!;
+  ReorderableAnimatedBuilderState get list => listKey.currentState!;
 
   @nonVirtual
   @protected
@@ -255,7 +255,6 @@ abstract class MotionListBaseState<
           }
         }
       }
-
       if (swappedPairs.isEmpty) {
         return;
       }
