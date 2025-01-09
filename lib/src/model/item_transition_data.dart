@@ -35,6 +35,6 @@ class ItemTransitionData {
 
   @override
   String toString() {
-    return 'MotionData{startOffset: $startOffset, endOffset: $endOffset, visible: $visible, animate: $animate}';
+    return 'ItemTransitionData{startOffset: $startOffset, endOffset: $endOffset, visible: $visible, animate: $animate}';
   }
 }

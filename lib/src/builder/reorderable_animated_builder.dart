@@ -4,7 +4,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import '../component/drag_listener.dart';
-import '../model/motion_data.dart';
+import '../model/item_transition_data.dart';
 import 'reorderable_animated_list_base.dart';
 
 part '../component/drag_item.dart';
@@ -62,7 +62,7 @@ class ReorderableAnimatedBuilder<E> extends StatefulWidget {
     assert(() {
       if (result == null) {
         throw FlutterError(
-          'ReorderableAnimatedBuilder.of() called with a context that does not contain a ReorderableAnimatedBuilderState.\n'
+          'ReorderableAnimatedBuilderState.of() called with a context that does not contain a ReorderableAnimatedBuilderState.\n'
           'No ReorderableAnimatedBuilderState ancestor could be found starting from the '
           'context that was passed to ReorderableAnimatedBuilderState.of(). This can '
           'happen when the context provided is from the same StatefulWidget that '
@@ -545,16 +545,12 @@ class ReorderableAnimatedBuilderState extends State<ReorderableAnimatedBuilder>
       ..add(incomingItem)
       ..sort();
 
-    final transitionData =
-        ItemTransitionData(endOffset: Offset.zero, startOffset: Offset.zero);
-
     final updatedChildrenMap = <int, ItemTransitionData>{};
 
     if (childrenMap.containsKey(itemIndex)) {
       for (final entry in childrenMap.entries) {
         if (entry.key == itemIndex) {
-          updatedChildrenMap[itemIndex] =
-              transitionData.copyWith(visible: false);
+          updatedChildrenMap[itemIndex] = ItemTransitionData(visible: false);
           updatedChildrenMap[entry.key + 1] = entry.value.copyWith(
               startOffset: _itemOffsetAt(entry.key),
               endOffset: _itemNextOffset(entry.key),
@@ -578,7 +574,7 @@ class ReorderableAnimatedBuilderState extends State<ReorderableAnimatedBuilder>
         });
       });
     } else {
-      childrenMap[itemIndex] = transitionData;
+      childrenMap[itemIndex] = ItemTransitionData();
       sizeController.value = kAlwaysCompleteAnimation.value;
       controller.forward().then<void>((_) {
         _removeActiveItemAt(_incomingItems, incomingItem.itemIndex)!
