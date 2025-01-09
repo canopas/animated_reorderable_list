@@ -1,22 +1,20 @@
 import 'dart:math';
-
-import 'package:animated_reorderable_list/animated_reorderable_list.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import '../component/drag_listener.dart';
-import '../model/motion_data.dart';
-import 'motion_list_base.dart';
+import '../model/item_transition_data.dart';
+import 'reorderable_animated_list_base.dart';
 
 part '../component/drag_item.dart';
 
-part '../component/motion_animated_content.dart';
+part '../component/reorderable_animated_content.dart';
 
 typedef CustomAnimatedWidgetBuilder<E> = Widget Function(
     BuildContext context, Widget child, Animation<double> animation);
 
-class MotionBuilder<E> extends StatefulWidget {
+class ReorderableAnimatedBuilder<E> extends StatefulWidget {
   final CustomAnimatedWidgetBuilder<E> insertAnimationBuilder;
   final CustomAnimatedWidgetBuilder<E> removeAnimationBuilder;
   final ReorderCallback? onReorder;
@@ -34,7 +32,7 @@ class MotionBuilder<E> extends StatefulWidget {
   final List<int> nonDraggableIndices;
   final List<int> lockedIndices;
 
-  const MotionBuilder(
+  const ReorderableAnimatedBuilder(
       {Key? key,
       required this.itemBuilder,
       required this.insertAnimationBuilder,
@@ -55,17 +53,18 @@ class MotionBuilder<E> extends StatefulWidget {
         super(key: key);
 
   @override
-  State<MotionBuilder> createState() => MotionBuilderState();
+  State<ReorderableAnimatedBuilder> createState() =>
+      ReorderableAnimatedBuilderState();
 
-  static MotionBuilderState of(BuildContext context) {
-    final MotionBuilderState? result =
-        context.findAncestorStateOfType<MotionBuilderState>();
+  static ReorderableAnimatedBuilderState of(BuildContext context) {
+    final ReorderableAnimatedBuilderState? result =
+        context.findAncestorStateOfType<ReorderableAnimatedBuilderState>();
     assert(() {
       if (result == null) {
         throw FlutterError(
-          'MotionBuilderState.of() called with a context that does not contain a MotionBuilderState.\n'
-          'No MotionBuilderState ancestor could be found starting from the '
-          'context that was passed to MotionBuilderState.of(). This can '
+          'ReorderableAnimatedBuilderState.of() called with a context that does not contain a ReorderableAnimatedBuilderState.\n'
+          'No ReorderableAnimatedBuilderState ancestor could be found starting from the '
+          'context that was passed to ReorderableAnimatedBuilderState.of(). This can '
           'happen when the context provided is from the same StatefulWidget that '
           'built the AnimatedList.'
           'The context used was:\n'
@@ -77,20 +76,20 @@ class MotionBuilder<E> extends StatefulWidget {
     return result!;
   }
 
-  static MotionBuilderState? maybeOf(BuildContext context) {
-    return context.findAncestorStateOfType<MotionBuilderState>();
+  static ReorderableAnimatedBuilderState? maybeOf(BuildContext context) {
+    return context.findAncestorStateOfType<ReorderableAnimatedBuilderState>();
   }
 }
 
-class MotionBuilderState extends State<MotionBuilder>
+class ReorderableAnimatedBuilderState extends State<ReorderableAnimatedBuilder>
     with TickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   final List<_ActiveItem> _incomingItems = <_ActiveItem>[];
   final List<_ActiveItem> _outgoingItems = <_ActiveItem>[];
   int _itemsCount = 0;
 
-  Map<int, MotionData> childrenMap = <int, MotionData>{};
-  final Map<int, MotionAnimatedContentState> _items =
-      <int, MotionAnimatedContentState>{};
+  Map<int, ItemTransitionData> childrenMap = <int, ItemTransitionData>{};
+  final Map<int, ReorderableAnimatedContentState> _items =
+      <int, ReorderableAnimatedContentState>{};
 
   OverlayEntry? _overlayEntry;
   int? _dragIndex;
@@ -120,7 +119,7 @@ class MotionBuilderState extends State<MotionBuilder>
   void initState() {
     _itemsCount = widget.initialCount;
     for (int i = 0; i < widget.initialCount; i++) {
-      childrenMap[i] = MotionData();
+      childrenMap[i] = ItemTransitionData();
     }
 
     super.initState();
@@ -133,7 +132,7 @@ class MotionBuilderState extends State<MotionBuilder>
   }
 
   @override
-  void didUpdateWidget(covariant MotionBuilder oldWidget) {
+  void didUpdateWidget(covariant ReorderableAnimatedBuilder oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.initialCount != oldWidget.initialCount) {
       cancelReorder();
@@ -167,7 +166,7 @@ class MotionBuilderState extends State<MotionBuilder>
 
   Drag? _dragStart(Offset position) {
     assert(_dragInfo == null);
-    final MotionAnimatedContentState item = _items[_dragIndex]!;
+    final ReorderableAnimatedContentState item = _items[_dragIndex]!;
     _isDragging = true;
 
     item.dragging = true;
@@ -194,7 +193,7 @@ class MotionBuilderState extends State<MotionBuilder>
     _overlayEntry = OverlayEntry(builder: _dragInfo!.createProxy);
     overlay.insert(_overlayEntry!);
 
-    for (final MotionAnimatedContentState childItem in _items.values) {
+    for (final ReorderableAnimatedContentState childItem in _items.values) {
       if (childItem == item || !childItem.mounted) {
         continue;
       }
@@ -215,7 +214,6 @@ class MotionBuilderState extends State<MotionBuilder>
     setState(() {
       _dragReset();
     });
-
     _isDragging = false;
   }
 
@@ -368,7 +366,7 @@ class MotionBuilderState extends State<MotionBuilder>
   void _dragReset() {
     if (_dragInfo != null) {
       if (_dragIndex != null && _items.containsKey(_dragIndex)) {
-        final MotionAnimatedContentState dragItem = _items[_dragIndex]!;
+        final ReorderableAnimatedContentState dragItem = _items[_dragIndex]!;
         dragItem.dragging = false;
         dragItem.dragSize = Size.zero;
         dragItem.rebuild();
@@ -388,7 +386,7 @@ class MotionBuilderState extends State<MotionBuilder>
   }
 
   void _resetItemGap() {
-    for (final MotionAnimatedContentState item in _items.values) {
+    for (final ReorderableAnimatedContentState item in _items.values) {
       item.resetGap();
     }
   }
@@ -401,7 +399,7 @@ class MotionBuilderState extends State<MotionBuilder>
     final dragCenter = _dragInfo!.itemSize
         .center(_dragInfo!.dragPosition - _dragInfo!.dragOffset);
 
-    for (final MotionAnimatedContentState item in _items.values) {
+    for (final ReorderableAnimatedContentState item in _items.values) {
       if (!item.mounted) continue;
       final Rect geometry = item.targetGeometryNonOffset();
       if (widget.lockedIndices.contains(item.index)) {
@@ -416,7 +414,7 @@ class MotionBuilderState extends State<MotionBuilder>
     if (newIndex == _insertIndex) return;
     _insertIndex = newIndex;
 
-    for (final MotionAnimatedContentState item in _items.values) {
+    for (final ReorderableAnimatedContentState item in _items.values) {
       if (item.index == _dragIndex ||
           widget.lockedIndices.contains(item.index)) {
         continue;
@@ -453,7 +451,7 @@ class MotionBuilderState extends State<MotionBuilder>
     }
   }
 
-  void registerItem(MotionAnimatedContentState item) {
+  void registerItem(ReorderableAnimatedContentState item) {
     if (_dragInfo != null && _items[item.index] != item) {
       item.updateForGap(false);
     }
@@ -465,8 +463,8 @@ class MotionBuilderState extends State<MotionBuilder>
     }
   }
 
-  void unregisterItem(int index, MotionAnimatedContentState item) {
-    final MotionAnimatedContentState? currentItem = _items[index];
+  void unregisterItem(int index, ReorderableAnimatedContentState item) {
+    final ReorderableAnimatedContentState? currentItem = _items[index];
     if (currentItem == item) {
       _items.remove(index);
     }
@@ -547,23 +545,20 @@ class MotionBuilderState extends State<MotionBuilder>
       ..add(incomingItem)
       ..sort();
 
-    final motionData =
-        MotionData(endOffset: Offset.zero, startOffset: Offset.zero);
-
-    final updatedChildrenMap = <int, MotionData>{};
+    final updatedChildrenMap = <int, ItemTransitionData>{};
 
     if (childrenMap.containsKey(itemIndex)) {
       for (final entry in childrenMap.entries) {
         if (entry.key == itemIndex) {
-          updatedChildrenMap[itemIndex] = motionData.copyWith(visible: false);
+          updatedChildrenMap[itemIndex] = ItemTransitionData(visible: false);
           updatedChildrenMap[entry.key + 1] = entry.value.copyWith(
               startOffset: _itemOffsetAt(entry.key),
-              endOffset: getChildOffset(entry.key),
+              endOffset: _itemNextOffset(entry.key),
               animate: isGrid);
         } else if (entry.key > itemIndex) {
           updatedChildrenMap[entry.key + 1] = entry.value.copyWith(
               startOffset: _itemOffsetAt(entry.key),
-              endOffset: getChildOffset(entry.key),
+              endOffset: _itemNextOffset(entry.key),
               animate: isGrid);
         } else {
           updatedChildrenMap[entry.key] = entry.value;
@@ -579,7 +574,7 @@ class MotionBuilderState extends State<MotionBuilder>
         });
       });
     } else {
-      childrenMap[itemIndex] = motionData;
+      childrenMap[itemIndex] = ItemTransitionData();
       sizeController.value = kAlwaysCompleteAnimation.value;
       controller.forward().then<void>((_) {
         _removeActiveItemAt(_incomingItems, incomingItem.itemIndex)!
@@ -649,7 +644,7 @@ class MotionBuilderState extends State<MotionBuilder>
 
   void moveItem(int fromIndex, int toIndex) {
     if (fromIndex == toIndex) return;
-    if (!childrenMap.containsKey(fromIndex) &&
+    if (!childrenMap.containsKey(fromIndex) ||
         !childrenMap.containsKey(toIndex)) {
       return;
     }
@@ -661,11 +656,10 @@ class MotionBuilderState extends State<MotionBuilder>
         startOffset: fromOffset, endOffset: toOffset, animate: !_isDragging);
     childrenMap[fromIndex] = childrenMap[toIndex]!.copyWith(
         startOffset: toOffset, endOffset: fromOffset, animate: !_isDragging);
-    setState(() {});
   }
 
   void _onItemRemoved(int itemIndex, Duration removeDuration) {
-    final updatedChildrenMap = <int, MotionData>{};
+    final updatedChildrenMap = <int, ItemTransitionData>{};
     if (childrenMap.containsKey(itemIndex)) {
       for (final entry in childrenMap.entries) {
         if (entry.key < itemIndex) {
@@ -684,27 +678,6 @@ class MotionBuilderState extends State<MotionBuilder>
     childrenMap.addAll(updatedChildrenMap);
 
     setState(() => _itemsCount -= 1);
-  }
-
-  Offset getChildOffset(int index) {
-    final currentOffset = _itemOffsetAt(index);
-    if (!isGrid) {
-      return currentOffset;
-    }
-
-    if (widget.delegateBuilder
-        is SliverReorderableGridDelegateWithFixedCrossAxisCount) {
-      final delegateBuilder = widget.delegateBuilder
-          as SliverReorderableGridDelegateWithFixedCrossAxisCount;
-      return delegateBuilder.getOffset(index, currentOffset);
-    } else if (widget.delegateBuilder
-        is SliverReorderableGridWithMaxCrossAxisExtent) {
-      final delegateBuilder =
-          widget.delegateBuilder as SliverReorderableGridWithMaxCrossAxisExtent;
-      final offset = delegateBuilder.getOffset(index, currentOffset);
-      return offset;
-    }
-    return Offset.zero;
   }
 
   Offset _itemOffsetAt(int index) {
@@ -729,12 +702,75 @@ class MotionBuilderState extends State<MotionBuilder>
       !widget.nonDraggableIndices.contains(index) &&
       !widget.lockedIndices.contains(index);
 
+  double childCrossAxisExtent = 0.0;
+  double childMainAxisExtent = 0.0;
+  int crossAxisCount = 0;
+  double crossAxisSpacing = 0.0;
+
+  void _updateChildExtent(SliverConstraints constraints) {
+    if (widget.delegateBuilder == null) return;
+    if (widget.delegateBuilder is SliverGridDelegateWithFixedCrossAxisCount) {
+      final delegateBuilder =
+          widget.delegateBuilder as SliverGridDelegateWithFixedCrossAxisCount;
+      crossAxisCount = delegateBuilder.crossAxisCount;
+      crossAxisSpacing = delegateBuilder.crossAxisSpacing;
+      final childAspectRatio = delegateBuilder.childAspectRatio;
+      final usableCrossAxisCount = max(
+          0.0,
+          constraints.crossAxisExtent -
+              crossAxisSpacing * (crossAxisCount - 1));
+
+      childCrossAxisExtent = usableCrossAxisCount / crossAxisCount;
+      childMainAxisExtent = childCrossAxisExtent / childAspectRatio;
+    }
+    if (widget.delegateBuilder is SliverGridDelegateWithMaxCrossAxisExtent) {
+      final delegateBuilder =
+          widget.delegateBuilder as SliverGridDelegateWithMaxCrossAxisExtent;
+      crossAxisSpacing = delegateBuilder.crossAxisSpacing;
+
+      int childCrossAxisCount = (constraints.crossAxisExtent /
+              (delegateBuilder.maxCrossAxisExtent + crossAxisSpacing))
+          .ceil();
+
+      // Ensure a minimum count of 1, can be zero and result in an infinite extent
+      // below when the window size is 0.
+      crossAxisCount = max(1, childCrossAxisCount);
+      final double usableCrossAxisExtent = max(
+        0.0,
+        constraints.crossAxisExtent - crossAxisSpacing * (crossAxisCount - 1),
+      );
+      childCrossAxisExtent = usableCrossAxisExtent / crossAxisCount;
+      childMainAxisExtent = delegateBuilder.mainAxisExtent ??
+          childCrossAxisExtent / delegateBuilder.childAspectRatio;
+    }
+  }
+
+  Offset _itemNextOffset(int index) {
+    final currentOffset = _itemOffsetAt(index);
+    if (!isGrid) {
+      return currentOffset;
+    }
+
+    final int col = index % crossAxisCount;
+    final crossAxisStart = crossAxisSpacing;
+
+    if (col == crossAxisCount - 1) {
+      return Offset(crossAxisStart, currentOffset.dy + childMainAxisExtent);
+    } else {
+      return Offset(currentOffset.dx + childCrossAxisExtent, currentOffset.dy);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
     return widget.delegateBuilder != null
-        ? SliverGrid(
-            gridDelegate: widget.delegateBuilder!, delegate: _createDelegate())
+        ? SliverLayoutBuilder(builder: (context, constraints) {
+            _updateChildExtent(constraints);
+            return SliverGrid(
+                gridDelegate: widget.delegateBuilder!,
+                delegate: _createDelegate());
+          })
         : SliverList(delegate: _createDelegate());
   }
 
@@ -771,17 +807,17 @@ class MotionBuilderState extends State<MotionBuilder>
     final Key itemGlobalKey = _MotionBuilderItemGlobalKey(child.key!, this);
     final Widget builder = _insertItemBuilder(incomingItem, child);
 
-    final motionData = childrenMap[index];
-    if (motionData == null) return builder;
+    final ItemTransitionData? transitionData = childrenMap[index];
+    if (transitionData == null) return builder;
     final OverlayState overlay = Overlay.of(context, debugRequiredFor: widget);
 
-    return MotionAnimatedContent(
+    return ReorderableAnimatedContent(
       index: index,
       key: itemGlobalKey,
-      motionData: motionData,
-      updateMotionData: (MotionData motionData) {
+      transitionData: transitionData,
+      updateItemPosition: () {
         final itemOffset = _itemOffsetAt(index);
-        childrenMap[index] = motionData.copyWith(
+        childrenMap[index] = ItemTransitionData(
             startOffset: itemOffset,
             endOffset: itemOffset,
             visible: true,

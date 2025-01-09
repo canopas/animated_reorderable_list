@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:animated_reorderable_list/animated_reorderable_list.dart';
-import 'builder/motion_list_base.dart';
-import 'builder/motion_list_impl.dart';
+import 'builder/reorderable_animated_list_base.dart';
+import 'builder/reorderable_animated_list_impl.dart';
 
 /// A Flutter AnimatedListView that animates insertion and removal of the item.
 ///
@@ -376,7 +376,7 @@ class AnimatedListViewState<E extends Object>
         slivers: [
           SliverPadding(
             padding: widget.padding ?? EdgeInsets.zero,
-            sliver: MotionListImpl(
+            sliver: ReorderableAnimatedListImpl(
               items: widget.items,
               itemBuilder: widget.itemBuilder,
               enterTransition: widget.enterTransition,

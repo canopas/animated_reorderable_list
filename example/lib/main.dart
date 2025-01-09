@@ -109,7 +109,7 @@ class _HomePageState extends State<HomePage> {
                           );
                         },
                         sliverGridDelegate:
-                            SliverReorderableGridDelegateWithFixedCrossAxisCount(
+                            const SliverGridDelegateWithFixedCrossAxisCount(
                                 crossAxisCount: 4),
                         enterTransition: animations,
                         exitTransition: animations,
@@ -146,24 +146,24 @@ class _HomePageState extends State<HomePage> {
 
                         /*  A custom builder that is for inserting items with animations.
 
-                                insertItemBuilder: (Widget child, Animation<double> animation){
-                                   return ScaleTransition(
-                                         scale: animation,
-                                         child: child,
-                                       );
-                                      },
+                              insertItemBuilder: (Widget child, Animation<double> animation){
+                                 return ScaleTransition(
+                                       scale: animation,
+                                       child: child,
+                                     );
+                                    },
 
 
-                        */
+                      */
                         /*  A custom builder that is for removing items with animations.
 
-                                    removeItemBuilder: (Widget child, Animation<double> animation){
-                                       return ScaleTransition(
-                                         scale: animation,
-                                         child: child,
-                                       );
-                                      },
-                        */
+                                  removeItemBuilder: (Widget child, Animation<double> animation){
+                                     return ScaleTransition(
+                                       scale: animation,
+                                       child: child,
+                                     );
+                                    },
+                      */
                       )
                     : AnimatedReorderableListView(
                         items: list,

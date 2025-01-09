@@ -1,20 +1,20 @@
 import 'package:flutter/cupertino.dart';
 
-class MotionData {
+class ItemTransitionData {
   final Offset startOffset;
   final Offset endOffset;
   final bool visible;
   final bool animate;
 
-  MotionData(
+  ItemTransitionData(
       {this.startOffset = Offset.zero,
       this.endOffset = Offset.zero,
       this.visible = true,
       this.animate = false});
 
-  MotionData copyWith(
+  ItemTransitionData copyWith(
       {Offset? startOffset, Offset? endOffset, bool? visible, bool? animate}) {
-    return MotionData(
+    return ItemTransitionData(
         startOffset: startOffset ?? this.startOffset,
         endOffset: endOffset ?? this.endOffset,
         visible: visible ?? this.visible,
@@ -24,7 +24,7 @@ class MotionData {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is MotionData &&
+      other is ItemTransitionData &&
           runtimeType == other.runtimeType &&
           startOffset == other.startOffset &&
           endOffset == other.endOffset &&
@@ -32,4 +32,9 @@ class MotionData {
 
   @override
   int get hashCode => Object.hash(startOffset, endOffset, visible, animate);
+
+  @override
+  String toString() {
+    return 'ItemTransitionData{startOffset: $startOffset, endOffset: $endOffset, visible: $visible, animate: $animate}';
+  }
 }
