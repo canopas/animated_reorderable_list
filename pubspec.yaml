@@ -1,6 +1,6 @@
 name: animated_reorderable_list
 description: A Flutter Reorderable Animated List with simple implementation and smooth transition.
-version: 1.1.5
+version: 1.2.0
 repository: https://github.com/canopas/animated_reorderable_list
 
 environment:
