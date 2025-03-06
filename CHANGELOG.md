@@ -1,3 +1,9 @@
+## 1.1.6
+
+### Improvements
+- Update documentation
+- Refactor code
+
 ## 1.1.5
 
 ### Improvements
