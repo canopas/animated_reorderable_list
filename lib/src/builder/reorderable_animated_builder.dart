@@ -846,14 +846,6 @@ class ReorderableAnimatedBuilderState extends State<ReorderableAnimatedBuilder>
       return true;
     }());
     final Key itemGlobalKey = _MotionBuilderItemGlobalKey(item.key!, this);
-
-    if (widget.dragStartDelay.inMilliseconds == 0) {
-      return ReorderableGridDragStartListener(
-        key: itemGlobalKey,
-        index: index,
-        child: itemWithSemantics,
-      );
-    }
     if (widget.buildDefaultDragHandles) {
       switch (Theme.of(context).platform) {
         case TargetPlatform.linux:
@@ -872,7 +864,7 @@ class ReorderableAnimatedBuilderState extends State<ReorderableAnimatedBuilder>
                       bottom: 8,
                       child: Align(
                         alignment: Alignment.bottomCenter,
-                        child: ReorderableDragStartListener(
+                        child: ReorderableGridDragStartListener(
                           index: index,
                           child: const Icon(Icons.drag_handle),
                         ),

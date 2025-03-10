@@ -134,7 +134,6 @@ class _HomePageState extends State<HomePage> {
                         },
                         nonDraggableItems: nonDraggableItems,
                         lockedItems: lockedItems,
-                        dragStartDelay: const Duration(milliseconds: 300),
                         onReorderEnd: (int index) {
                           //  print(" End index :  $index");
                         },
@@ -182,7 +181,7 @@ class _HomePageState extends State<HomePage> {
                         removeDuration: const Duration(milliseconds: 300),
                         nonDraggableItems: nonDraggableItems,
                         lockedItems: lockedItems,
-                        dragStartDelay: const Duration(milliseconds: 300),
+                        buildDefaultDragHandles: true,
                         onReorder: (int oldIndex, int newIndex) {
                           final Map<User, int> lockedItemPositions = {
                             for (int i = 0; i < list.length; i++)
