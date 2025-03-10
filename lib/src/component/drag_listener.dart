@@ -50,12 +50,15 @@ class ReorderableGridDragStartListener extends StatelessWidget {
   }
 
   void _startDragging(BuildContext context, PointerDownEvent event) {
+    final DeviceGestureSettings? gestureSettings =
+        MediaQuery.maybeGestureSettingsOf(context);
+
     final ReorderableAnimatedBuilderState? list =
         ReorderableAnimatedBuilder.maybeOf(context);
     list?.startItemDragReorder(
       index: index,
       event: event,
-      recognizer: createRecognizer(),
+      recognizer: createRecognizer()..gestureSettings = gestureSettings,
     );
   }
 }
