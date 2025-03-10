@@ -5,3 +5,4 @@ export 'src/animated_gridview.dart';
 export 'src/animated_listview.dart';
 export 'src/animated_reorderable_gridview.dart';
 export 'src/animated_reorderable_listview.dart';
+export 'src/sliver_animated_listview.dart';
