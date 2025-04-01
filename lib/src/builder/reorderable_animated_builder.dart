@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import  '../component/sliver_constraints_capture.dart';
 import '../component/drag_listener.dart';
 import '../model/item_transition_data.dart';
 import 'reorderable_animated_list_base.dart';
@@ -764,15 +765,17 @@ class ReorderableAnimatedBuilderState extends State<ReorderableAnimatedBuilder>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return widget.delegateBuilder != null
-        ? SliverLayoutBuilder(builder: (context, constraints) {
-            _updateChildExtent(constraints);
-            return SliverGrid(
-                gridDelegate: widget.delegateBuilder!,
-                delegate: _createDelegate());
-          })
+     return widget.delegateBuilder != null
+        ? SliverConstraintsCapture(
+            onConstraintsChanged: _updateChildExtent,
+            child: SliverGrid(
+              gridDelegate: widget.delegateBuilder!,
+              delegate: _createDelegate(),
+            ),
+          )
         : SliverList(delegate: _createDelegate());
   }
+
 
   Widget _itemBuilder(BuildContext context, int index) {
     final _ActiveItem? outgoingItem = _activeItemAt(_outgoingItems, index);
