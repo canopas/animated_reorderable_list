@@ -1,3 +1,8 @@
+## 1.3.0
+
+###  Performance Improvement
+- Reduced excessive rebuilds in GridView during scrolling
+
 ## 1.2.0
 
 - Android example app - migrated Android Gradle Plugin from imperative to declarative syntax.
