@@ -989,25 +989,25 @@ class ReorderableAnimatedBuilderState extends State<ReorderableAnimatedBuilder>
     );
   }
 
-  Widget _removeItemBuilder(_ActiveItem outgoingItem, Widget child) {
-    final Animation<double> animation =
-        outgoingItem.controller ?? kAlwaysCompleteAnimation;
-    final Animation<double> sizeAnimation =
-        outgoingItem.sizeAnimation ?? kAlwaysCompleteAnimation;
-    return SizeTransition(
-        sizeFactor: sizeAnimation,
-        child: widget.removeAnimationBuilder(context, child, animation));
-  }
+Widget _removeItemBuilder(_ActiveItem outgoingItem, Widget child) {
+  final Animation<double> animation =
+      outgoingItem.controller ?? kAlwaysCompleteAnimation;
+  final Animation<double> sizeAnimation =
+      outgoingItem.sizeAnimation ?? kAlwaysCompleteAnimation;
+  return _NoClipSizeTransition(
+    sizeFactor: sizeAnimation,
+    child: widget.removeAnimationBuilder(context, child, animation));
+}
 
   Widget _insertItemBuilder(_ActiveItem? incomingItem, Widget child) {
-    final Animation<double> animation =
-        incomingItem?.controller ?? kAlwaysCompleteAnimation;
-    final Animation<double> sizeAnimation =
-        incomingItem?.sizeAnimation ?? kAlwaysCompleteAnimation;
-    return SizeTransition(
-        axis: widget.scrollDirection,
-        sizeFactor: sizeAnimation,
-        child: widget.insertAnimationBuilder(context, child, animation));
+     final Animation<double> animation =
+      incomingItem?.controller ?? kAlwaysCompleteAnimation;
+  final Animation<double> sizeAnimation =
+      incomingItem?.sizeAnimation ?? kAlwaysCompleteAnimation;
+  return _NoClipSizeTransition(
+    axis: widget.scrollDirection,
+    sizeFactor: sizeAnimation,
+    child: widget.insertAnimationBuilder(context, child, animation));
   }
 }
 
@@ -1057,4 +1057,33 @@ class _ActiveItem implements Comparable<_ActiveItem> {
 
   @override
   int compareTo(_ActiveItem other) => itemIndex - other.itemIndex;
+}
+
+/// A version of [SizeTransition] that does not clip its child.
+class _NoClipSizeTransition extends AnimatedWidget {
+  const _NoClipSizeTransition({
+    Key? key,
+    required Animation<double> sizeFactor,
+    this.axis = Axis.vertical,
+    required this.child,
+  }) : super(key: key, listenable: sizeFactor);
+
+  final Axis axis;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final Animation<double> sizeFactor = listenable as Animation<double>;
+    return ClipRect(
+      clipBehavior: Clip.none,
+      child: Align(
+        alignment: axis == Axis.vertical
+            ? FractionalOffset.centerLeft
+            : FractionalOffset.topCenter,
+        heightFactor: axis == Axis.vertical ? sizeFactor.value : null,
+        widthFactor: axis == Axis.horizontal ? sizeFactor.value : null,
+        child: child,
+      ),
+    );
+  }
 }
