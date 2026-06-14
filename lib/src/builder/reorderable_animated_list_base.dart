@@ -246,28 +246,33 @@ abstract class ReorderableAnimatedListBaseState<
   }
 
   void calculateDiff(List oldList, List newList) {
-    final swappedPairs = [];
-
     if (oldList.length == newList.length && widget.enableSwap) {
+      final moves = <int, int>{};
+
       for (int i = 0; i < newList.length; i++) {
         if (!isSameItem(oldList[i], newList[i])) {
           final oldIndex =
               oldList.indexWhere((oldItem) => isSameItem(oldItem, newList[i]));
 
           if (oldIndex != -1) {
-            if (isSameItem(newList[oldIndex], oldList[i])) {
-              swappedPairs.add([i, oldIndex]);
-            }
+            moves[i] = oldIndex;
           }
         }
       }
-      if (swappedPairs.isEmpty) {
-        return;
+
+      if (moves.isEmpty) return;
+
+      if (moves.length == 2) {
+        final entries = moves.entries.toList();
+        final a = entries[0];
+        final b = entries[1];
+        if (a.key == b.value && b.key == a.value) {
+          listKey.currentState!.moveItem(a.key, a.value);
+          return;
+        }
       }
-      // Handle swapped Items
-      for (List<int> pair in swappedPairs) {
-        listKey.currentState!.moveItem(pair[0], pair[1]);
-      }
+
+      listKey.currentState!.moveItems(moves);
       return;
     }
 

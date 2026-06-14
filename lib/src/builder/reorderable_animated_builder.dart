@@ -661,6 +661,43 @@ class ReorderableAnimatedBuilderState extends State<ReorderableAnimatedBuilder>
         startOffset: toOffset, endOffset: fromOffset, animate: !_isDragging);
   }
 
+  void moveItems(Map<int, int> moves) {
+    if (_dragInfo != null || _isDragging) return;
+
+    final offsets = <int, Offset>{};
+    final indices = <int>{};
+    for (final entry in moves.entries) {
+      indices.add(entry.key);
+      indices.add(entry.value);
+    }
+    for (final index in indices) {
+      if (childrenMap.containsKey(index)) {
+        offsets[index] = _itemOffsetAt(index);
+      }
+    }
+
+    final originalEntries = <int, ItemTransitionData>{};
+    for (final index in indices) {
+      if (childrenMap.containsKey(index)) {
+        originalEntries[index] = childrenMap[index]!;
+      }
+    }
+
+    for (final entry in moves.entries) {
+      final newIndex = entry.key;
+      final oldIndex = entry.value;
+      final startOffset = offsets[oldIndex] ?? Offset.zero;
+      final endOffset = offsets[newIndex] ?? Offset.zero;
+
+      childrenMap[newIndex] =
+          (originalEntries[oldIndex] ?? ItemTransitionData()).copyWith(
+        startOffset: startOffset,
+        endOffset: endOffset,
+        animate: true,
+      );
+    }
+  }
+
   void _onItemRemoved(int itemIndex, Duration removeDuration) {
     final updatedChildrenMap = <int, ItemTransitionData>{};
     if (childrenMap.containsKey(itemIndex)) {

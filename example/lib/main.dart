@@ -71,8 +71,21 @@ class _HomePageState extends State<HomePage> {
                   list[7] = child1;
                   setState(() {});
                 },
+                tooltip: 'Swap 2 items',
                 icon: const Icon(
                   Icons.swap_horiz,
+                  color: primaryColor,
+                )),
+            IconButton(
+                onPressed: () {
+                  if (list.length < 4) return;
+                  final item = list.removeAt(1);
+                  list.insert(list.length - 1, item);
+                  setState(() {});
+                },
+                tooltip: 'Move item 1 to end (non-adjacent)',
+                icon: const Icon(
+                  Icons.move_down,
                   color: primaryColor,
                 )),
             IconButton(
