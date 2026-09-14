@@ -475,8 +475,9 @@ class ReorderableAnimatedBuilderState extends State<ReorderableAnimatedBuilder>
 
   @override
   void dispose() {
+    // Pending callbacks only have to bail out on `!mounted`, never dispose.
     for (final _ActiveItem item in _incomingItems.followedBy(_outgoingItems)) {
-      item.controller?.dispose();
+      item.dispose();
     }
     _dragReset();
     super.dispose();
@@ -570,19 +571,18 @@ class ReorderableAnimatedBuilderState extends State<ReorderableAnimatedBuilder>
       childrenMap.clear();
       childrenMap.addAll(updatedChildrenMap);
       sizeController.forward().then((value) {
+        if (!mounted) return;
         controller.forward().then<void>((_) {
-          _removeActiveItemAt(_incomingItems, incomingItem.itemIndex)!
-              .controller!
-              .dispose();
+          if (!mounted) return;
+          _removeActiveItemAt(_incomingItems, incomingItem.itemIndex)?.dispose();
         });
       });
     } else {
       childrenMap[itemIndex] = ItemTransitionData();
       sizeController.value = kAlwaysCompleteAnimation.value;
       controller.forward().then<void>((_) {
-        _removeActiveItemAt(_incomingItems, incomingItem.itemIndex)!
-            .controller!
-            .dispose();
+        if (!mounted) return;
+        _removeActiveItemAt(_incomingItems, incomingItem.itemIndex)?.dispose();
       });
     }
     setState(() {
@@ -619,16 +619,16 @@ class ReorderableAnimatedBuilderState extends State<ReorderableAnimatedBuilder>
         ..sort();
 
       controller.reverse().then<void>((void value) {
+        if (!mounted) return;
         if (controller.status == AnimationStatus.dismissed) {
           if (childrenMap.containsKey(index)) {
             childrenMap.update(
                 index, (value) => value.copyWith(visible: false));
           }
           sizeController.reverse(from: 1.0).then((value) {
-            final removedItem =
-                _removeActiveItemAt(_outgoingItems, outgoingItem.itemIndex)!;
-            removedItem.controller!.dispose();
-            removedItem.sizeAnimation!.dispose();
+            if (!mounted) return;
+            _removeActiveItemAt(_outgoingItems, outgoingItem.itemIndex)
+                ?.dispose();
 
             // Decrement the incoming and outgoing item indices to account
             // for the removal.
@@ -1054,6 +1054,12 @@ class _ActiveItem implements Comparable<_ActiveItem> {
   final AnimationController? controller;
   final AnimationController? sizeAnimation;
   int itemIndex;
+
+  /// This item owns both controllers, so they are always released together.
+  void dispose() {
+    controller?.dispose();
+    sizeAnimation?.dispose();
+  }
 
   @override
   int compareTo(_ActiveItem other) => itemIndex - other.itemIndex;

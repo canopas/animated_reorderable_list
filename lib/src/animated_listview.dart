@@ -1,8 +1,8 @@
+import 'package:animated_reorderable_list/animated_reorderable_list.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
-import 'package:animated_reorderable_list/animated_reorderable_list.dart';
+
 import 'builder/reorderable_animated_list_base.dart';
-import 'builder/reorderable_animated_list_impl.dart';
 
 /// A Flutter AnimatedListView that animates insertion and removal of the item.
 ///
@@ -277,6 +277,9 @@ class AnimatedListView<E extends Object> extends StatefulWidget {
   /// isSameItem: (a, b) => a.id == b.id,
   /// ```
   final bool Function(E a, E b)? isSameItem;
+  /// Item identity for diffing, e.g. `(item) => item.id`. Hashes instead of
+  /// comparing every pair. Falls back to [isSameItem] when null.
+  final Object Function(E item)? keyOf;
 
   /// Whether to enable swap animation when changing the order of the items.
   ///
@@ -327,6 +330,7 @@ class AnimatedListView<E extends Object> extends StatefulWidget {
     this.removeItemBuilder,
     this.shrinkWrap = false,
     required this.isSameItem,
+    this.keyOf,
     this.enableSwap = true,
     this.addDragStartListener = true,
   }) : super(key: key);
@@ -408,6 +412,7 @@ class AnimatedListViewState<E extends Object>
               insertItemBuilder: widget.insertItemBuilder,
               removeItemBuilder: widget.removeItemBuilder,
               isSameItem: widget.isSameItem,
+              keyOf: widget.keyOf,
               enableSwap: widget.enableSwap,
               addDragStartListener: widget.addDragStartListener,
             ),

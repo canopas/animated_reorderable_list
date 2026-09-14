@@ -1,8 +1,8 @@
-import 'package:flutter/gestures.dart';
 import 'package:animated_reorderable_list/animated_reorderable_list.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+
 import 'builder/reorderable_animated_list_base.dart';
-import 'builder/reorderable_animated_list_impl.dart';
 
 ///A [ListView] that enables users to interactively reorder items through dragging, with animated insertion and removal of items.
 ///
@@ -344,6 +344,9 @@ class AnimatedReorderableListView<E extends Object> extends StatefulWidget {
   /// isSameItem: (a, b) => a.id == b.id,
   /// ```
   final bool Function(E a, E b) isSameItem;
+  /// Item identity for diffing, e.g. `(item) => item.id`. Hashes instead of
+  /// comparing every pair. Falls back to [isSameItem] when null.
+  final Object Function(E item)? keyOf;
 
   /// The amount of time to wait before starting the drag operation.
   ///
@@ -416,6 +419,7 @@ class AnimatedReorderableListView<E extends Object> extends StatefulWidget {
     this.longPressDraggable = true,
     this.shrinkWrap = false,
     required this.isSameItem,
+    this.keyOf,
     this.dragStartDelay = const Duration(milliseconds: 500),
     this.nonDraggableItems = const [],
     this.lockedItems = const [],
@@ -508,6 +512,7 @@ class AnimatedReorderableListViewState<E extends Object>
               //ignore: deprecated_member_use_from_same_package
               longPressDraggable: widget.longPressDraggable,
               isSameItem: widget.isSameItem,
+              keyOf: widget.keyOf,
               dragStartDelay: widget.dragStartDelay,
               nonDraggableItems: widget.nonDraggableItems,
               lockedItems: widget.lockedItems,
