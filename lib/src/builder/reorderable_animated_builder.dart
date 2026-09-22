@@ -168,6 +168,11 @@ class ReorderableAnimatedBuilderState extends State<ReorderableAnimatedBuilder>
   }
 
   Drag? _dragStart(Offset position) {
+    // Another recognizer may start before the previous drag has reset.
+    // Keep the recognizer and index needed by the new drag.
+    if (_dragInfo != null) {
+      _resetDragOnly();
+    }
     assert(_dragInfo == null);
     final ReorderableAnimatedContentState item = _items[_dragIndex]!;
     _isDragging = true;
@@ -206,6 +211,7 @@ class ReorderableAnimatedBuilderState extends State<ReorderableAnimatedBuilder>
   }
 
   void _dragUpdate(_DragInfo item, Offset position, Offset delta) {
+    if (!identical(item, _dragInfo)) return;
     setState(() {
       _overlayEntry?.markNeedsBuild();
       _dragUpdateItems();
@@ -214,6 +220,7 @@ class ReorderableAnimatedBuilderState extends State<ReorderableAnimatedBuilder>
   }
 
   void _dragCancel(_DragInfo item) {
+    if (!identical(item, _dragInfo)) return;
     setState(() {
       _dragReset();
     });
@@ -305,6 +312,8 @@ class ReorderableAnimatedBuilderState extends State<ReorderableAnimatedBuilder>
   }
 
   void _dragEnd(_DragInfo item) {
+    if (!identical(item, _dragInfo)) return;
+    if (_insertIndex == null || _dragIndex == null) return;
     setState(() {
       if (_insertIndex == item.index || isGrid) {
         _finalDropPosition = _itemOffsetAt(_insertIndex!);
@@ -348,7 +357,9 @@ class ReorderableAnimatedBuilderState extends State<ReorderableAnimatedBuilder>
     widget.onReorderEnd?.call(_insertIndex!);
   }
 
-  void _dropCompleted() {
+  void _dropCompleted(_DragInfo item) {
+    if (!identical(item, _dragInfo)) return;
+    if (_insertIndex == null || _dragIndex == null) return;
     final int fromIndex = _dragIndex!;
     final int toIndex = _insertIndex!;
     if (fromIndex != toIndex) {
@@ -368,19 +379,28 @@ class ReorderableAnimatedBuilderState extends State<ReorderableAnimatedBuilder>
 
   void _dragReset() {
     if (_dragInfo != null) {
+      _resetDragOnly();
+      if (_dragIndex != null && _items.containsKey(_dragIndex)) {
+        _dragIndex = null;
+      }
+      _recognizer?.dispose();
+      _recognizer = null;
+    }
+  }
+
+  // Release the old drag without interrupting a recognizer entering onStart.
+  void _resetDragOnly() {
+    if (_dragInfo != null) {
       if (_dragIndex != null && _items.containsKey(_dragIndex)) {
         final ReorderableAnimatedContentState dragItem = _items[_dragIndex]!;
         dragItem.dragging = false;
         dragItem.dragSize = Size.zero;
         dragItem.rebuild();
-        _dragIndex = null;
       }
       _dragInfo?.dispose();
       _dragInfo = null;
       _autoScroller?.stopAutoScroll();
       _resetItemGap();
-      _recognizer?.dispose();
-      _recognizer = null;
       _overlayEntry?.remove();
       _overlayEntry?.dispose();
       _overlayEntry = null;
@@ -427,9 +447,9 @@ class ReorderableAnimatedBuilderState extends State<ReorderableAnimatedBuilder>
   }
 
   Offset calculateNextDragOffset(int index) {
+    if (_dragIndex == null || _insertIndex == null) return Offset.zero;
     int minPos = min(_dragIndex!, _insertIndex!);
     int maxPos = max(_dragIndex!, _insertIndex!);
-    if (_dragIndex == null || _insertIndex == null) return Offset.zero;
 
     if (index < minPos || index > maxPos) return Offset.zero;
 
