@@ -10,7 +10,7 @@ class _DragInfo extends Drag {
   final _DragItemUpdate? onUpdate;
   final _DragItemCallback? onEnd;
   final _DragItemCallback? onCancel;
-  final VoidCallback? onDragCompleted;
+  final _DragItemCallback? onDragCompleted;
   final ReorderItemProxyDecorator? proxyDecorator;
   final TickerProvider tickerProvider;
 
@@ -52,6 +52,7 @@ class _DragInfo extends Drag {
 
   void dispose() {
     _proxyAnimation?.dispose();
+    _proxyAnimation = null;
   }
 
   void startDrag() {
@@ -76,6 +77,8 @@ class _DragInfo extends Drag {
 
   @override
   void end(DragEndDetails details) {
+    // A replaced drag can still receive an end notification after disposal.
+    if (_proxyAnimation == null) return;
     _proxyAnimation!.reverse();
     onEnd?.call(this);
   }
@@ -90,7 +93,7 @@ class _DragInfo extends Drag {
   void _dropCompleted() {
     _proxyAnimation?.dispose();
     _proxyAnimation = null;
-    onDragCompleted?.call();
+    onDragCompleted?.call(this);
   }
 
   Widget createProxy(BuildContext context) {
